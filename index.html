@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#112a35">
+<meta name="robots" content="noindex,nofollow">
+<title>Regatul numerelor · Clasa a III-a</title>
+<link rel="stylesheet" href="./styles/main.css">
+</head>
+<body>
+<main>
+<h1 class="sr">Regatul numerelor — Clasa a III-a</h1>
+<figure class="scene">
+<img src="./assets/scoala.webp" width="1672" height="941" alt="Regatul numerelor, în fața Școlii Dăneasa: copii exploratori și personaje în formă de numere.">
+<button class="flag" id="class-entry" aria-label="Clasa a III-a — alege numele tău" aria-haspopup="dialog" title="Alege numele tău"><span class="sr">Clasa a III-a</span></button>
+<button class="teacher" id="teacher-entry" aria-label="Profesor — acces la panoul de control" aria-haspopup="dialog" title="Acces profesor">Profesor</button>
+</figure>
+</main>
+<section id="map-page" hidden aria-labelledby="map-title">
+ <header class="map-toolbar"><button id="map-home" type="button">Ieșire</button><div><h2 id="map-title">Harta magică</h2><p id="map-student"></p></div><span id="map-mode" class="preview-label">Elev</span></header>
+ <p class="map-help">Atinge un ținut pentru a-l descoperi. Pe telefon poți glisa harta lateral.</p>
+ <div class="map-scroll" tabindex="0" role="region" aria-label="Harta capitolelor, cu derulare laterală">
+  <div class="map-art">
+   <img id="map-image" src="./assets/harta.webp" width="1672" height="941" alt="Harta Regatului numerelor: școala, opt ținuturi și castelul provocării finale.">
+   <div id="map-chapters"></div>
+   <div class="chapter-progress" id="chapter-progress" role="group" aria-label="Progresul meu în cele opt capitole"></div>
+   <button class="map-castle" id="map-castle" aria-label="Castelul provocării finale — închis"></button>
+  </div>
+ </div>
+ <p class="map-summary" id="map-summary" role="status"></p>
+ <dialog class="chapter-dialog" id="chapter-dialog" aria-labelledby="chapter-title"><button id="chapter-close" class="close" aria-label="Închide detaliile capitolului">×</button><p class="eyebrow">Regatul numerelor</p><h2 id="chapter-title"></h2><p id="chapter-description"></p><p id="chapter-access" class="notice"></p><button id="chapter-back" type="button">Înapoi la hartă</button></dialog>
+</section>
+
+<section id="forest-page" hidden aria-labelledby="forest-title">
+ <header class="map-toolbar"><button id="forest-back" type="button">← Harta magică</button><div><h2 id="forest-title">Pădurea numerelor fermecate</h2><p id="forest-student"></p></div><span class="preview-label">Elev</span></header>
+ <p class="map-help">Colorat: disponibil · Gri cu lacăt: blocat · Luminos: parcurs. Pe telefon poți glisa imaginea lateral.</p>
+ <div class="map-scroll" tabindex="0" role="region" aria-label="Cele șase lecții ale Pădurii numerelor fermecate">
+  <div class="forest-art">
+   <img src="./assets/padure.webp" width="1672" height="941" alt="Pădurea numerelor fermecate, cu șase lecții, școala Dăneasa și robotul: Explorează lecțiile, exersează în ritmul tău și descoperă magia numerelor!">
+   <img id="forest-color-source" hidden src="./assets/padure-color.webp" alt="">
+   <img id="forest-unlocked-source" hidden src="./assets/padure-lectia2.webp" alt="">
+   <button id="forest-back-sign" class="forest-back-sign" type="button" aria-label="Înapoi la harta magică"></button>
+   <div id="forest-lessons"></div>
+   <div id="forest-progress" class="forest-progress" role="group" aria-label="Progresul meu în cele șase lecții"></div>
+  </div>
+ </div>
+ <p id="forest-summary" class="map-summary" role="status"></p>
+ <dialog id="lesson-dialog" class="chapter-dialog" aria-labelledby="lesson-title"><button id="lesson-close" class="close" type="button" aria-label="Închide lecția">×</button><p class="eyebrow">Pădurea numerelor fermecate</p><h2 id="lesson-title"></h2><p id="lesson-message"></p><p id="lesson-note" class="notice"></p><button id="lesson-return" type="button">Înapoi în pădure</button></dialog>
+</section>
+
+<section id="formation-page" hidden aria-labelledby="formation-title">
+ <header class="map-toolbar"><button id="formation-back" type="button">← Înapoi la pădure</button><div><h2 id="formation-title">1. Formarea numerelor naturale</h2><p id="formation-student"></p></div></header>
+ <p class="map-help">Alege orice lădiță. O ladă rezolvată = o steluță. După 6 steluțe, apasă cheia pentru a o lua.</p>
+ <div class="map-scroll" tabindex="0" role="region" aria-label="Cele 12 lădițe ale lecției"><div class="formation-art">
+  <img id="formation-image" src="./assets/formarea-cupola.webp" width="1672" height="941" alt="Douăsprezece lădițe cu exerciții în pădure și cheia lecției 2 pe o masă rotundă.">
+  <img id="formation-key-image" hidden src="./assets/formarea-cheie.webp" alt=""><img id="formation-empty-image" hidden src="./assets/formarea-goala.webp" alt="">
+  <button id="formation-back-sign" type="button" aria-label="Înapoi la pădure"></button>
+  <div id="formation-chests"></div>
+  <div class="formation-counter"><span id="formation-count">0/12</span><progress id="formation-bar" max="12" value="0" aria-label="Lădițe rezolvate"></progress></div>
+  <button id="formation-key" type="button" aria-label="Cheia lecției 2"></button>
+ </div></div>
+ <p id="formation-status" class="map-summary" role="status" aria-live="polite"></p>
+
+</section>
+<section id="chest1-page" hidden aria-label="Lădița 1 — Ce număr se formează?">
+ <div class="map-scroll" tabindex="0" role="region" aria-label="Exercițiu cu patru cifre"><div class="chest1-art">
+  <img id="chest1-image" src="./assets/ladita1.webp" width="1672" height="941" alt="Ce număr se formează? Un cub portocaliu pentru o mie, șase plăci verzi pentru sute, trei bare roșii pentru zeci și două cuburi albastre pentru unități.">
+  <img id="chest2-source" hidden src="./assets/ladita2.webp" alt=""><img id="chest3-source" hidden src="./assets/ladita3.webp" alt=""><img id="chest4-source" hidden src="./assets/ladita4.webp" alt="">
+  <img id="chest5-source" hidden src="./assets/ladita5.webp" alt=""><img id="chest6-source" hidden src="./assets/ladita6.webp" alt=""><img id="chest7-source" hidden src="./assets/ladita7.webp" alt=""><img id="chest8-source" hidden src="./assets/ladita8.webp" alt="">
+  <form id="chest1-form" novalidate autocomplete="off">
+   <div class="chest1-digits" role="group" aria-label="Scrie cele patru cifre ale numărului">
+    <input id="chest1-digit-0" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Cifra miilor" autocomplete="off">
+    <input id="chest1-digit-1" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Cifra sutelor" autocomplete="off">
+    <input id="chest1-digit-2" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Cifra zecilor" autocomplete="off">
+    <input id="chest1-digit-3" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Cifra unităților" autocomplete="off">
+   </div>
+   <button id="chest1-check" type="submit" aria-label="Verifică răspunsul"></button>
+  </form>
+  <button id="chest1-back" type="button" aria-label="Înapoi la cele 12 lădițe"></button>
+  <output id="chest1-result" aria-live="polite" role="status"></output>
+ </div></div>
+ <p id="chest1-status" class="map-summary" role="status" aria-live="polite"></p>
+</section>
+<section id="missing-page" hidden aria-label="Completează pergamentul lipsă">
+ <div class="map-scroll" tabindex="0" role="region" aria-label="Exercițiu cu termen lipsă"><div class="missing-art">
+  <img id="missing-image" src="./assets/ladita9.webp" width="1672" height="941" alt="Ce număr lipsește?">
+  <img id="missing-source-10" hidden src="./assets/ladita10.webp" alt=""><img id="missing-source-11" hidden src="./assets/ladita11.webp" alt=""><img id="missing-source-12" hidden src="./assets/ladita12.webp" alt="">
+  <form id="missing-form" novalidate autocomplete="off">
+   <input id="missing-answer" type="text" inputmode="numeric" pattern="[0-9]{1,4}" maxlength="4" aria-label="Valoarea întreagă a pergamentului lipsă" autocomplete="off">
+   <button id="missing-check" type="submit" aria-label="Verifică răspunsul"></button>
+  </form>
+  <button id="missing-back" type="button" aria-label="Înapoi la cele 12 lădițe"></button>
+  <output id="missing-result" aria-live="polite" role="status"></output>
+ </div></div>
+ <p id="missing-status" class="map-summary" role="status" aria-live="polite"></p>
+</section>
+
+<section id="teacher-page" hidden aria-labelledby="teacher-title">
+ <header class="map-toolbar"><button id="teacher-logout" type="button">Ieșire</button><div><h2 id="teacher-title">Panoul profesorului</h2><p>Harta, progresul și parolele elevilor</p></div></header>
+ <div class="teacher-content">
+  <p>Schimbă parola unui elev fără să îi modifici progresul. Parolele actuale nu sunt afișate.</p>
+  <button id="teacher-progress" type="button">Harta și progresul elevilor</button>
+  <button id="teacher-own-password" type="button">Schimbă parola mea</button>
+  <button id="teacher-reload" type="button">Reîncarcă lista</button>
+  <p id="teacher-status" role="status" aria-live="polite"></p>
+  <div id="teacher-students" class="teacher-students"></div>
+ </div>
+ <dialog id="password-dialog" class="chapter-dialog" aria-labelledby="password-editor-title">
+  <button id="password-editor-close" class="close" type="button" aria-label="Închide">×</button>
+  <h2 id="password-editor-title">Schimbă parola</h2>
+  <form id="password-editor-form">
+   <div id="current-password-wrap" hidden><label for="current-password">Parola ta actuală</label><input id="current-password" type="password" autocomplete="current-password" maxlength="128"></div>
+   <label for="new-password">Parola nouă</label><input id="new-password" type="password" autocomplete="new-password" required minlength="4" maxlength="128">
+   <label for="confirm-password">Repetă parola nouă</label><input id="confirm-password" type="password" autocomplete="new-password" required maxlength="128">
+   <button id="editor-reveal" type="button">Arată parolele</button>
+   <p id="password-editor-note" class="notice"></p>
+   <button class="submit" id="password-editor-save" type="submit">Salvează parola</button>
+  </form>
+  <p id="password-editor-status" role="status" aria-live="polite"></p>
+ </dialog>
+</section>
+
+<noscript><p class="noscript">Activează JavaScript în browser pentru a deschide lista elevilor.</p></noscript>
+<dialog id="entry" class="roster-mode" aria-labelledby="dialog-title">
+<header class="dialog-head"><div><p class="eyebrow">Regatul numerelor</p><h2 id="dialog-title">Clasa a III-a</h2></div><button class="close" id="close" aria-label="Închide">×</button></header>
+<div class="body">
+<section id="roster-view"><p class="intro">Alege numele tău pentru a intra.</p><div class="students" id="students"></div><p class="footnote">Fiecare are propria aventură, în ritmul său.</p></section>
+<section class="login" id="login-view" hidden>
+<button class="back" id="back">← Înapoi la colegi</button>
+<div class="selected-avatar" id="selected-avatar" aria-hidden="true"></div><h3 class="selected-name" id="selected-name"></h3><p class="welcome" id="welcome">Bine ai venit în Regatul numerelor!</p>
+<form id="login-form">
+<label for="password">Parola ta</label><div class="password-wrap"><input id="password" type="password" autocomplete="off" maxlength="128" aria-describedby="setup-note" disabled><button type="button" class="reveal" id="reveal" aria-label="Arată parola" disabled>Arată</button></div>
+<button type="submit" class="submit">Intră în regat</button>
+</form>
+<p class="notice" id="setup-note">Alege numele tău și introdu parola primită de la profesor.</p><p class="status" id="status" role="status" aria-live="polite"></p>
+</section>
+</div>
+</dialog>
+<script type="module" src="./scripts/app.js"></script>
+</body>
+</html>
