@@ -51,11 +51,12 @@
 
 <section id="reading-page" hidden aria-labelledby="reading-title">
  <header class="map-toolbar"><button id="reading-back" type="button">← Înapoi la pădure</button><div><h2 id="reading-title">2. Citirea și scrierea numerelor naturale</h2><p id="reading-student"></p></div></header>
- <p class="map-help">Cele 12 lădițe sunt pregătite. Exercițiile urmează să fie adăugate. Pe telefon poți glisa imaginea lateral.</p>
+ <p class="map-help">Lădița 1 este disponibilă. Celelalte exerciții urmează să fie adăugate. Pe telefon poți glisa imaginea lateral.</p>
  <div class="map-scroll" tabindex="0" role="region" aria-label="Cele 12 lădițe ale lecției 2"><div class="reading-art">
   <img src="./assets/citirea-cupola.webp" width="1672" height="941" alt="Citirea și scrierea numerelor naturale: 12 lădițe numerotate, școala Dăneasa, robotul, bufnița și cheia lecției 3 sub o cupolă de sticlă. Progres: zero din 12 steluțe.">
   <button id="reading-back-sign" type="button" aria-label="Înapoi la pădure"></button>
   <div id="reading-chests"></div>
+  <div class="reading-counter"><span id="reading-count">0/12</span><progress id="reading-bar" max="12" value="0" aria-label="Steluțe câștigate la lecția 2"></progress></div>
   <button id="reading-key" type="button" aria-label="Cheia lecției 3 — sub cupolă"></button>
  </div></div>
  <p id="reading-status" class="map-summary" role="status" aria-live="polite"></p>
@@ -66,6 +67,19 @@
   <p class="notice">Steluța se câștigă prin rezolvarea exercițiului. Deschiderea lădiței nu modifică progresul.</p>
   <button id="reading-dialog-return" type="button">Înapoi la lădițe</button>
  </dialog>
+</section>
+
+<section id="reading-exercise-page" hidden aria-label="Lecția 2, lădița 1 — Scrie cu litere numărul 4927">
+ <div class="map-scroll" tabindex="0" role="region" aria-label="Exercițiu de scriere a numărului cu litere"><div class="reading-exercise-art">
+  <img src="./assets/citirea-ladita1.webp" width="1672" height="941" alt="Scrie cu litere numărul 4927. Fiecare cifră reprezintă un ordin: mii, sute, zeci și unități.">
+  <form id="reading-form" novalidate autocomplete="off">
+   <textarea id="reading-answer" maxlength="500" aria-label="Scrie cu litere numărul 4927" autocomplete="off" autocapitalize="sentences" spellcheck="false"></textarea>
+   <button id="reading-check" type="submit" aria-label="Verifică răspunsul"></button>
+  </form>
+  <button id="reading-exercise-back" type="button" aria-label="Înapoi la lădițele lecției 2"></button>
+  <output id="reading-result" role="status" aria-live="polite"></output>
+ </div></div>
+ <p id="reading-exercise-status" class="map-summary" role="status" aria-live="polite"></p>
 </section>
 
 <section id="formation-page" hidden aria-labelledby="formation-title">

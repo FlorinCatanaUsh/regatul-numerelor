@@ -22,6 +22,7 @@ const studentAuth = (()=>{
   async profile(){return (await request('profile')).profile;},
   async teacherLogin(password){token=null;const r=await request('teacher_login',{password});if(typeof r.token!=='string'||r.profile?.role!=='teacher')throw new Error('Răspuns de autentificare invalid.');token=r.token;return r.profile;},
   async students(){return (await request('teacher_students')).students;},
+  async reading(operation,fields={}){return await request('reading',{operation,...fields});},
   async formation(operation,fields={}){return await request('formation',{operation,...fields});},
   async allowLesson2(studentId,allowed){return await request('teacher_lesson2',{studentId,allowed});},
   async setPassword(studentId,password,currentPassword=null){return await request('teacher_password',{studentId,password,currentPassword});},

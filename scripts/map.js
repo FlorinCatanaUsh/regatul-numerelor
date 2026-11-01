@@ -104,33 +104,69 @@ function returnToMap(){
 for(const id of ['forest-back','forest-back-sign'])$(id).addEventListener('click',returnToMap);
 for(const id of ['lesson-close','lesson-return'])$(id).addEventListener('click',()=>$('lesson-dialog').close());
 
-// Lesson 2 has its own landing page. No completion is awarded until exercises exist.
+// Lesson 2 progress is validated and stored separately by the server.
+let readingBusy=false,readingReady=false,readingReturnFocus=null;
 function readingAvailable(){return !!(mapProfile?.formation?.lesson2Allowed&&mapProfile?.formation?.lesson2Opened);}
-function openReading(){
- if(!mapProfile||(!teacherMapReturn&&!readingAvailable()))return;
+function renderReading(){
+ const solved=(mapProfile?.reading?.solved||[]).filter(id=>id===1),count=solved.length?1:0;
  $('reading-student').textContent=mapProfile.displayName+(teacherMapReturn?' — vizualizare profesor':'');
+ $('reading-count').textContent=count+'/12';$('reading-bar').value=count;
  $('reading-chests').replaceChildren();
  for(let id=1;id<=12;id++){
-  const button=document.createElement('button');button.type='button';button.className='reading-chest';
+  const button=document.createElement('button');button.type='button';button.className='reading-chest'+(id===1&&count?' complete':'');
   const col=(id-1)%4,row=Math.floor((id-1)/4);
   Object.assign(button.style,{left:[23,35.5,48,60][col]+'%',top:[39,56,74][row]+'%',width:'12%',height:'16%'});
-  button.setAttribute('aria-label','Lecția 2, lădița '+id+' — exercițiul urmează să fie adăugat');
-  button.setAttribute('aria-haspopup','dialog');
+  button.setAttribute('aria-label','Lecția 2, lădița '+id+(id===1?(count?' — rezolvată':' — Scrie cu litere numărul 4927'):' — exercițiul urmează să fie adăugat'));
+  if(id===1&&count){const star=document.createElement('span');star.textContent='★';button.append(star);}
   button.addEventListener('click',()=>{
+   if(readingBusy)return;
+   if(id===1){openReadingChest();return;}
    $('reading-dialog-title').textContent='Lădița '+id+' · Citirea și scrierea numerelor naturale';
-   $('reading-dialog').showModal();$('reading-dialog-close').focus();
-   readingReturnFocus=button;
+   readingReturnFocus=button;$('reading-dialog').showModal();$('reading-dialog-close').focus();
   });
   $('reading-chests').append(button);
  }
- $('reading-status').textContent='0 din 12 steluțe. Exercițiile lecției 2 urmează să fie adăugate.';
- $('forest-page').hidden=true;$('reading-page').hidden=false;$('reading-back').focus();window.scrollTo(0,0);
+ $('reading-status').textContent=count+' din 12 steluțe. Lădița 1 este disponibilă; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
 }
-let readingReturnFocus=null;
-for(const id of ['reading-back','reading-back-sign'])$(id).addEventListener('click',openForest);
-$('reading-key').addEventListener('click',()=>{$('reading-status').textContent='Cheia lecției 3 rămâne sub cupolă. Vei putea câștiga cheia după rezolvarea a 6 lădițe distincte, când exercițiile vor fi disponibile.';});
+async function openReading(){
+ if(readingBusy||!mapProfile||(!teacherMapReturn&&!readingAvailable()))return;
+ readingReady=false;renderReading();$('forest-page').hidden=true;$('reading-page').hidden=false;$('reading-back').focus();window.scrollTo(0,0);
+ if(teacherMapReturn)return;
+ readingBusy=true;$('reading-back').disabled=true;
+ try{const r=await studentAuth.reading('state');syncProfile(r.profile);readingReady=true;renderReading();}
+ catch(error){$('reading-status').textContent=error.message;}
+ finally{readingBusy=false;$('reading-back').disabled=false;}
+}
+function openReadingChest(){
+ if(!teacherMapReturn&&!readingReady){$('reading-status').textContent='Reintră în lecție pentru a verifica accesul și conexiunea.';return;}
+ $('reading-answer').value='';$('reading-answer').disabled=!!teacherMapReturn;$('reading-check').disabled=!!teacherMapReturn;
+ clearReadingFeedback();$('reading-page').hidden=true;$('reading-exercise-page').hidden=false;window.scrollTo(0,0);(teacherMapReturn?$('reading-exercise-back'):$('reading-answer')).focus();
+}
+function clearReadingFeedback(){
+ $('reading-result').textContent='';$('reading-result').className='';$('reading-result').setAttribute('aria-label','');
+ $('reading-exercise-status').textContent=teacherMapReturn?'Vizualizare profesor. Progresul elevului nu poate fi modificat.':'';
+}
+for(const id of ['reading-back','reading-back-sign'])$(id).addEventListener('click',()=>{if(!readingBusy)openForest();});
+$('reading-key').addEventListener('click',()=>{$('reading-status').textContent='Cheia lecției 3 rămâne sub cupolă până rezolvi 6 lădițe distincte. Momentan este disponibilă prima lădiță.';});
 for(const id of ['reading-dialog-close','reading-dialog-return'])$(id).addEventListener('click',()=>$('reading-dialog').close());
 $('reading-dialog').addEventListener('close',()=>readingReturnFocus?.focus());
+$('reading-answer').addEventListener('input',clearReadingFeedback);
+$('reading-form').addEventListener('submit',async event=>{
+ event.preventDefault();if(readingBusy||teacherMapReturn||!readingReady)return;
+ const answer=$('reading-answer').value;
+ if(!answer.trim()){$('reading-exercise-status').textContent='Scrie numărul folosind litere.';$('reading-answer').focus();return;}
+ readingBusy=true;$('reading-check').disabled=true;$('reading-answer').disabled=true;$('reading-exercise-status').textContent='Se verifică…';
+ try{
+  const r=await studentAuth.reading('answer',{chest:1,answer});syncProfile(r.profile);renderReading();
+  $('reading-result').textContent=r.correct?'✓':'✕';$('reading-result').className=r.correct?'correct':'incorrect';
+  $('reading-result').setAttribute('aria-label',r.correct?'Răspuns corect':'Răspuns greșit');
+  $('reading-exercise-status').textContent=r.correct?'Corect! Steluța este salvată. Poți exersa din nou.':'Mai încearcă. Poți modifica răspunsul și verifica din nou.';
+ }catch(error){$('reading-exercise-status').textContent=error.message;}
+ finally{readingBusy=false;$('reading-check').disabled=false;$('reading-answer').disabled=false;}
+});
+$('reading-exercise-back').addEventListener('click',()=>{
+ if(readingBusy)return;$('reading-answer').value='';clearReadingFeedback();$('reading-exercise-page').hidden=true;$('reading-page').hidden=false;renderReading();$('reading-chests').querySelector('button')?.focus();window.scrollTo(0,0);
+});
 
 let formationQuestions=[],activeChest=null,formationBusy=false,formationRevision=0,lockBusy=false;
 function formationData(){const f=mapProfile?.formation||{};return {...f,solved:[...new Set((f.solved||[]).filter(n=>Number.isInteger(n)&&n>=1&&n<=12))]};}
