@@ -46,9 +46,9 @@ Deno.serve(async req=>{
    return students===null?response({error:'Acces rezervat profesorului.'},403,origin):response({students},200,origin);
   }
   if(body.action==='reading'){
-   if(!['state','answer'].includes(body.operation)||body.operation==='answer'&&(!Number.isInteger(body.chest)||typeof body.answer!=='string'||body.answer.length>500))return response({error:'Cerere invalidă.'},400,origin);
+   if(!['state','answer','take_key'].includes(body.operation)||body.operation==='answer'&&(!Number.isInteger(body.chest)||typeof body.answer!=='string'||body.answer.length>500))return response({error:'Cerere invalidă.'},400,origin);
    const r=await rpc('regat_reading',{p_token:token,p_action:body.operation,p_chest:body.chest??null,p_answer:body.answer??null});
-   const errors={unauthorized:'Sesiunea a expirat. Autentifică-te din nou.',lesson_locked:'Lecția 2 este blocată. Ai nevoie de cheie și permisiunea profesorului.',chest_missing:'Exercițiul acestei lădițe nu este încă disponibil.'};
+   const errors={six_stars:'Obține 6 steluțe pentru a elibera cheia lecției 3.',unauthorized:'Sesiunea a expirat. Autentifică-te din nou.',lesson_locked:'Lecția 2 este blocată. Ai nevoie de cheie și permisiunea profesorului.',chest_missing:'Exercițiul acestei lădițe nu este încă disponibil.'};
    return r?.ok?response(r,200,origin):response({error:errors[r?.error]||'Acțiunea nu a reușit.'},r?.error==='unauthorized'?401:403,origin);
   }
   if(body.action==='formation'){

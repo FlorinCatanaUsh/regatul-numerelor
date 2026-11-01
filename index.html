@@ -51,9 +51,10 @@
 
 <section id="reading-page" hidden aria-labelledby="reading-title">
  <header class="map-toolbar"><button id="reading-back" type="button">← Înapoi la pădure</button><div><h2 id="reading-title">2. Citirea și scrierea numerelor naturale</h2><p id="reading-student"></p></div></header>
- <p class="map-help">Lădițele 1–4 sunt disponibile. Celelalte exerciții urmează să fie adăugate. Pe telefon poți glisa imaginea lateral.</p>
+ <p class="map-help">Lădițele 1–8 sunt disponibile. Celelalte exerciții urmează să fie adăugate. Pe telefon poți glisa imaginea lateral.</p>
  <div class="map-scroll" tabindex="0" role="region" aria-label="Cele 12 lădițe ale lecției 2"><div class="reading-art">
-  <img src="./assets/citirea-cupola.webp" width="1672" height="941" alt="Citirea și scrierea numerelor naturale: 12 lădițe numerotate, școala Dăneasa, robotul, bufnița și cheia lecției 3 sub o cupolă de sticlă. Progres: zero din 12 steluțe.">
+  <img id="reading-image" src="./assets/citirea-cupola.webp" width="1672" height="941" alt="Citirea și scrierea numerelor naturale: 12 lădițe numerotate, școala Dăneasa, robotul, bufnița și cheia lecției 3 sub o cupolă de sticlă. Progres: zero din 12 steluțe.">
+  <img id="reading-key-image" hidden src="./assets/citirea-cheie.webp" alt=""><img id="reading-empty-image" hidden src="./assets/citirea-goala.webp" alt="">
   <button id="reading-back-sign" type="button" aria-label="Înapoi la pădure"></button>
   <div id="reading-chests"></div>
   <div class="reading-counter"><span id="reading-count">0/12</span><progress id="reading-bar" max="12" value="0" aria-label="Steluțe câștigate la lecția 2"></progress></div>
@@ -75,9 +76,22 @@
   <img id="reading-exercise-source-2" hidden src="./assets/citirea-ladita2.webp?v=2" alt="">
   <img id="reading-exercise-source-3" hidden src="./assets/citirea-ladita3.webp?v=2" alt="">
   <img id="reading-exercise-source-4" hidden src="./assets/citirea-ladita4.webp" alt="">
+  <img id="reading-exercise-source-5" hidden src="./assets/citirea-ladita5.webp" alt="">
+  <img id="reading-exercise-source-6" hidden src="./assets/citirea-ladita6.webp" alt="">
+  <img id="reading-exercise-source-7" hidden src="./assets/citirea-ladita7.webp" alt="">
+  <img id="reading-exercise-source-8" hidden src="./assets/citirea-ladita8.webp" alt="">
   <form id="reading-form" novalidate autocomplete="off">
    <textarea id="reading-answer" maxlength="500" aria-label="Scrie cu litere numărul 4927" autocomplete="off" autocapitalize="sentences" spellcheck="false"></textarea>
    <button id="reading-check" type="submit" aria-label="Verifică răspunsul"></button>
+  </form>
+  <form id="reading-numeric-form" hidden novalidate autocomplete="off">
+   <div id="reading-digits" role="group" aria-label="Scrie cele patru cifre ale numărului">
+    <input id="reading-digit-0" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Cifra miilor" autocomplete="off">
+    <input id="reading-digit-1" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Cifra sutelor" autocomplete="off">
+    <input id="reading-digit-2" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Cifra zecilor" autocomplete="off">
+    <input id="reading-digit-3" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Cifra unităților" autocomplete="off">
+   </div>
+   <button id="reading-numeric-check" type="submit" aria-label="Verifică răspunsul"></button>
   </form>
   <button id="reading-exercise-back" type="button" aria-label="Înapoi la lădițele lecției 2"></button>
   <output id="reading-result" role="status" aria-live="polite"></output>

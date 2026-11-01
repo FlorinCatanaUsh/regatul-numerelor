@@ -106,18 +106,26 @@ for(const id of ['lesson-close','lesson-return'])$(id).addEventListener('click',
 
 // Lesson 2 progress is validated and stored separately by the server.
 let readingBusy=false,readingReady=false,readingReturnFocus=null,readingChest=null;
-const readingExercises={1:{number:'4927',image:$('reading-exercise-image').src},2:{number:'3052',image:$('reading-exercise-source-2').src},3:{number:'8304',image:$('reading-exercise-source-3').src},4:{number:'4715',image:$('reading-exercise-source-4').src}};
+const readingExercises={1:{number:'4927',image:$('reading-exercise-image').src},2:{number:'3052',image:$('reading-exercise-source-2').src},3:{number:'8304',image:$('reading-exercise-source-3').src},4:{number:'4715',image:$('reading-exercise-source-4').src},5:{mode:'digits',number:'patru mii șase sute douăzeci și trei',image:$('reading-exercise-source-5').src},6:{mode:'digits',number:'opt mii șaptezeci și nouă',image:$('reading-exercise-source-6').src},7:{mode:'digits',number:'șase mii patru',image:$('reading-exercise-source-7').src},8:{mode:'digits',number:'șapte mii trei sute doi',image:$('reading-exercise-source-8').src}};
+const readingDomeSource=$('reading-image').src;
+const readingDigits=Array.from({length:4},(_,i)=>$('reading-digit-'+i));
+function readingPrompt(exercise){return 'Scrie cu '+(exercise.mode==='digits'?'cifre':'litere')+' numărul '+exercise.number;}
 function readingAvailable(){return !!(mapProfile?.formation?.lesson2Allowed&&mapProfile?.formation?.lesson2Opened);}
 function renderReading(){
  const solved=[...new Set((mapProfile?.reading?.solved||[]).filter(id=>readingExercises[id]))],count=solved.length;
  $('reading-student').textContent=mapProfile.displayName+(teacherMapReturn?' — vizualizare profesor':'');
  $('reading-count').textContent=count+'/12';$('reading-bar').value=count;
+ const taken=!!mapProfile.reading?.keyTaken;
+ $('reading-image').src=taken?$('reading-empty-image').src:count>=6?$('reading-key-image').src:readingDomeSource;
+ $('reading-image').alt='Lecția 2: '+count+' din 12 steluțe. '+(taken?'Cheia lecției 3 a fost luată.':count>=6?'Cheia lecției 3 este eliberată.':'Cheia lecției 3 este sub cupolă.');
+ $('reading-key').disabled=taken||!!teacherMapReturn||readingBusy;
+ $('reading-key').setAttribute('aria-label',taken?'Cheia lecției 3 a fost luată':count>=6?'Ia cheia lecției 3':'Cheia lecției 3 — obține 6 steluțe');
  $('reading-chests').replaceChildren();
  for(let id=1;id<=12;id++){
   const button=document.createElement('button');button.type='button';button.className='reading-chest'+(solved.includes(id)?' complete':'');
   const col=(id-1)%4,row=Math.floor((id-1)/4);
   Object.assign(button.style,{left:[23,35.5,48,60][col]+'%',top:[39,56,74][row]+'%',width:'12%',height:'16%'});
-  button.setAttribute('aria-label','Lecția 2, lădița '+id+(readingExercises[id]?(solved.includes(id)?' — rezolvată':' — Scrie cu litere numărul '+readingExercises[id].number):' — exercițiul urmează să fie adăugat'));
+  button.setAttribute('aria-label','Lecția 2, lădița '+id+(readingExercises[id]?(solved.includes(id)?' — rezolvată':' — '+readingPrompt(readingExercises[id])):' — exercițiul urmează să fie adăugat'));
   if(solved.includes(id)){const star=document.createElement('span');star.textContent='★';button.append(star);}
   button.addEventListener('click',()=>{
    if(readingBusy)return;
@@ -127,7 +135,7 @@ function renderReading(){
   });
   $('reading-chests').append(button);
  }
- $('reading-status').textContent=count+' din 12 steluțe. Lădițele 1–4 sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
+ $('reading-status').textContent=count+' din 12 steluțe. Lădițele 1–8 sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(taken?' Cheia lecției 3 a fost luată.':count>=6?' Cupola a dispărut. Apasă cheia pentru a o lua.':' Obține 6 steluțe pentru a elibera cheia.')+(teacherMapReturn?' Vizualizare profesor.':'');
 }
 async function openReading(){
  if(readingBusy||!mapProfile||(!teacherMapReturn&&!readingAvailable()))return;
@@ -136,42 +144,67 @@ async function openReading(){
  readingBusy=true;$('reading-back').disabled=true;
  try{const r=await studentAuth.reading('state');syncProfile(r.profile);readingReady=true;renderReading();}
  catch(error){$('reading-status').textContent=error.message;}
- finally{readingBusy=false;$('reading-back').disabled=false;}
+ finally{readingBusy=false;$('reading-back').disabled=false;$('reading-key').disabled=!!mapProfile?.reading?.keyTaken||!!teacherMapReturn;}
 }
 function openReadingChest(id){
  const exercise=readingExercises[id];if(!exercise)return;readingChest=id;
- $('reading-exercise-image').src=exercise.image;$('reading-exercise-image').alt='Scrie cu litere numărul '+exercise.number+'.';
- $('reading-answer').setAttribute('aria-label','Scrie cu litere numărul '+exercise.number);
- $('reading-exercise-page').setAttribute('aria-label','Lecția 2, lădița '+id+' — Scrie cu litere numărul '+exercise.number);
+ $('reading-exercise-image').src=exercise.image;$('reading-exercise-image').alt=readingPrompt(exercise)+'.';
+ $('reading-answer').setAttribute('aria-label',readingPrompt(exercise));
+ $('reading-exercise-page').setAttribute('aria-label','Lecția 2, lădița '+id+' — '+readingPrompt(exercise));
  $('reading-exercise-page').className='reading-exercise-'+id;
  if(!teacherMapReturn&&!readingReady){$('reading-status').textContent='Reintră în lecție pentru a verifica accesul și conexiunea.';return;}
  $('reading-answer').value='';$('reading-answer').disabled=!!teacherMapReturn;$('reading-check').disabled=!!teacherMapReturn;
- clearReadingFeedback();$('reading-page').hidden=true;$('reading-exercise-page').hidden=false;window.scrollTo(0,0);(teacherMapReturn?$('reading-exercise-back'):$('reading-answer')).focus();
+ const numeric=exercise.mode==='digits';$('reading-form').hidden=numeric;$('reading-numeric-form').hidden=!numeric;
+ readingDigits.forEach(input=>{input.value='';input.disabled=!!teacherMapReturn;});$('reading-numeric-check').disabled=!!teacherMapReturn;
+ clearReadingFeedback();$('reading-page').hidden=true;$('reading-exercise-page').hidden=false;window.scrollTo(0,0);(teacherMapReturn?$('reading-exercise-back'):exercise.mode==='digits'?readingDigits[0]:$('reading-answer')).focus();
 }
 function clearReadingFeedback(){
  $('reading-result').textContent='';$('reading-result').className='';$('reading-result').setAttribute('aria-label','');
  $('reading-exercise-status').textContent=teacherMapReturn?'Vizualizare profesor. Progresul elevului nu poate fi modificat.':'';
 }
 for(const id of ['reading-back','reading-back-sign'])$(id).addEventListener('click',()=>{if(!readingBusy)openForest();});
-$('reading-key').addEventListener('click',()=>{$('reading-status').textContent='Cheia lecției 3 rămâne sub cupolă până rezolvi 6 lădițe distincte. Momentan sunt disponibile lădițele 1–4.';});
+$('reading-key').addEventListener('click',async()=>{
+ if(readingBusy||teacherMapReturn||mapProfile?.reading?.keyTaken)return;
+ const count=new Set(mapProfile?.reading?.solved||[]).size;
+ if(count<6){$('reading-status').textContent='Obține 6 steluțe pentru a elibera cheia lecției 3.';return;}
+ readingBusy=true;$('reading-key').disabled=true;
+ try{const r=await studentAuth.reading('take_key');syncProfile(r.profile);renderReading();$('reading-status').textContent='Ai luat cheia lecției 3! Progresul este salvat.';}
+ catch(error){$('reading-status').textContent=error.message;}
+ finally{readingBusy=false;$('reading-key').disabled=!!mapProfile?.reading?.keyTaken;}
+});
 for(const id of ['reading-dialog-close','reading-dialog-return'])$(id).addEventListener('click',()=>$('reading-dialog').close());
 $('reading-dialog').addEventListener('close',()=>readingReturnFocus?.focus());
 $('reading-answer').addEventListener('input',clearReadingFeedback);
-$('reading-form').addEventListener('submit',async event=>{
- event.preventDefault();if(readingBusy||teacherMapReturn||!readingReady||!readingExercises[readingChest])return;
- const answer=$('reading-answer').value;
- if(!answer.trim()){$('reading-exercise-status').textContent='Scrie numărul folosind litere.';$('reading-answer').focus();return;}
- readingBusy=true;$('reading-check').disabled=true;$('reading-answer').disabled=true;$('reading-exercise-status').textContent='Se verifică…';
+async function submitReadingAnswer(answer){
+ if(readingBusy||teacherMapReturn||!readingReady||!readingExercises[readingChest])return;
+ readingBusy=true;setReadingControls(true);$('reading-exercise-status').textContent='Se verifică…';
  try{
   const r=await studentAuth.reading('answer',{chest:readingChest,answer});syncProfile(r.profile);renderReading();
   $('reading-result').textContent=r.correct?'✓':'✕';$('reading-result').className=r.correct?'correct':'incorrect';
   $('reading-result').setAttribute('aria-label',r.correct?'Răspuns corect':'Răspuns greșit');
   $('reading-exercise-status').textContent=r.correct?'Corect! Steluța este salvată. Poți exersa din nou.':'Mai încearcă. Poți modifica răspunsul și verifica din nou.';
  }catch(error){$('reading-exercise-status').textContent=error.message;}
- finally{readingBusy=false;$('reading-check').disabled=false;$('reading-answer').disabled=false;}
+ finally{readingBusy=false;setReadingControls(false);}
+}
+function setReadingControls(disabled){$('reading-check').disabled=disabled;$('reading-answer').disabled=disabled;$('reading-numeric-check').disabled=disabled;readingDigits.forEach(input=>input.disabled=disabled);}
+$('reading-form').addEventListener('submit',async event=>{
+ event.preventDefault();if(readingExercises[readingChest]?.mode==='digits')return;
+ if(!$('reading-answer').value.trim()){$('reading-exercise-status').textContent='Scrie numărul folosind litere.';return;}
+ await submitReadingAnswer($('reading-answer').value);
+});
+$('reading-numeric-form').addEventListener('submit',async event=>{
+ event.preventDefault();if(readingExercises[readingChest]?.mode!=='digits'||readingBusy||teacherMapReturn)return;
+ if(!readingDigits.every(input=>/^[0-9]$/.test(input.value))){$('reading-exercise-status').textContent='Completează toate cele patru căsuțe, inclusiv cu 0 unde este nevoie.';return;}
+ await submitReadingAnswer(readingDigits.map(input=>input.value).join(''));
+});
+readingDigits.forEach((input,index)=>{
+ input.addEventListener('input',()=>{if(readingBusy||teacherMapReturn)return;input.value=input.value.replace(/[^0-9]/g,'').slice(-1);clearReadingFeedback();if(input.value&&index<3)readingDigits[index+1].focus();});
+ input.addEventListener('paste',event=>{event.preventDefault();if(readingBusy||teacherMapReturn)return;const digits=(event.clipboardData?.getData('text')||'').replace(/[^0-9]/g,'').slice(0,4-index);if(!digits)return;for(let i=0;i<digits.length;i++)readingDigits[index+i].value=digits[i];clearReadingFeedback();readingDigits[Math.min(3,index+digits.length)].focus();});
+ input.addEventListener('keydown',event=>{if(event.key==='Backspace'&&!input.value&&index>0){event.preventDefault();readingDigits[index-1].focus();}else if(event.key==='ArrowLeft'&&index>0){event.preventDefault();readingDigits[index-1].focus();}else if(event.key==='ArrowRight'&&index<3){event.preventDefault();readingDigits[index+1].focus();}});
+ input.addEventListener('focus',()=>input.select());
 });
 $('reading-exercise-back').addEventListener('click',()=>{
- if(readingBusy)return;$('reading-answer').value='';clearReadingFeedback();$('reading-exercise-page').hidden=true;$('reading-page').hidden=false;renderReading();$('reading-chests').querySelector('button')?.focus();window.scrollTo(0,0);
+ if(readingBusy)return;$('reading-answer').value='';readingDigits.forEach(input=>input.value='');clearReadingFeedback();$('reading-exercise-page').hidden=true;$('reading-page').hidden=false;renderReading();$('reading-chests').querySelector('button')?.focus();window.scrollTo(0,0);
 });
 
 let formationQuestions=[],activeChest=null,formationBusy=false,formationRevision=0,lockBusy=false;
