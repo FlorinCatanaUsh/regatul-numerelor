@@ -11,7 +11,7 @@ let calls=[];let current;const context={document:{getElementById:$,createElement
 vm.runInContext(fs.readFileSync(require('path').join(__dirname,'../scripts/map.js'),'utf8').replace('export function','function'),context);
 
 
-const expected={1:'PATru mii noua sute douazeci si sapte.',2:'trei mii cincizeci si doi.',3:'opt mii trei sute patru.',4:'patru mii sapte sute cincisprezece.',5:'4623',6:'8079',7:'6004',8:'7302'};
+const expected={1:'PATru mii noua sute douazeci si sapte.',2:'trei mii cincizeci si doi.',3:'opt mii trei sute patru.',4:'patru mii sapte sute cincisprezece.',5:'4623',6:'8079',7:'6004',8:'7302',9:'cinci mii două sute șaptezeci și patru',10:'nouă mii optzeci și șase',11:'6342',12:'8507'};
 let failNext=false;
 const ui=context.setupMap({pupils:[],entryDialog:$('entry'),studentAuth:{reading:async(operation,fields={})=>{
  calls.push([operation,fields]);if(failNext){failNext=false;throw new Error('Offline');}
@@ -26,9 +26,9 @@ async function enter(){ui.open(current);await $('map-chapters').children[0].fire
 async function chest(id){await $('reading-chests').children[id-1].fire('click');}
 (async()=>{
 await enter();assert.equal($('reading-count').textContent,'0/12');const init=calls.length;await $('reading-key').fire('click');assert.equal(calls.length,init);
-for(let id=1;id<=8;id++){
+for(let id=1;id<=12;id++){
  await chest(id);assert.equal($('reading-exercise-page').hidden,false);assert.equal($('reading-exercise-page').className,'reading-exercise-'+id);
- if(id<=4){assert.equal($('reading-form').hidden,false);assert.equal($('reading-numeric-form').hidden,true);assert.equal($('reading-answer').value,'');$('reading-answer').value=expected[id];await $('reading-form').fire('submit');}
+ if(id<=4||id===9||id===10){assert.equal($('reading-form').hidden,false);assert.equal($('reading-numeric-form').hidden,true);assert.equal($('reading-answer').value,'');$('reading-answer').value=expected[id];await $('reading-form').fire('submit');}
  else {
   assert.equal($('reading-form').hidden,true);assert.equal($('reading-numeric-form').hidden,false);
   for(let n=0;n<4;n++)assert.equal($('reading-digit-'+n).value,'');
@@ -40,14 +40,14 @@ for(let id=1;id<=8;id++){
   await $('reading-numeric-form').fire('submit');assert.equal(calls.at(-1)[1].chest,id);assert.equal(calls.at(-1)[1].answer,expected[id]);
  }
  assert.equal($('reading-result').textContent,'✓');assert.equal($('reading-count').textContent,id+'/12');
- if(id>=5){await $('reading-numeric-form').fire('submit');assert.equal($('reading-count').textContent,id+'/12');$('reading-digit-3').value=expected[id].endsWith('9')?'0':'9';await $('reading-numeric-form').fire('submit');assert.equal($('reading-result').textContent,'✕');assert.equal($('reading-count').textContent,id+'/12');}
+ if([5,6,7,8,11,12].includes(id)){await $('reading-numeric-form').fire('submit');assert.equal($('reading-count').textContent,id+'/12');$('reading-digit-3').value=expected[id].endsWith('9')?'0':'9';await $('reading-numeric-form').fire('submit');assert.equal($('reading-result').textContent,'✕');assert.equal($('reading-count').textContent,id+'/12');}
  await $('reading-exercise-back').fire('click');assert.equal($('reading-exercise-page').hidden,true);
  if(id===5){const n=calls.length;await $('reading-key').fire('click');assert.equal(calls.length,n);assert.equal($('reading-image').src,$('reading-image').src);}
  if(id===6){assert.equal($('reading-image').src,$('reading-key-image').src);await $('reading-key').fire('click');assert.equal(calls.at(-1)[0],'take_key');assert.equal($('reading-image').src,$('reading-empty-image').src);assert.equal(current.reading.keyTaken,true);}
 }
-assert.equal($('reading-key').disabled,true);await enter();assert.equal($('reading-count').textContent,'8/12');assert.equal($('reading-image').src,$('reading-empty-image').src);
+assert.equal($('reading-key').disabled,true);await enter();assert.equal($('reading-count').textContent,'12/12');assert.equal($('reading-image').src,$('reading-empty-image').src);
 await chest(6);for(let n=0;n<4;n++)assert.equal($('reading-digit-'+n).value,'');await $('reading-exercise-back').fire('click');
-const n=calls.length;await chest(9);assert.equal($('reading-dialog').open,true);assert.equal(calls.length,n);$('reading-dialog').close();await $('reading-back').fire('click');
+const n=calls.length;await chest(9);assert.equal($('reading-form').hidden,false);assert.equal($('reading-answer').value,'');assert.equal(calls.length,n);await $('reading-exercise-back').fire('click');await $('reading-back').fire('click');
 ui.teacherView(current,()=>{});await $('map-chapters').children[0].fire('click');await $('forest-progress').children[1].fire('click');await chest(7);assert.equal($('reading-numeric-check').disabled,true);for(let n=0;n<4;n++)assert.equal($('reading-digit-'+n).disabled,true);await $('reading-numeric-form').fire('submit');assert.equal(calls.length,n);assert.equal($('reading-key').disabled,true);
-console.log('PASS: 8 chest switching, word/numeric forms, focus, paste, mandatory zeros, incomplete/wrong/correct/repeat, unique stars, saved state, key threshold and collection, back, teacher readonly.');
+console.log('PASS: 12 chest switching, word/numeric forms, focus, paste, mandatory zeros, incomplete/wrong/correct/repeat, unique stars, saved state, key threshold and collection, back, teacher readonly.');
 })().catch(e=>{console.error(e);process.exitCode=1});

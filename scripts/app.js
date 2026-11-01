@@ -1,6 +1,6 @@
 import { pupils } from '../data/students.js';
 import { studentAuth } from './auth.js';
-import { setupMap } from './map.js';
+import { setupMap } from './map.js?v=lesson2-12';
 import { setupTeacher } from './teacher.js';
 'use strict';
 

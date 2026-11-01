@@ -106,7 +106,7 @@ for(const id of ['lesson-close','lesson-return'])$(id).addEventListener('click',
 
 // Lesson 2 progress is validated and stored separately by the server.
 let readingBusy=false,readingReady=false,readingReturnFocus=null,readingChest=null;
-const readingExercises={1:{number:'4927',image:$('reading-exercise-image').src},2:{number:'3052',image:$('reading-exercise-source-2').src},3:{number:'8304',image:$('reading-exercise-source-3').src},4:{number:'4715',image:$('reading-exercise-source-4').src},5:{mode:'digits',number:'patru mii șase sute douăzeci și trei',image:$('reading-exercise-source-5').src},6:{mode:'digits',number:'opt mii șaptezeci și nouă',image:$('reading-exercise-source-6').src},7:{mode:'digits',number:'șase mii patru',image:$('reading-exercise-source-7').src},8:{mode:'digits',number:'șapte mii trei sute doi',image:$('reading-exercise-source-8').src}};
+const readingExercises={1:{number:'4927',image:$('reading-exercise-image').src},2:{number:'3052',image:$('reading-exercise-source-2').src},3:{number:'8304',image:$('reading-exercise-source-3').src},4:{number:'4715',image:$('reading-exercise-source-4').src},5:{mode:'digits',number:'patru mii șase sute douăzeci și trei',image:$('reading-exercise-source-5').src},6:{mode:'digits',number:'opt mii șaptezeci și nouă',image:$('reading-exercise-source-6').src},7:{mode:'digits',number:'șase mii patru',image:$('reading-exercise-source-7').src},8:{mode:'digits',number:'șapte mii trei sute doi',image:$('reading-exercise-source-8').src},9:{number:'5274',image:$('reading-exercise-source-9').src},10:{number:'9086',image:$('reading-exercise-source-10').src},11:{mode:'digits',number:'șase mii trei sute patruzeci și doi',image:$('reading-exercise-source-11').src},12:{mode:'digits',number:'opt mii cinci sute șapte',image:$('reading-exercise-source-12').src}};
 const readingDomeSource=$('reading-image').src;
 const readingDigits=Array.from({length:4},(_,i)=>$('reading-digit-'+i));
 function readingPrompt(exercise){return 'Scrie cu '+(exercise.mode==='digits'?'cifre':'litere')+' numărul '+exercise.number;}
@@ -135,7 +135,7 @@ function renderReading(){
   });
   $('reading-chests').append(button);
  }
- $('reading-status').textContent=count+' din 12 steluțe. Lădițele 1–8 sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(taken?' Cheia lecției 3 a fost luată.':count>=6?' Cupola a dispărut. Apasă cheia pentru a o lua.':' Obține 6 steluțe pentru a elibera cheia.')+(teacherMapReturn?' Vizualizare profesor.':'');
+ $('reading-status').textContent=count+' din 12 steluțe. Toate cele 12 lădițe sunt disponibile.'+(taken?' Cheia lecției 3 a fost luată.':count>=6?' Cupola a dispărut. Apasă cheia pentru a o lua.':' Obține 6 steluțe pentru a elibera cheia.')+(teacherMapReturn?' Vizualizare profesor.':'');
 }
 async function openReading(){
  if(readingBusy||!mapProfile||(!teacherMapReturn&&!readingAvailable()))return;
