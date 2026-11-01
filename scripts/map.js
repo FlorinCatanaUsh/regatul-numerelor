@@ -58,13 +58,15 @@ const forestLessons=[
  {id:6,title:'Formarea, citirea și scrierea numerelor cu cifre romane',box:[60.5,70,15.5,16]}
 ];
 let forestState=null;
-function forestStatus(id){if(id===2&&!mapProfile.formation?.lesson2Allowed)return 'locked';return forestState.completed.includes(id)?'complete':forestState.unlocked.includes(id)?'available':'locked';}
+function forestStatus(id){if(id===2&&!readingAvailable())return 'locked';return forestState.completed.includes(id)?'complete':forestState.unlocked.includes(id)?'available':'locked';}
 function showForestLesson(lesson){
  if(lesson.id===1){openFormation();return;}
+ if(lesson.id===2&&(teacherMapReturn||readingAvailable())){openReading();return;}
  const state=forestStatus(lesson.id);
  $('lesson-title').textContent=lesson.id+'. '+lesson.title;
  $('lesson-message').textContent=state==='locked'?'Lecția este încă blocată. Profesorul îți va permite accesul când va fi momentul.':state==='complete'?'Ai parcurs această lecție. Vei putea reveni pentru exersare.':'Această lecție este deblocată. O vei putea începe după adăugarea exercițiilor.';
  $('lesson-note').textContent='Exercițiile acestei lecții urmează să fie adăugate. Deschiderea acestei ferestre nu marchează lecția drept rezolvată.';
+ if(lesson.id===2){$('lesson-message').textContent='Pentru lecția 2 ai nevoie de cheia câștigată în lecția 1 și de permisiunea profesorului. Apoi atinge lacătul pentru a deschide lecția.';}
  $('lesson-dialog').showModal();$('lesson-close').focus();
 }
 function renderForest(profile){
@@ -90,6 +92,7 @@ function renderForest(profile){
 }
 function openForest(){
  if(!mapProfile)return;
+ $('reading-page').hidden=true;
  $('formation-page').hidden=true;
  renderForest(mapProfile);$('map-page').hidden=true;$('forest-page').hidden=false;$('forest-back').focus();window.scrollTo(0,0);
 }
@@ -100,6 +103,34 @@ function returnToMap(){
 }
 for(const id of ['forest-back','forest-back-sign'])$(id).addEventListener('click',returnToMap);
 for(const id of ['lesson-close','lesson-return'])$(id).addEventListener('click',()=>$('lesson-dialog').close());
+
+// Lesson 2 has its own landing page. No completion is awarded until exercises exist.
+function readingAvailable(){return !!(mapProfile?.formation?.lesson2Allowed&&mapProfile?.formation?.lesson2Opened);}
+function openReading(){
+ if(!mapProfile||(!teacherMapReturn&&!readingAvailable()))return;
+ $('reading-student').textContent=mapProfile.displayName+(teacherMapReturn?' — vizualizare profesor':'');
+ $('reading-chests').replaceChildren();
+ for(let id=1;id<=12;id++){
+  const button=document.createElement('button');button.type='button';button.className='reading-chest';
+  const col=(id-1)%4,row=Math.floor((id-1)/4);
+  Object.assign(button.style,{left:[23,35.5,48,60][col]+'%',top:[39,56,74][row]+'%',width:'12%',height:'16%'});
+  button.setAttribute('aria-label','Lecția 2, lădița '+id+' — exercițiul urmează să fie adăugat');
+  button.setAttribute('aria-haspopup','dialog');
+  button.addEventListener('click',()=>{
+   $('reading-dialog-title').textContent='Lădița '+id+' · Citirea și scrierea numerelor naturale';
+   $('reading-dialog').showModal();$('reading-dialog-close').focus();
+   readingReturnFocus=button;
+  });
+  $('reading-chests').append(button);
+ }
+ $('reading-status').textContent='0 din 12 steluțe. Exercițiile lecției 2 urmează să fie adăugate.';
+ $('forest-page').hidden=true;$('reading-page').hidden=false;$('reading-back').focus();window.scrollTo(0,0);
+}
+let readingReturnFocus=null;
+for(const id of ['reading-back','reading-back-sign'])$(id).addEventListener('click',openForest);
+$('reading-key').addEventListener('click',()=>{$('reading-status').textContent='Cheia lecției 3 rămâne sub cupolă. Vei putea câștiga cheia după rezolvarea a 6 lădițe distincte, când exercițiile vor fi disponibile.';});
+for(const id of ['reading-dialog-close','reading-dialog-return'])$(id).addEventListener('click',()=>$('reading-dialog').close());
+$('reading-dialog').addEventListener('close',()=>readingReturnFocus?.focus());
 
 let formationQuestions=[],activeChest=null,formationBusy=false,formationRevision=0,lockBusy=false;
 function formationData(){const f=mapProfile?.formation||{};return {...f,solved:[...new Set((f.solved||[]).filter(n=>Number.isInteger(n)&&n>=1&&n<=12))]};}

@@ -49,6 +49,25 @@
  <dialog id="lesson-dialog" class="chapter-dialog" aria-labelledby="lesson-title"><button id="lesson-close" class="close" type="button" aria-label="Închide lecția">×</button><p class="eyebrow">Pădurea numerelor fermecate</p><h2 id="lesson-title"></h2><p id="lesson-message"></p><p id="lesson-note" class="notice"></p><button id="lesson-return" type="button">Înapoi în pădure</button></dialog>
 </section>
 
+<section id="reading-page" hidden aria-labelledby="reading-title">
+ <header class="map-toolbar"><button id="reading-back" type="button">← Înapoi la pădure</button><div><h2 id="reading-title">2. Citirea și scrierea numerelor naturale</h2><p id="reading-student"></p></div></header>
+ <p class="map-help">Cele 12 lădițe sunt pregătite. Exercițiile urmează să fie adăugate. Pe telefon poți glisa imaginea lateral.</p>
+ <div class="map-scroll" tabindex="0" role="region" aria-label="Cele 12 lădițe ale lecției 2"><div class="reading-art">
+  <img src="./assets/citirea-cupola.webp" width="1672" height="941" alt="Citirea și scrierea numerelor naturale: 12 lădițe numerotate, școala Dăneasa, robotul, bufnița și cheia lecției 3 sub o cupolă de sticlă. Progres: zero din 12 steluțe.">
+  <button id="reading-back-sign" type="button" aria-label="Înapoi la pădure"></button>
+  <div id="reading-chests"></div>
+  <button id="reading-key" type="button" aria-label="Cheia lecției 3 — sub cupolă"></button>
+ </div></div>
+ <p id="reading-status" class="map-summary" role="status" aria-live="polite"></p>
+ <dialog id="reading-dialog" class="chapter-dialog" aria-labelledby="reading-dialog-title">
+  <button id="reading-dialog-close" type="button" class="close" aria-label="Închide">×</button>
+  <p class="eyebrow">Lecția 2</p><h2 id="reading-dialog-title"></h2>
+  <p>Exercițiul acestei lădițe urmează să fie adăugat.</p>
+  <p class="notice">Steluța se câștigă prin rezolvarea exercițiului. Deschiderea lădiței nu modifică progresul.</p>
+  <button id="reading-dialog-return" type="button">Înapoi la lădițe</button>
+ </dialog>
+</section>
+
 <section id="formation-page" hidden aria-labelledby="formation-title">
  <header class="map-toolbar"><button id="formation-back" type="button">← Înapoi la pădure</button><div><h2 id="formation-title">1. Formarea numerelor naturale</h2><p id="formation-student"></p></div></header>
  <p class="map-help">Alege orice lădiță. O ladă rezolvată = o steluță. După 6 steluțe, apasă cheia pentru a o lua.</p>
