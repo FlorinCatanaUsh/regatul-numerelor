@@ -14,6 +14,7 @@ const chapters = [
 let mapProfile = null;
 let teacherMapReturn=null;
 let teacherClassMode=false;
+let activeLesson=null,lessonAccessBusy=false,onLessonAccessChanged=null;
 function showChapter(chapter) {
  if(chapter.id===1){openForest();return;}
  const complete = mapProfile.completedChapters.includes(chapter.id);
@@ -48,15 +49,21 @@ const mapUI={open:openStudentMap,teacherView(profile,onBack){
  $('map-home').textContent='← Panoul profesorului';$('map-mode').textContent='Vizualizare profesor';
  $('map-summary').textContent+=' Atinge insulița 1 pentru progresul celor 6 lecții. Vizualizarea nu modifică progresul.';
  document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
-},classView({lesson2Allowed=false}={},onBack){
+},classView({lesson2Allowed=false,lessonAccess={}}={},onBack){
  teacherClassMode=true;document.body.classList.add('teacher-class-mode');
- const profile={studentId:'class',displayName:'Toată clasa',completedChapters:[],lessonProgress:{1:{unlocked:[1],completed:[]}},formation:{solved:[],keyTaken:false,lesson2Allowed,lesson2Opened:false},reading:{solved:[],keyTaken:false}};
+ const profile={studentId:'class',displayName:'Toată clasa',completedChapters:[],lessonProgress:{1:{unlocked:[1],completed:[]}},formation:{solved:[],keyTaken:false,lesson2Allowed,lesson2Opened:false},reading:{solved:[],keyTaken:false},classAccess:lessonAccess};
+ profile.lessonProgress[1].manualAccess=Object.fromEntries(Object.entries(lessonAccess).filter(([id])=>id!=='2').map(([id,s])=>[id,s.total>0&&s.allowed===s.total]));
  renderMap(profile);teacherMapReturn=onBack;$('teacher-page').hidden=true;$('map-page').hidden=false;$('forest-page').hidden=true;
  $('map-home').textContent='← Individual';$('map-mode').textContent='Toată clasa';$('forest-mode').textContent='Toată clasa';
  document.body.classList.add('viewing-map');window.scrollTo(0,0);
 },updateClassPermission(allowed){
  if(!teacherClassMode||!mapProfile)return;
  mapProfile.formation.lesson2Allowed=allowed;renderMap(mapProfile);if(forestState)renderForest(mapProfile);
+},setLessonAccessChangedHandler(handler){onLessonAccessChanged=handler;},updateClassPermissions(access){
+ if(!teacherClassMode||!mapProfile)return;
+ mapProfile.classAccess=access;mapProfile.lessonProgress[1].manualAccess=Object.fromEntries(Object.entries(access).filter(([id])=>id!=='2').map(([id,s])=>[id,s.total>0&&s.allowed===s.total]));
+ if(access[2])mapProfile.formation.lesson2Allowed=access[2].total>0&&access[2].allowed===access[2].total;
+ renderMap(mapProfile);if(forestState)renderForest(mapProfile);
 }};
 
 const forestLessons=[
@@ -68,17 +75,65 @@ const forestLessons=[
  {id:6,title:'Formarea, citirea și scrierea numerelor cu cifre romane',box:[60.5,70,15.5,16]}
 ];
 let forestState=null;
-function forestStatus(id){if(id===2&&!readingAvailable())return 'locked';return forestState.completed.includes(id)?'complete':forestState.unlocked.includes(id)?'available':'locked';}
+function lessonPermission(profile,id){
+ if(id===2)return !!profile.formation?.lesson2Allowed;
+ const p=profile.lessonProgress?.[1]||{},manual=p.manualAccess?.[id];
+ return typeof manual==='boolean'?manual:id===1||(p.unlocked||[]).includes(id);
+}
+function forestStatus(id){
+ if(id===2&&!readingAvailable()||id!==2&&!lessonPermission(mapProfile,id))return 'locked';
+ return forestState.completed.includes(id)?'complete':id===1||lessonPermission(mapProfile,id)?'available':'locked';
+}
+function lessonAccessCounts(){
+ return teacherClassMode?(mapProfile.classAccess?.[activeLesson.id]||{allowed:0,total:0}):{allowed:lessonPermission(mapProfile,activeLesson.id)?1:0,total:1};
+}
+function renderLessonAccess(message=''){
+ const teacher=!!teacherMapReturn;$('lesson-access-controls').hidden=!teacher;
+ $('lesson-preview').hidden=!teacher||activeLesson.id>2;
+ if(!teacher)return;
+ const count=lessonAccessCounts();
+ $('lesson-access-scope').textContent=teacherClassMode?'Comandă pentru toată clasa. Acces permis pentru '+count.allowed+' din '+count.total+' elevi.':'Comandă pentru '+mapProfile.displayName+'. Acces '+(count.allowed?'permis.':'blocat.');
+ $('lesson-allow').textContent=teacherClassMode?'Permite accesul tuturor':'Permite accesul';
+ $('lesson-block').textContent=teacherClassMode?'Blochează accesul tuturor':'Blochează accesul';
+ $('lesson-allow').disabled=lessonAccessBusy||count.total===0||count.allowed===count.total;
+ $('lesson-block').disabled=lessonAccessBusy||count.allowed===0;
+ for(const id of ['lesson-close','lesson-return','lesson-preview'])$(id).disabled=lessonAccessBusy;
+ $('lesson-access-status').textContent=message;
+}
 function showForestLesson(lesson){
- if(lesson.id===1){openFormation();return;}
- if(lesson.id===2&&(teacherMapReturn||readingAvailable())){openReading();return;}
+ if(lessonAccessBusy)return;activeLesson=lesson;
+ if(!teacherMapReturn){
+  if(lesson.id===1&&forestStatus(1)!=='locked'){openFormation();return;}
+  if(lesson.id===2&&readingAvailable()){openReading();return;}
+ }
  const state=forestStatus(lesson.id);
  $('lesson-title').textContent=lesson.id+'. '+lesson.title;
- $('lesson-message').textContent=state==='locked'?'Lecția este încă blocată. Profesorul îți va permite accesul când va fi momentul.':state==='complete'?'Ai parcurs această lecție. Vei putea reveni pentru exersare.':'Această lecție este deblocată. O vei putea începe după adăugarea exercițiilor.';
- $('lesson-note').textContent='Exercițiile acestei lecții urmează să fie adăugate. Deschiderea acestei ferestre nu marchează lecția drept rezolvată.';
- if(lesson.id===2){$('lesson-message').textContent='Pentru lecția 2 ai nevoie de cheia câștigată în lecția 1 și de permisiunea profesorului. Apoi atinge lacătul pentru a deschide lecția.';}
- $('lesson-dialog').showModal();$('lesson-close').focus();
+ $('lesson-message').textContent=teacherMapReturn?'Gestionează accesul la această lecție.':state==='locked'?'Lecția este blocată de profesor.':state==='complete'?'Ai parcurs această lecție.':'Ai acces la această lecție.';
+ $('lesson-note').textContent=lesson.id>2?'Exercițiile acestei lecții urmează să fie adăugate. Permisiunea de acces se salvează acum.':'Deschiderea lecției nu modifică progresul elevilor.';
+ if(lesson.id===2)$('lesson-note').textContent='Elevul are nevoie de cheia luată din lecția 1 și de permisiunea profesorului. Apoi atinge lacătul pentru a deschide lecția.';
+ renderLessonAccess();$('lesson-dialog').showModal();$('lesson-close').focus();
 }
+async function changeLessonAccess(allowed){
+ if(!teacherMapReturn||!activeLesson||lessonAccessBusy)return;
+ const lesson=activeLesson.id,target=teacherClassMode?'all':mapProfile.studentId;
+ lessonAccessBusy=true;renderLessonAccess('Se salvează accesul…');
+ try{
+  const result=await studentAuth.allowLesson(target,lesson,allowed);
+  if(onLessonAccessChanged)await onLessonAccessChanged();
+  if(result.profile){renderMap(result.profile);renderForest(mapProfile);}
+  else{
+   mapProfile.classAccess??={};mapProfile.classAccess[lesson]={allowed:allowed?result.affected:0,total:result.affected};
+   if(lesson===2)mapProfile.formation.lesson2Allowed=allowed;
+   else{const p=mapProfile.lessonProgress[1];p.manualAccess??={};p.manualAccess[lesson]=allowed;p.unlocked=[...new Set((p.unlocked||[]).filter(id=>id!==lesson).concat(allowed?[lesson]:[]))];}
+   renderMap(mapProfile);renderForest(mapProfile);
+  }
+  lessonAccessBusy=false;renderLessonAccess((allowed?'Acces permis':'Acces blocat')+(teacherClassMode?' pentru toată clasa.':' pentru '+mapProfile.displayName+'.'));
+ }catch(error){lessonAccessBusy=false;renderLessonAccess(error.message);}
+}
+$('lesson-allow').addEventListener('click',()=>changeLessonAccess(true));
+$('lesson-block').addEventListener('click',()=>changeLessonAccess(false));
+$('lesson-preview').addEventListener('click',()=>{if(lessonAccessBusy||!teacherMapReturn)return;$('lesson-dialog').close();if(activeLesson.id===1)openFormation();else if(activeLesson.id===2)openReading();});
+$('lesson-dialog').addEventListener('cancel',event=>{if(lessonAccessBusy)event.preventDefault();});
 function renderForest(profile){
  const p=profile.lessonProgress?.[1]||{unlocked:[1],completed:[]};
  const valid=items=>[...new Set((Array.isArray(items)?items:[]).filter(n=>Number.isInteger(n)&&n>=1&&n<=6))];
@@ -112,7 +167,7 @@ function returnToMap(){
  $('map-chapters').querySelector('button').focus();window.scrollTo(0,0);
 }
 for(const id of ['forest-back','forest-back-sign'])$(id).addEventListener('click',returnToMap);
-for(const id of ['lesson-close','lesson-return'])$(id).addEventListener('click',()=>$('lesson-dialog').close());
+for(const id of ['lesson-close','lesson-return'])$(id).addEventListener('click',()=>{if(!lessonAccessBusy)$('lesson-dialog').close();});
 
 // Lesson 2 progress is validated and stored separately by the server.
 let readingBusy=false,readingReady=false,readingReturnFocus=null,readingChest=null;

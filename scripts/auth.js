@@ -24,6 +24,7 @@ const studentAuth = (()=>{
   async students(){return (await request('teacher_students')).students;},
   async reading(operation,fields={}){return await request('reading',{operation,...fields});},
   async formation(operation,fields={}){return await request('formation',{operation,...fields});},
+  async allowLesson(studentId,lesson,allowed){return await request('teacher_lesson_access',{studentId,lesson,allowed});},
   async allowLesson2(studentId,allowed){return await request('teacher_lesson2',{studentId,allowed});},
   async setPassword(studentId,password,currentPassword=null){return await request('teacher_password',{studentId,password,currentPassword});},
   async logout(){if(!token)return;try{await request('logout');}finally{token=null;}},

@@ -54,8 +54,13 @@ Deno.serve(async req=>{
   if(body.action==='formation'){
    if(!['exercises','answer','take_key','open_lesson2'].includes(body.operation)||body.operation==='answer'&&(!Number.isInteger(body.chest)||body.chest<1||body.chest>12||typeof body.answer!=='string'||body.answer.length>5))return response({error:'Cerere invalidă.'},400,origin);
    const r=await rpc('regat_formation',{p_token:token,p_action:body.operation,p_chest:body.chest??null,p_answer:body.answer??null});
-   const messages={unauthorized:'Sesiunea a expirat. Autentifică-te din nou.',six_stars:'Obține 6 steluțe pentru a elibera cheia.',key_missing:'Revino la lecția 1 și ia cheia de pe masă.',teacher_permission:'Profesorul nu a permis încă accesul la lecția 2.',chest_missing:'Lădița nu există.'};
+   const messages={lesson_locked:'Lecția 1 este blocată de profesor.',unauthorized:'Sesiunea a expirat. Autentifică-te din nou.',six_stars:'Obține 6 steluțe pentru a elibera cheia.',key_missing:'Revino la lecția 1 și ia cheia de pe masă.',teacher_permission:'Profesorul nu a permis încă accesul la lecția 2.',chest_missing:'Lădița nu există.'};
    return r?.ok?response(r,200,origin):response({error:messages[r?.error]||'Acțiunea nu a reușit.'},r?.error==='unauthorized'?401:403,origin);
+  }
+  if(body.action==='teacher_lesson_access'){
+   if(typeof body.studentId!=='string'||!Number.isInteger(body.lesson)||body.lesson<1||body.lesson>6||typeof body.allowed!=='boolean')return response({error:'Cerere invalidă.'},400,origin);
+   const r=await rpc('regat_teacher_lesson_access',{p_token:token,p_student_id:body.studentId,p_lesson:body.lesson,p_allowed:body.allowed});
+   return r?.ok?response(r,200,origin):response({error:r?.error==='unauthorized'?'Acces rezervat profesorului.':'Accesul lecției nu a fost modificat.'},r?.error==='unauthorized'?403:400,origin);
   }
   if(body.action==='teacher_lesson2'){
    if(typeof body.studentId!=='string'||typeof body.allowed!=='boolean')return response({error:'Cerere invalidă.'},400,origin);

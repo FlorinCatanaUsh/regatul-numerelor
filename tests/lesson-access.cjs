@@ -1,0 +1,36 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+class Element{
+ constructor(id=''){this.id=id;this.hidden=true;this.children=[];this.style={};this.events={};this.attributes={};this.src='assets/'+id+'.webp';this.classList={add(){},remove(){}};}
+ addEventListener(type,fn){(this.events[type]??=[]).push(fn)}
+ async fire(type,event={}){for(const fn of this.events[type]||[])await fn({preventDefault(){},...event})}
+ setAttribute(k,v){this.attributes[k]=v} append(...els){this.children.push(...els)} replaceChildren(...els){this.children=els} querySelector(){return this.children[0]||new Element()} focus(){this.focused=true;} select(){} showModal(){this.open=true} close(){this.open=false;this.fire('close')}
+}
+const html=fs.readFileSync(require('path').join(__dirname,'../index.html'),'utf8'),elements=new Map();for(const m of html.matchAll(/id="([^"]+)"/g)){assert(!elements.has(m[1]),'duplicate id '+m[1]);elements.set(m[1],new Element(m[1]));}
+const $=id=>{assert(elements.has(id),'Missing id '+id);return elements.get(id)};
+let calls=[];let current;const context={document:{getElementById:$,createElement:()=>new Element(),body:new Element()},window:{scrollTo(){}},setTimeout,console};vm.createContext(context);
+vm.runInContext(fs.readFileSync(require('path').join(__dirname,'../scripts/map.js'),'utf8').replace('export function','function'),context);
+
+
+
+let fail=false,refreshes=0;
+const ui=context.setupMap({pupils:[],entryDialog:$('entry'),studentAuth:{allowLesson:async(target,lesson,allowed)=>{
+ calls.push([target,lesson,allowed]);if(fail)throw Error('Offline');if(target==='all')return {affected:2};
+ current=structuredClone(current);if(lesson===2)current.formation.lesson2Allowed=allowed;else{const p=current.lessonProgress[1];p.manualAccess??={};p.manualAccess[lesson]=allowed;p.unlocked=[...new Set(p.unlocked.filter(id=>id!==lesson).concat(allowed?[lesson]:[]))];}return {profile:current};
+}}});
+ui.setLessonAccessChangedHandler(async()=>refreshes++);
+current={studentId:'test',displayName:'Test pupil',completedChapters:[],lessonProgress:{1:{unlocked:[1],completed:[]}},formation:{solved:[],keyTaken:false,lesson2Allowed:false,lesson2Opened:false},reading:{solved:[],keyTaken:false}};
+async function menu(id){await $('forest-progress').children[id-1].fire('click');assert.equal($('lesson-dialog').open,true);assert.equal($('lesson-access-controls').hidden,false);assert.equal($('lesson-preview').hidden,id>2);}
+(async()=>{
+ ui.teacherView(current,()=>{});await $('map-chapters').children[0].fire('click');
+ for(let id=1;id<=6;id++){
+  await menu(id);assert.match($('lesson-access-scope').textContent,/Test pupil/);
+  if(id===1){assert.equal($('lesson-allow').disabled,true);await $('lesson-block').fire('click');assert.deepEqual(calls.at(-1),['test',1,false]);assert.equal($('lesson-allow').disabled,false);}
+  await $('lesson-allow').fire('click');assert.deepEqual(calls.at(-1),['test',id,true]);assert.equal($('lesson-allow').disabled,true);assert.equal($('lesson-block').disabled,false);assert.equal(current.formation.keyTaken,false);
+  await $('lesson-block').fire('click');assert.deepEqual(calls.at(-1),['test',id,false]);assert.equal($('lesson-allow').disabled,false);await $('lesson-return').fire('click');
+ }
+ await menu(3);fail=true;await $('lesson-allow').fire('click');assert.match($('lesson-access-status').textContent,/Offline/);assert.equal($('lesson-allow').disabled,false);fail=false;await $('lesson-return').fire('click');
+ ui.open(current);await $('map-chapters').children[0].fire('click');await $('forest-progress').children[0].fire('click');assert.equal($('lesson-access-controls').hidden,true);assert.equal($('formation-page').hidden,true);const n=calls.length;await $('lesson-allow').fire('click');assert.equal(calls.length,n);await $('lesson-return').fire('click');
+ ui.classView({lessonAccess:Object.fromEntries([1,2,3,4,5,6].map(id=>[id,{allowed:0,total:2}]))},()=>{});await $('map-chapters').children[0].fire('click');
+ for(let id=1;id<=6;id++){await menu(id);assert.match($('lesson-access-scope').textContent,/toată clasa/);await $('lesson-allow').fire('click');assert.deepEqual(calls.at(-1),['all',id,true]);assert.match($('lesson-access-scope').textContent,/2 din 2/);await $('lesson-block').fire('click');assert.deepEqual(calls.at(-1),['all',id,false]);await $('lesson-return').fire('click');}
+ assert(refreshes>20);console.log('PASS: all six lesson menus, individual and whole-class access/block, scope/counts, persistence callbacks, key retained, blocked student access and hidden teacher controls, errors.');
+})().catch(e=>{console.error(e);process.exitCode=1});
