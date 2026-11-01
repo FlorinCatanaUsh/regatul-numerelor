@@ -105,28 +105,29 @@ for(const id of ['forest-back','forest-back-sign'])$(id).addEventListener('click
 for(const id of ['lesson-close','lesson-return'])$(id).addEventListener('click',()=>$('lesson-dialog').close());
 
 // Lesson 2 progress is validated and stored separately by the server.
-let readingBusy=false,readingReady=false,readingReturnFocus=null;
+let readingBusy=false,readingReady=false,readingReturnFocus=null,readingChest=null;
+const readingExercises={1:{number:'4927',image:$('reading-exercise-image').src},2:{number:'3052',image:$('reading-exercise-source-2').src}};
 function readingAvailable(){return !!(mapProfile?.formation?.lesson2Allowed&&mapProfile?.formation?.lesson2Opened);}
 function renderReading(){
- const solved=(mapProfile?.reading?.solved||[]).filter(id=>id===1),count=solved.length?1:0;
+ const solved=[...new Set((mapProfile?.reading?.solved||[]).filter(id=>readingExercises[id]))],count=solved.length;
  $('reading-student').textContent=mapProfile.displayName+(teacherMapReturn?' — vizualizare profesor':'');
  $('reading-count').textContent=count+'/12';$('reading-bar').value=count;
  $('reading-chests').replaceChildren();
  for(let id=1;id<=12;id++){
-  const button=document.createElement('button');button.type='button';button.className='reading-chest'+(id===1&&count?' complete':'');
+  const button=document.createElement('button');button.type='button';button.className='reading-chest'+(solved.includes(id)?' complete':'');
   const col=(id-1)%4,row=Math.floor((id-1)/4);
   Object.assign(button.style,{left:[23,35.5,48,60][col]+'%',top:[39,56,74][row]+'%',width:'12%',height:'16%'});
-  button.setAttribute('aria-label','Lecția 2, lădița '+id+(id===1?(count?' — rezolvată':' — Scrie cu litere numărul 4927'):' — exercițiul urmează să fie adăugat'));
-  if(id===1&&count){const star=document.createElement('span');star.textContent='★';button.append(star);}
+  button.setAttribute('aria-label','Lecția 2, lădița '+id+(readingExercises[id]?(solved.includes(id)?' — rezolvată':' — Scrie cu litere numărul '+readingExercises[id].number):' — exercițiul urmează să fie adăugat'));
+  if(solved.includes(id)){const star=document.createElement('span');star.textContent='★';button.append(star);}
   button.addEventListener('click',()=>{
    if(readingBusy)return;
-   if(id===1){openReadingChest();return;}
+   if(readingExercises[id]){openReadingChest(id);return;}
    $('reading-dialog-title').textContent='Lădița '+id+' · Citirea și scrierea numerelor naturale';
    readingReturnFocus=button;$('reading-dialog').showModal();$('reading-dialog-close').focus();
   });
   $('reading-chests').append(button);
  }
- $('reading-status').textContent=count+' din 12 steluțe. Lădița 1 este disponibilă; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
+ $('reading-status').textContent=count+' din 12 steluțe. Lădițele 1 și 2 sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
 }
 async function openReading(){
  if(readingBusy||!mapProfile||(!teacherMapReturn&&!readingAvailable()))return;
@@ -137,7 +138,12 @@ async function openReading(){
  catch(error){$('reading-status').textContent=error.message;}
  finally{readingBusy=false;$('reading-back').disabled=false;}
 }
-function openReadingChest(){
+function openReadingChest(id){
+ const exercise=readingExercises[id];if(!exercise)return;readingChest=id;
+ $('reading-exercise-image').src=exercise.image;$('reading-exercise-image').alt='Scrie cu litere numărul '+exercise.number+'.';
+ $('reading-answer').setAttribute('aria-label','Scrie cu litere numărul '+exercise.number);
+ $('reading-exercise-page').setAttribute('aria-label','Lecția 2, lădița '+id+' — Scrie cu litere numărul '+exercise.number);
+ $('reading-exercise-page').className='reading-exercise-'+id;
  if(!teacherMapReturn&&!readingReady){$('reading-status').textContent='Reintră în lecție pentru a verifica accesul și conexiunea.';return;}
  $('reading-answer').value='';$('reading-answer').disabled=!!teacherMapReturn;$('reading-check').disabled=!!teacherMapReturn;
  clearReadingFeedback();$('reading-page').hidden=true;$('reading-exercise-page').hidden=false;window.scrollTo(0,0);(teacherMapReturn?$('reading-exercise-back'):$('reading-answer')).focus();
@@ -147,17 +153,17 @@ function clearReadingFeedback(){
  $('reading-exercise-status').textContent=teacherMapReturn?'Vizualizare profesor. Progresul elevului nu poate fi modificat.':'';
 }
 for(const id of ['reading-back','reading-back-sign'])$(id).addEventListener('click',()=>{if(!readingBusy)openForest();});
-$('reading-key').addEventListener('click',()=>{$('reading-status').textContent='Cheia lecției 3 rămâne sub cupolă până rezolvi 6 lădițe distincte. Momentan este disponibilă prima lădiță.';});
+$('reading-key').addEventListener('click',()=>{$('reading-status').textContent='Cheia lecției 3 rămâne sub cupolă până rezolvi 6 lădițe distincte. Momentan sunt disponibile lădițele 1 și 2.';});
 for(const id of ['reading-dialog-close','reading-dialog-return'])$(id).addEventListener('click',()=>$('reading-dialog').close());
 $('reading-dialog').addEventListener('close',()=>readingReturnFocus?.focus());
 $('reading-answer').addEventListener('input',clearReadingFeedback);
 $('reading-form').addEventListener('submit',async event=>{
- event.preventDefault();if(readingBusy||teacherMapReturn||!readingReady)return;
+ event.preventDefault();if(readingBusy||teacherMapReturn||!readingReady||!readingExercises[readingChest])return;
  const answer=$('reading-answer').value;
  if(!answer.trim()){$('reading-exercise-status').textContent='Scrie numărul folosind litere.';$('reading-answer').focus();return;}
  readingBusy=true;$('reading-check').disabled=true;$('reading-answer').disabled=true;$('reading-exercise-status').textContent='Se verifică…';
  try{
-  const r=await studentAuth.reading('answer',{chest:1,answer});syncProfile(r.profile);renderReading();
+  const r=await studentAuth.reading('answer',{chest:readingChest,answer});syncProfile(r.profile);renderReading();
   $('reading-result').textContent=r.correct?'✓':'✕';$('reading-result').className=r.correct?'correct':'incorrect';
   $('reading-result').setAttribute('aria-label',r.correct?'Răspuns corect':'Răspuns greșit');
   $('reading-exercise-status').textContent=r.correct?'Corect! Steluța este salvată. Poți exersa din nou.':'Mai încearcă. Poți modifica răspunsul și verifica din nou.';
