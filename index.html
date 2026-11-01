@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=lesson2-12">
+<link rel="stylesheet" href="./styles/main.css?v=teacher-class-tabs">
 </head>
 <body>
 <main>
@@ -17,6 +17,21 @@
 <button class="teacher" id="teacher-entry" aria-label="Profesor — acces la panoul de control" aria-haspopup="dialog" title="Acces profesor">Profesor</button>
 </figure>
 </main>
+<section id="teacher-workspace" hidden aria-label="Panoul profesorului">
+ <header class="map-toolbar"><button id="teacher-logout" type="button">Ieșire</button><div><h2>Panoul profesorului</h2><p>Alege lucrul individual sau comenzile pentru toată clasa.</p></div></header>
+ <div class="teacher-workspace-content">
+  <div class="teacher-tabs" role="tablist" aria-label="Mod de lucru">
+   <button id="teacher-tab-individual" type="button" role="tab" aria-selected="true" aria-controls="teacher-page">Individual</button>
+   <button id="teacher-tab-class" type="button" role="tab" aria-selected="false" aria-controls="map-page" tabindex="-1">Toată clasa</button>
+  </div>
+  <div class="teacher-tools"><button id="teacher-own-password" type="button">Schimbă parola mea</button><button id="teacher-reload" type="button">Reîncarcă</button></div>
+  <div id="teacher-class-controls" hidden>
+   <p class="class-command-note">Comenzile de aici se aplică tuturor elevilor clasei. Pentru lecția 2, fiecare elev are nevoie și de cheia din prima lecție.</p>
+   <div class="class-command-buttons"><button id="teacher-class-allow" type="button">Permite lecția 2 tuturor</button><button id="teacher-class-block" type="button">Blochează lecția 2 tuturor</button></div>
+   <p id="teacher-class-status" role="status" aria-live="polite"></p>
+  </div>
+ </div>
+</section>
 <section id="map-page" hidden aria-labelledby="map-title">
  <header class="map-toolbar"><button id="map-home" type="button">Ieșire</button><div><h2 id="map-title">Harta magică</h2><p id="map-student"></p></div><span id="map-mode" class="preview-label">Elev</span></header>
  <p class="map-help">Atinge un ținut pentru a-l descoperi. Pe telefon poți glisa harta lateral.</p>
@@ -33,7 +48,7 @@
 </section>
 
 <section id="forest-page" hidden aria-labelledby="forest-title">
- <header class="map-toolbar"><button id="forest-back" type="button">← Harta magică</button><div><h2 id="forest-title">Pădurea numerelor fermecate</h2><p id="forest-student"></p></div><span class="preview-label">Elev</span></header>
+ <header class="map-toolbar"><button id="forest-back" type="button">← Harta magică</button><div><h2 id="forest-title">Pădurea numerelor fermecate</h2><p id="forest-student"></p></div><span id="forest-mode" class="preview-label">Elev</span></header>
  <p class="map-help">Colorat: disponibil · Gri cu lacăt: blocat · Luminos: parcurs. Pe telefon poți glisa imaginea lateral.</p>
  <div class="map-scroll" tabindex="0" role="region" aria-label="Cele șase lecții ale Pădurii numerelor fermecate">
   <div class="forest-art">
@@ -51,7 +66,7 @@
 
 <section id="reading-page" hidden aria-labelledby="reading-title">
  <header class="map-toolbar"><button id="reading-back" type="button">← Înapoi la pădure</button><div><h2 id="reading-title">2. Citirea și scrierea numerelor naturale</h2><p id="reading-student"></p></div></header>
- <p class="map-help">Lădițele 1–8 sunt disponibile. Celelalte exerciții urmează să fie adăugate. Pe telefon poți glisa imaginea lateral.</p>
+ <p class="map-help">Toate cele 12 lădițe sunt disponibile. Pe telefon poți glisa imaginea lateral.</p>
  <div class="map-scroll" tabindex="0" role="region" aria-label="Cele 12 lădițe ale lecției 2"><div class="reading-art">
   <img id="reading-image" src="./assets/citirea-cupola.webp" width="1672" height="941" alt="Citirea și scrierea numerelor naturale: 12 lădițe numerotate, școala Dăneasa, robotul, bufnița și cheia lecției 3 sub o cupolă de sticlă. Progres: zero din 12 steluțe.">
   <img id="reading-key-image" hidden src="./assets/citirea-cheie.webp" alt=""><img id="reading-empty-image" hidden src="./assets/citirea-goala.webp" alt="">
@@ -151,12 +166,9 @@
 </section>
 
 <section id="teacher-page" hidden aria-labelledby="teacher-title">
- <header class="map-toolbar"><button id="teacher-logout" type="button">Ieșire</button><div><h2 id="teacher-title">Panoul profesorului</h2><p>Harta, progresul și parolele elevilor</p></div></header>
  <div class="teacher-content">
-  <p>Schimbă parola unui elev fără să îi modifici progresul. Parolele actuale nu sunt afișate.</p>
-  <button id="teacher-progress" type="button">Harta și progresul elevilor</button>
-  <button id="teacher-own-password" type="button">Schimbă parola mea</button>
-  <button id="teacher-reload" type="button">Reîncarcă lista</button>
+  <h2 id="teacher-title">Lucru individual</h2>
+  <p>Alege un elev pentru a-i vedea harta sau pentru a-i schimba accesul și parola.</p>
   <p id="teacher-status" role="status" aria-live="polite"></p>
   <div id="teacher-students" class="teacher-students"></div>
  </div>
@@ -191,6 +203,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=lesson2-12"></script>
+<script type="module" src="./scripts/app.js?v=teacher-class-tabs"></script>
 </body>
 </html>

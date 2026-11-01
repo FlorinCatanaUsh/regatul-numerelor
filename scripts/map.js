@@ -13,6 +13,7 @@ const chapters = [
 ];
 let mapProfile = null;
 let teacherMapReturn=null;
+let teacherClassMode=false;
 function showChapter(chapter) {
  if(chapter.id===1){openForest();return;}
  const complete = mapProfile.completedChapters.includes(chapter.id);
@@ -34,19 +35,28 @@ function renderMap(profile) {
   const badge=document.createElement('span');badge.className='chapter-state';badge.setAttribute('aria-hidden','true');badge.textContent=done?'✓':chapter.id===1?'↪':'🔒';hotspot.append(badge);hotspot.addEventListener('click',()=>showChapter(chapter));$('map-chapters').append(hotspot);
   const tile=document.createElement('button');tile.type='button';tile.className='progress-tile'+(done?' complete':'');tile.textContent=String(chapter.id);tile.setAttribute('aria-label','Capitolul '+chapter.id+' — '+state);tile.addEventListener('click',()=>showChapter(chapter));$('chapter-progress').append(tile);
  }
- $('map-summary').textContent=mapProfile.completedChapters.length+' din 8 capitole parcurse.';
+ $('map-summary').textContent=teacherClassMode?'Harta clasei. Comenzile de sus se aplică tuturor elevilor.':mapProfile.completedChapters.length+' din 8 capitole parcurse.';
 }
 function openStudentMap(profile){
- teacherMapReturn=null;$('map-home').textContent='Ieșire';$('map-mode').textContent='Elev';renderMap(profile);$('map-page').hidden=false;$('forest-page').hidden=true;document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
+ teacherMapReturn=null;teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('teacher-workspace').hidden=true;$('forest-mode').textContent='Elev';$('map-home').textContent='Ieșire';$('map-mode').textContent='Elev';renderMap(profile);$('map-page').hidden=false;$('forest-page').hidden=true;document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
 }
 $('map-home').addEventListener('click',async()=>{if(teacherMapReturn){const back=teacherMapReturn;teacherMapReturn=null;mapProfile=null;forestState=null;$('map-page').hidden=true;$('forest-page').hidden=true;back();return;}const button=$('map-home');button.disabled=true;try{await studentAuth.logout();}catch{studentAuth.clear();}finally{button.disabled=false;$('map-page').hidden=true;$('forest-page').hidden=true;document.body.classList.remove('viewing-map');mapProfile=null;forestState=null;$('class-entry').focus();}});
 for(const id of ['chapter-close','chapter-back'])$(id).addEventListener('click',()=>$('chapter-dialog').close());
 $('map-castle').addEventListener('click',()=>{$('chapter-title').textContent='Castelul Marelui Cristal';$('chapter-description').textContent='Marea provocare finală a Regatului numerelor.';$('chapter-access').textContent='Castelul rămâne închis până la parcurgerea celor opt capitole și deblocarea de către profesor. Provocarea finală nu este încă configurată.';$('chapter-dialog').showModal();});
 const mapUI={open:openStudentMap,teacherView(profile,onBack){
- renderMap(profile);teacherMapReturn=onBack;$('teacher-page').hidden=true;$('map-page').hidden=false;$('forest-page').hidden=true;
+ teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('forest-mode').textContent='Vizualizare profesor';renderMap(profile);teacherMapReturn=onBack;$('teacher-page').hidden=true;$('map-page').hidden=false;$('forest-page').hidden=true;
  $('map-home').textContent='← Panoul profesorului';$('map-mode').textContent='Vizualizare profesor';
  $('map-summary').textContent+=' Atinge insulița 1 pentru progresul celor 6 lecții. Vizualizarea nu modifică progresul.';
  document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
+},classView({lesson2Allowed=false}={},onBack){
+ teacherClassMode=true;document.body.classList.add('teacher-class-mode');
+ const profile={studentId:'class',displayName:'Toată clasa',completedChapters:[],lessonProgress:{1:{unlocked:[1],completed:[]}},formation:{solved:[],keyTaken:false,lesson2Allowed,lesson2Opened:false},reading:{solved:[],keyTaken:false}};
+ renderMap(profile);teacherMapReturn=onBack;$('teacher-page').hidden=true;$('map-page').hidden=false;$('forest-page').hidden=true;
+ $('map-home').textContent='← Individual';$('map-mode').textContent='Toată clasa';$('forest-mode').textContent='Toată clasa';
+ document.body.classList.add('viewing-map');window.scrollTo(0,0);
+},updateClassPermission(allowed){
+ if(!teacherClassMode||!mapProfile)return;
+ mapProfile.formation.lesson2Allowed=allowed;renderMap(mapProfile);if(forestState)renderForest(mapProfile);
 }};
 
 const forestLessons=[
@@ -88,7 +98,7 @@ function renderForest(profile){
   }
   const tile=document.createElement('button');tile.type='button';tile.className='progress-tile'+(state==='complete'?' complete':'');tile.textContent=String(lesson.id);tile.setAttribute('aria-label','Lecția '+lesson.id+' — '+label);tile.addEventListener('click',()=>showForestLesson(lesson));$('forest-progress').append(tile);
  }
- $('forest-summary').textContent=forestState.completed.length+' din 6 lecții parcurse — '+profile.displayName;
+ $('forest-summary').textContent=teacherClassMode?'Harta clasei. Alege o lecție pentru a vedea exercițiile.':forestState.completed.length+' din 6 lecții parcurse — '+profile.displayName;
 }
 function openForest(){
  if(!mapProfile)return;
@@ -248,7 +258,7 @@ $('formation-key').addEventListener('click',async()=>{
 function backToForest(){if(formationBusy)return;formationRevision++;$('formation-page').hidden=true;renderForest(mapProfile);$('forest-page').hidden=false;$('forest-back').focus();window.scrollTo(0,0);}
 for(const id of ['formation-back','formation-back-sign'])$(id).addEventListener('click',backToForest);
 async function unlockLesson2(button){
- if(lockBusy)return;if(teacherMapReturn){$('forest-summary').textContent='Vizualizare profesor. Elevul trebuie să atingă lacătul din propriul cont.';return;}
+ if(lockBusy)return;if(teacherMapReturn){$('forest-summary').textContent=teacherClassMode?'Pentru accesul clasei, folosește butoanele de sus. Elevii care au cheia vor putea deschide lacătul din contul lor.':'Vizualizare profesor. Elevul trebuie să atingă lacătul din propriul cont.';return;}
  lockBusy=true;button.disabled=true;
  try{const r=await studentAuth.formation('open_lesson2');button.classList.add('opening');await new Promise(resolve=>setTimeout(resolve,450));syncProfile(r.profile);$('forest-summary').textContent='Lecția 2 a fost deschisă. Lacătul a dispărut.';}
  catch(error){$('forest-summary').textContent=error.message;button.disabled=false;}
