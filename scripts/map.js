@@ -106,7 +106,7 @@ for(const id of ['lesson-close','lesson-return'])$(id).addEventListener('click',
 
 // Lesson 2 progress is validated and stored separately by the server.
 let readingBusy=false,readingReady=false,readingReturnFocus=null,readingChest=null;
-const readingExercises={1:{number:'4927',image:$('reading-exercise-image').src},2:{number:'3052',image:$('reading-exercise-source-2').src},3:{number:'8304',image:$('reading-exercise-source-3').src}};
+const readingExercises={1:{number:'4927',image:$('reading-exercise-image').src},2:{number:'3052',image:$('reading-exercise-source-2').src},3:{number:'8304',image:$('reading-exercise-source-3').src},4:{number:'4715',image:$('reading-exercise-source-4').src}};
 function readingAvailable(){return !!(mapProfile?.formation?.lesson2Allowed&&mapProfile?.formation?.lesson2Opened);}
 function renderReading(){
  const solved=[...new Set((mapProfile?.reading?.solved||[]).filter(id=>readingExercises[id]))],count=solved.length;
@@ -127,7 +127,7 @@ function renderReading(){
   });
   $('reading-chests').append(button);
  }
- $('reading-status').textContent=count+' din 12 steluțe. Lădițele 1, 2 și 3 sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
+ $('reading-status').textContent=count+' din 12 steluțe. Lădițele 1–4 sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
 }
 async function openReading(){
  if(readingBusy||!mapProfile||(!teacherMapReturn&&!readingAvailable()))return;
@@ -153,7 +153,7 @@ function clearReadingFeedback(){
  $('reading-exercise-status').textContent=teacherMapReturn?'Vizualizare profesor. Progresul elevului nu poate fi modificat.':'';
 }
 for(const id of ['reading-back','reading-back-sign'])$(id).addEventListener('click',()=>{if(!readingBusy)openForest();});
-$('reading-key').addEventListener('click',()=>{$('reading-status').textContent='Cheia lecției 3 rămâne sub cupolă până rezolvi 6 lădițe distincte. Momentan sunt disponibile lădițele 1, 2 și 3.';});
+$('reading-key').addEventListener('click',()=>{$('reading-status').textContent='Cheia lecției 3 rămâne sub cupolă până rezolvi 6 lădițe distincte. Momentan sunt disponibile lădițele 1–4.';});
 for(const id of ['reading-dialog-close','reading-dialog-return'])$(id).addEventListener('click',()=>$('reading-dialog').close());
 $('reading-dialog').addEventListener('close',()=>readingReturnFocus?.focus());
 $('reading-answer').addEventListener('input',clearReadingFeedback);
