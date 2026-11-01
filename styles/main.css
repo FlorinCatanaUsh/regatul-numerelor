@@ -113,3 +113,5 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
 #reading-result{position:absolute;left:83%;top:56%;font:bold clamp(40px,5vw,80px) sans-serif;line-height:1.2;text-shadow:0 2px 3px #fff9}#reading-result.correct{color:#087d32}#reading-result.incorrect{color:#cc1728}
 
 .reading-exercise-art>img[hidden]{display:none!important}.reading-exercise-2 #reading-answer{left:25.7%;width:49%;top:43%;line-height:2.3}.reading-exercise-2 #reading-check{left:78%;top:88%;width:18%}.reading-exercise-2 #reading-exercise-back{top:88%}.reading-exercise-2 #reading-result{left:77%}
+
+.reading-exercise-3 #reading-answer{left:27.3%;width:48.6%;top:44%;height:27%;line-height:2.4}.reading-exercise-3 #reading-check{left:73%;top:88%;width:18%}.reading-exercise-3 #reading-exercise-back{left:8.6%;top:88%;width:16%}.reading-exercise-3 #reading-result{left:78%}
