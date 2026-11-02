@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=lesson-three-lock">
+<link rel="stylesheet" href="./styles/main.css?v=map-progress-fog">
 </head>
 <body>
 <main>
@@ -31,10 +31,19 @@
 </section>
 <section id="map-page" hidden aria-labelledby="map-title">
  <header class="map-toolbar"><button id="map-home" type="button">Ieșire</button><div><h2 id="map-title">Harta magică</h2><p id="map-student"></p></div><span id="map-mode" class="preview-label">Elev</span></header>
- <p class="map-help">Atinge un ținut pentru a-l descoperi. Pe telefon poți glisa harta lateral.</p>
+ <p class="map-help">Primul ținut este dezvăluit. Ceața se retrage pe măsură ce parcurgi capitolele. Pe telefon poți glisa harta lateral.</p>
  <div class="map-scroll" tabindex="0" role="region" aria-label="Harta capitolelor, cu derulare laterală">
   <div class="map-art">
    <img id="map-image" src="./assets/harta.webp" width="1672" height="941" alt="Harta Regatului numerelor: școala, opt ținuturi și castelul provocării finale.">
+   <svg id="map-fog" viewBox="0 0 1672 941" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <defs>
+     <radialGradient id="fog-clear"><stop offset="0" stop-color="black"/><stop offset=".74" stop-color="black"/><stop offset="1" stop-color="black" stop-opacity="0"/></radialGradient>
+     <linearGradient id="fog-color" x2=".7" y2="1"><stop stop-color="#eef4f7"/><stop offset=".5" stop-color="#cfdee5"/><stop offset="1" stop-color="#aebfcf"/></linearGradient>
+     <filter id="fog-clouds" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".008 .014" numOctaves="3" seed="8"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope=".22"/></feComponentTransfer><feBlend in="SourceGraphic" mode="soft-light"/></filter>
+     <mask id="fog-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1672" height="941"><rect width="1672" height="941" fill="white"/><g id="map-fog-reveals"></g></mask>
+    </defs>
+    <g mask="url(#fog-mask)"><rect width="1672" height="941" fill="url(#fog-color)" filter="url(#fog-clouds)"/></g>
+   </svg>
    <div id="map-chapters"></div>
    <div class="chapter-progress" id="chapter-progress" role="group" aria-label="Progresul meu în cele opt capitole"></div>
    <button class="map-castle" id="map-castle" aria-label="Castelul provocării finale — închis"></button>
@@ -379,6 +388,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=lesson-three-lock"></script>
+<script type="module" src="./scripts/app.js?v=map-progress-fog"></script>
 </body>
 </html>

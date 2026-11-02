@@ -23,15 +23,26 @@ function showChapter(chapter) {
  $('chapter-access').textContent=complete?'Capitol parcurs. Exersarea va rămâne disponibilă după activarea conținutului.':'Acest capitol este încă închis. Profesorul va permite accesul când va fi momentul.';
  $('chapter-dialog').showModal();$('chapter-close').focus();
 }
+function chapterRevealed(id){return id===1||mapProfile.completedChapters.includes(id)||mapProfile.completedChapters.includes(id-1);}
+function renderMapFog(){
+ // Each reveal follows the artwork's island, independent of viewport size.
+ const zones=[[205,350,260,185],[655,345,230,155],[1070,330,225,170],[1445,175,235,190],[1465,485,220,185],[1010,600,245,165],[600,580,240,170],[255,625,235,165]];
+ const clear=[[265,110,330,160],[835,95,310,140],[135,835,170,120]];
+ zones.forEach((zone,i)=>{if(chapterRevealed(i+1))clear.push(zone);});
+ if(mapProfile.completedChapters.length===8)clear.push([1450,765,260,235]);
+ $('map-fog-reveals').innerHTML=clear.map(([cx,cy,rx,ry])=>`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#fog-clear)"/>`).join('');
+ $('map-image').alt='Regatul numerelor: '+chapters.filter(c=>chapterRevealed(c.id)).map(c=>c.title).join(', ')+'. Celelalte ținuturi sunt acoperite de ceață.';
+}
 function renderMap(profile) {
  if(!profile || typeof profile.studentId!=='string' || typeof profile.displayName!=='string')throw new Error('Missing map profile');
  mapProfile={...profile,completedChapters:[...new Set((profile.completedChapters||[]).filter(id=>Number.isInteger(id)&&id>=1&&id<=8))]};
+ renderMapFog();
  $('map-student').textContent=mapProfile.displayName;
  $('map-chapters').replaceChildren();$('chapter-progress').replaceChildren();
  for(const chapter of chapters){
   const done=mapProfile.completedChapters.includes(chapter.id);
   const state=done?'parcurs':chapter.id===1?'disponibil':'blocat';
-  const hotspot=document.createElement('button');hotspot.type='button';hotspot.className='chapter-hotspot'+(done?' complete':'');hotspot.setAttribute('aria-label',chapter.id+'. '+chapter.title+' — '+state);
+  const hotspot=document.createElement('button');hotspot.type='button';hotspot.className='chapter-hotspot'+(done?' complete':'')+(chapterRevealed(chapter.id)?'':' fogged');hotspot.setAttribute('aria-label',chapter.id+'. '+chapter.title+' — '+state);
   const [left,top,width,height]=chapter.box;Object.assign(hotspot.style,{left:left+'%',top:top+'%',width:width+'%',height:height+'%'});
   const badge=document.createElement('span');badge.className='chapter-state';badge.setAttribute('aria-hidden','true');badge.textContent=done?'✓':chapter.id===1?'↪':'🔒';hotspot.append(badge);hotspot.addEventListener('click',()=>showChapter(chapter));$('map-chapters').append(hotspot);
   const tile=document.createElement('button');tile.type='button';tile.className='progress-tile'+(done?' complete':'');tile.textContent=String(chapter.id);tile.setAttribute('aria-label','Capitolul '+chapter.id+' — '+state);tile.addEventListener('click',()=>showChapter(chapter));$('chapter-progress').append(tile);
