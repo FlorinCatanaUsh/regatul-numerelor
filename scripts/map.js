@@ -241,21 +241,22 @@ $('ordering-check').addEventListener('click',async()=>{
 });
 $('ordering-exercise-back').addEventListener('click',()=>{comparisonRevision++;orderingBusy=false;orderingReady=false;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderOrdering();$('ordering-chests').children[activeOrderingChest-1]?.focus();window.scrollTo(0,0);});
 
-let roundingReturnFocus=null,roundingBusy=false,roundingReady=false;
+const roundingExercises={1:{number:47,image:$('rounding-exercise-image').src},2:{number:464,image:$('rounding-exercise-source-2').src}};
+let roundingReturnFocus=null,roundingBusy=false,roundingReady=false,activeRoundingChest=1;
 function renderRounding(){
  $('rounding-key').disabled=true;
- const solved=[...new Set((mapProfile?.lessonProgress?.[1]?.roundingSolved||[]).filter(id=>id===1))];
+ const solved=[...new Set((mapProfile?.lessonProgress?.[1]?.roundingSolved||[]).filter(id=>roundingExercises[id]))];
  $('rounding-count').textContent=solved.length+'/12';$('rounding-bar').value=solved.length;
  $('rounding-chests').replaceChildren();
  const left=[[22.7,35.7,48,60.1],[21.5,34.4,47.4,60],[21.5,34.7,47.7,60.4]],top=[40.5,57.1,74.1];
  for(let id=1;id<=12;id++){
   const row=Math.floor((id-1)/4),col=(id-1)%4,button=document.createElement('button');button.type='button';button.className='comparison-chest'+(solved.includes(id)?' complete':'');if(solved.includes(id)){const star=document.createElement('span');star.textContent='★';button.append(star);}
-  button.setAttribute('aria-label','Lecția 5, lădița '+id+(id===1?' — rotunjește 47 la zeci'+(solved.includes(id)?' — rezolvată':''):' — exercițiul urmează să fie adăugat'));
+  button.setAttribute('aria-label','Lecția 5, lădița '+id+(roundingExercises[id]?' — rotunjește '+roundingExercises[id].number+' la zeci'+(solved.includes(id)?' — rezolvată':''):' — exercițiul urmează să fie adăugat'));
   Object.assign(button.style,{left:left[row][col]+'%',top:top[row]+'%',width:'12.9%',height:'18%'});
-  button.addEventListener('click',()=>{if(id===1)return openRoundingExercise();roundingReturnFocus=button;$('rounding-dialog-title').textContent='Lădița '+id;$('rounding-dialog').showModal();$('rounding-dialog-close').focus();});
+  button.addEventListener('click',()=>{if(roundingExercises[id])return openRoundingExercise(id);roundingReturnFocus=button;$('rounding-dialog-title').textContent='Lădița '+id;$('rounding-dialog').showModal();$('rounding-dialog-close').focus();});
   $('rounding-chests').append(button);
  }
- $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Prima lădiță este disponibilă; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
+ $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Primele două lădițe sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
 }
 for(const id of ['rounding-dialog-close','rounding-dialog-return'])$(id).addEventListener('click',()=>$('rounding-dialog').close());
 $('rounding-dialog').addEventListener('close',()=>roundingReturnFocus?.focus());
@@ -263,7 +264,10 @@ $('rounding-back-sign').addEventListener('click',()=>openForest());
 function roundingControls(){const disabled=roundingBusy||!roundingReady||!!teacherMapReturn;$('rounding-answer').disabled=disabled;$('rounding-check').disabled=disabled;}
 function roundingMessage(message=''){ $('rounding-exercise-status').textContent=message; }
 function applyRoundingProfile(profile){if(!profile||profile.studentId!==mapProfile?.studentId)throw new Error('Profilul elevului nu corespunde.');renderMap(profile);renderForest(mapProfile);renderRounding();}
-async function openRoundingExercise(){
+async function openRoundingExercise(id=1){
+ const exercise=roundingExercises[id];if(!exercise)return;activeRoundingChest=id;
+ $('rounding-exercise-image').src=exercise.image;$('rounding-exercise-image').alt='Rotunjește numărul '+exercise.number+' la zeci. Privește cifra unităților. 0, 1, 2, 3, 4: rotunjește prin eliminare. 5, 6, 7, 8, 9: rotunjește prin adăugare.';
+ $('rounding-exercise-page').setAttribute('aria-label','Lecția 5, lădița '+id+' — Rotunjește '+exercise.number+' la zeci');$('rounding-answer').setAttribute('aria-label','Numărul '+exercise.number+' rotunjit la zeci');
  const revision=++comparisonRevision,sid=mapProfile.studentId;roundingBusy=false;roundingReady=false;
  $('rounding-answer').value='';$('rounding-answer').className='';$('rounding-answer').setAttribute('aria-invalid','false');roundingControls();
  $('lesson-content-page').hidden=true;$('rounding-exercise-page').hidden=false;$('rounding-exercise-back').focus();window.scrollTo(0,0);
@@ -276,14 +280,14 @@ async function checkRounding(){
  if(roundingBusy||!roundingReady||teacherMapReturn)return;
  const answer=$('rounding-answer').value.trim();if(!/^\d{1,5}$/.test(answer)){roundingMessage('Scrie un număr în căsuță.');$('rounding-answer').focus();return;}
  const revision=comparisonRevision,sid=mapProfile.studentId;roundingBusy=true;roundingControls();roundingMessage('Se verifică…');
- try{const r=await studentAuth.rounding('answer',{chest:1,answer});if(revision!==comparisonRevision||$('rounding-exercise-page').hidden||mapProfile?.studentId!==sid||teacherMapReturn)return;applyRoundingProfile(r.profile);$('rounding-answer').className=r.correct?'correct':'incorrect';$('rounding-answer').setAttribute('aria-invalid',String(!r.correct));roundingMessage(r.correct?'Corect! Ai câștigat steluța acestei lădițe.':'Mai încearcă!');}
+ try{const r=await studentAuth.rounding('answer',{chest:activeRoundingChest,answer});if(revision!==comparisonRevision||$('rounding-exercise-page').hidden||mapProfile?.studentId!==sid||teacherMapReturn)return;applyRoundingProfile(r.profile);$('rounding-answer').className=r.correct?'correct':'incorrect';$('rounding-answer').setAttribute('aria-invalid',String(!r.correct));roundingMessage(r.correct?'Corect! Ai câștigat steluța acestei lădițe.':'Mai încearcă!');}
  catch(error){if(revision===comparisonRevision&&!$('rounding-exercise-page').hidden)roundingMessage(error.message);}
  finally{if(revision===comparisonRevision){roundingBusy=false;roundingControls();}}
 }
 $('rounding-check').addEventListener('click',checkRounding);
 $('rounding-answer').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();checkRounding();}});
 $('rounding-answer').addEventListener('input',()=>{if(!roundingBusy){$('rounding-answer').className='';$('rounding-answer').setAttribute('aria-invalid','false');roundingMessage();}});
-$('rounding-exercise-back').addEventListener('click',()=>{comparisonRevision++;roundingBusy=false;roundingReady=false;$('rounding-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderRounding();$('rounding-chests').children[0]?.focus();window.scrollTo(0,0);});
+$('rounding-exercise-back').addEventListener('click',()=>{comparisonRevision++;roundingBusy=false;roundingReady=false;$('rounding-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderRounding();$('rounding-chests').children[activeRoundingChest-1]?.focus();window.scrollTo(0,0);});
 function openLessonContent(lesson){
  $('lesson-dialog').close();$('forest-page').hidden=true;
  $('lesson-content-title').textContent=lesson.id+'. '+lesson.title;
