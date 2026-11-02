@@ -16,11 +16,11 @@ current={studentId:'test',displayName:'Test',completedChapters:[],lessonProgress
 let fail=false,hold=false,deferred;
 const ui=context.setupMap({pupils:[],entryDialog:$('entry'),studentAuth:{ordering:async(operation,fields={})=>{
  calls.push([operation,fields]);if(fail)throw Error('Offline');if(operation==='state'){if(hold)return await new Promise(resolve=>deferred=resolve);return {profile:current};}
- const correct=fields.answer.join(',')==='2503,2530,3052,3205';if(correct){current=structuredClone(current);current.lessonProgress[1].orderingSolved=[1];}return {correct,profile:current};
+ const correct=fields.answer.join(',')===({1:'2503,2530,3052,3205',2:'476,2034,4001,4678'}[fields.chest]);if(correct){current=structuredClone(current);current.lessonProgress[1].orderingSolved=[...new Set([...current.lessonProgress[1].orderingSolved,fields.chest])];}return {correct,profile:current};
 }}});
 const number=id=>$('ordering-number-'+id),slot=id=>$('ordering-slot-'+id);
 async function enter(){ui.open(current);await $('map-chapters').children[0].fire('click');await $('forest-progress').children[3].fire('click');}
-async function open(){await $('ordering-chests').children[0].fire('click');}
+async function open(id=1){await $('ordering-chests').children[id-1].fire('click');}
 (async()=>{
  await enter();assert.equal($('ordering-count').textContent,'0/12');await open();assert.equal($('ordering-exercise-page').hidden,false);assert.equal($('ordering-check').disabled,false);
  await slot(0).fire('click');assert.match($('ordering-exercise-status').textContent,/mai întâi/);const n=calls.length;await $('ordering-check').fire('click');assert.equal(calls.length,n);assert.match($('ordering-exercise-status').textContent,/toate cele patru/);
@@ -33,6 +33,11 @@ async function open(){await $('ordering-chests').children[0].fire('click');}
  await number(0).fire('click');await slot(0).fire('click');await number(1).fire('click');await slot(0).fire('click');assert.equal(slot(0).textContent,'2 530');assert.equal(number(0).disabled,false);await $('ordering-exercise-back').fire('click');
  fail=true;await open();assert.equal($('ordering-check').disabled,true);assert.match($('ordering-exercise-status').textContent,/Offline/);fail=false;await $('ordering-exercise-back').fire('click');
  hold=true;const pending=$('ordering-chests').children[0].fire('click');await Promise.resolve();await $('ordering-exercise-back').fire('click');deferred({profile:current});await pending;assert.equal($('ordering-exercise-page').hidden,true);hold=false;
+ await open(2);assert.match($('ordering-exercise-image').src,/source-2/);assert.match($('ordering-exercise-image').alt,/4 678.*2 034.*476.*4 001/);assert.equal(slot(0).textContent,'');assert.match(number(2).attributes['aria-label'],/476/);
+ for(let i=0;i<4;i++){await number(i).fire('click');await slot(i).fire('click');}await $('ordering-check').fire('click');assert.match($('ordering-exercise-status').textContent,/Mai încearcă/);assert.equal($('ordering-count').textContent,'1/12');
+ await slot(2).fire('click');await slot(0).fire('click');await slot(3).fire('click');await slot(2).fire('click');assert.equal(slot(0).textContent,'476');assert.equal(slot(2).textContent,'4 001');assert.equal(slot(3).textContent,'4 678');
+ await $('ordering-check').fire('click');assert.equal(calls.at(-1)[1].chest,2);assert.equal(calls.at(-1)[1].answer.join(','),'476,2034,4001,4678');assert.match($('ordering-exercise-status').textContent,/Corect/);assert.equal($('ordering-count').textContent,'2/12');await $('ordering-check').fire('click');assert.equal($('ordering-count').textContent,'2/12');await $('ordering-exercise-back').fire('click');assert.match($('ordering-chests').children[1].className,/complete/);assert.equal($('ordering-chests').children[1].focused,true);
+ await open(1);assert.match($('ordering-exercise-image').alt,/3 205.*2 530/);assert.equal(slot(0).textContent,'');assert.equal($('ordering-count').textContent,'2/12');await $('ordering-exercise-back').fire('click');
  const before=calls.length;ui.teacherView(current,()=>{});await $('map-chapters').children[0].fire('click');await $('forest-progress').children[3].fire('click');await $('lesson-preview').fire('click');await open();assert.equal($('ordering-check').disabled,true);for(let i=0;i<4;i++){assert(number(i).disabled);assert(slot(i).disabled);}await number(0).fire('click');await $('ordering-check').fire('click');assert.equal(calls.length,before);
  console.log('PASS ordering UI: selection/move/swap/replacement, incomplete/wrong/correct/repeat, persistent unique star, back/reset, offline and stale response, teacher read-only.');
 })().catch(e=>{console.error(e);process.exitCode=1});

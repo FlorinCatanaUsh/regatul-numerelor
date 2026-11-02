@@ -171,22 +171,24 @@ $('comparison-key').addEventListener('click',async()=>{
 $('comparison-back-sign').addEventListener('click',()=>openForest());
 let orderingReturnFocus=null;
 function renderOrdering(){
- const solved=(mapProfile?.lessonProgress?.[1]?.orderingSolved||[]).includes(1);$('ordering-count').textContent=(solved?1:0)+'/12';$('ordering-bar').value=solved?1:0;$('ordering-key').disabled=true;
- $('lesson-content-message').textContent=(solved?'1':'0')+' din 12 steluțe. Lădița 1 este disponibilă; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
+ const solved=[...new Set((mapProfile?.lessonProgress?.[1]?.orderingSolved||[]).filter(id=>orderingExercises[id]))];$('ordering-count').textContent=solved.length+'/12';$('ordering-bar').value=solved.length;$('ordering-key').disabled=true;
+ $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Lădițele 1 și 2 sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
  $('ordering-chests').replaceChildren();
  const left=[[22.7,35.7,48,60.1],[21.5,34.4,47.4,60],[21.5,34.7,47.7,60.4]],top=[40.5,57.1,74.1];
  for(let id=1;id<=12;id++){
-  const row=Math.floor((id-1)/4),col=(id-1)%4,button=document.createElement('button');button.type='button';button.className='comparison-chest'+(id===1&&solved?' complete':'');if(id===1&&solved){const star=document.createElement('span');star.textContent='★';button.append(star);}
-  button.setAttribute('aria-label','Lecția 4, lădița '+id+(id===1?(solved?' — rezolvată':' — ordonează crescător'):' — exercițiul urmează să fie adăugat'));
+  const row=Math.floor((id-1)/4),col=(id-1)%4,button=document.createElement('button');button.type='button';button.className='comparison-chest'+(solved.includes(id)?' complete':'');if(solved.includes(id)){const star=document.createElement('span');star.textContent='★';button.append(star);}
+  button.setAttribute('aria-label','Lecția 4, lădița '+id+(orderingExercises[id]?(solved.includes(id)?' — rezolvată':' — ordonează crescător'):' — exercițiul urmează să fie adăugat'));
   Object.assign(button.style,{left:left[row][col]+'%',top:top[row]+'%',width:'12.9%',height:'18%'});
-  button.addEventListener('click',()=>{if(id===1)return openOrderingExercise();orderingReturnFocus=button;$('ordering-dialog-title').textContent='Lădița '+id+' · Ordonarea numerelor naturale';$('ordering-dialog').showModal();$('ordering-dialog-close').focus();});
+  button.addEventListener('click',()=>{if(orderingExercises[id])return openOrderingExercise(id);orderingReturnFocus=button;$('ordering-dialog-title').textContent='Lădița '+id+' · Ordonarea numerelor naturale';$('ordering-dialog').showModal();$('ordering-dialog-close').focus();});
   $('ordering-chests').append(button);
  }
 }
 for(const id of ['ordering-dialog-close','ordering-dialog-return'])$(id).addEventListener('click',()=>$('ordering-dialog').close());
 $('ordering-dialog').addEventListener('close',()=>orderingReturnFocus?.focus());
 $('ordering-back-sign').addEventListener('click',()=>openForest());
-const orderingNumbers=[3205,2530,3052,2503],orderingBank=[0,1,2,3].map(i=>$('ordering-number-'+i)),orderingSlots=[0,1,2,3].map(i=>$('ordering-slot-'+i));
+const orderingExercises={1:{numbers:[3205,2530,3052,2503],image:$('ordering-exercise-image').src},2:{numbers:[4678,2034,476,4001],image:$('ordering-exercise-source-2').src}};
+let orderingNumbers=orderingExercises[1].numbers,activeOrderingChest=1;
+const orderingBank=[0,1,2,3].map(i=>$('ordering-number-'+i)),orderingSlots=[0,1,2,3].map(i=>$('ordering-slot-'+i));
 let orderingPlaces=[null,null,null,null],orderingSelected=null,orderingBusy=false,orderingReady=false;
 const orderingLabel=n=>String(n).replace(/(\d)(?=(\d{3})+$)/g,'$1 ');
 function orderingMessage(text='',kind=''){$('ordering-exercise-status').textContent=text;$('ordering-exercise-status').className=kind;}
@@ -197,7 +199,9 @@ function renderOrderingMove(){
  $('ordering-check').disabled=disabled;
 }
 function applyOrderingProfile(profile){if(!profile||profile.studentId!==mapProfile?.studentId)throw new Error('Profilul elevului nu corespunde.');renderMap(profile);renderForest(mapProfile);renderOrdering();}
-async function openOrderingExercise(){
+async function openOrderingExercise(id=1){
+ const exercise=orderingExercises[id];if(!exercise)return;activeOrderingChest=id;orderingNumbers=exercise.numbers;
+ $('ordering-exercise-image').src=exercise.image;$('ordering-exercise-image').alt='Ordonează crescător numerele '+orderingNumbers.map(orderingLabel).join(', ')+'. Atinge numărul, apoi căsuța unde vrei să ajungă.';$('ordering-exercise-page').setAttribute('aria-label','Lecția 4, lădița '+id+' — Ordonează crescător');orderingBank.forEach((button,index)=>button.setAttribute('aria-label','Alege numărul '+orderingLabel(orderingNumbers[index])));
  const revision=++comparisonRevision,sid=mapProfile.studentId;orderingPlaces=[null,null,null,null];orderingSelected=null;orderingBusy=false;orderingReady=false;
  $('lesson-content-page').hidden=true;$('ordering-exercise-page').hidden=false;renderOrderingMove();orderingMessage(teacherMapReturn?'Vizualizare profesor. Progresul elevilor nu este modificat.':'Se verifică accesul…');$('ordering-exercise-back').focus();window.scrollTo(0,0);
  if(teacherMapReturn)return;
@@ -218,11 +222,11 @@ $('ordering-check').addEventListener('click',async()=>{
  if(orderingBusy||!orderingReady||teacherMapReturn)return;
  if(orderingPlaces.includes(null)){orderingMessage('Așază toate cele patru numere în căsuțe.','error');return;}
  const revision=comparisonRevision,sid=mapProfile.studentId;orderingSelected=null;orderingBusy=true;renderOrderingMove();orderingMessage('Se verifică…');
- try{const r=await studentAuth.ordering('answer',{chest:1,answer:orderingPlaces.map(id=>orderingNumbers[id])});if(revision!==comparisonRevision||$('ordering-exercise-page').hidden||mapProfile?.studentId!==sid||teacherMapReturn)return;applyOrderingProfile(r.profile);orderingSlots.forEach(button=>button.className='ordering-slot '+(r.correct?'correct':'incorrect'));orderingMessage(r.correct?'Corect! Steluța este salvată.':'Mai încearcă! Poți muta numerele între căsuțe.',r.correct?'success':'error');}
+ try{const r=await studentAuth.ordering('answer',{chest:activeOrderingChest,answer:orderingPlaces.map(id=>orderingNumbers[id])});if(revision!==comparisonRevision||$('ordering-exercise-page').hidden||mapProfile?.studentId!==sid||teacherMapReturn)return;applyOrderingProfile(r.profile);orderingSlots.forEach(button=>button.className='ordering-slot '+(r.correct?'correct':'incorrect'));orderingMessage(r.correct?'Corect! Steluța este salvată.':'Mai încearcă! Poți muta numerele între căsuțe.',r.correct?'success':'error');}
  catch(error){if(revision===comparisonRevision&&!$('ordering-exercise-page').hidden)orderingMessage(error.message,'error');}
  finally{if(revision===comparisonRevision){orderingBusy=false;for(const [id,button] of orderingBank.entries())button.disabled=!orderingReady||!!teacherMapReturn||orderingPlaces.includes(id);for(const button of orderingSlots)button.disabled=!orderingReady||!!teacherMapReturn;$('ordering-check').disabled=!orderingReady||!!teacherMapReturn;}}
 });
-$('ordering-exercise-back').addEventListener('click',()=>{comparisonRevision++;orderingBusy=false;orderingReady=false;$('ordering-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderOrdering();$('ordering-chests').children[0]?.focus();window.scrollTo(0,0);});
+$('ordering-exercise-back').addEventListener('click',()=>{comparisonRevision++;orderingBusy=false;orderingReady=false;$('ordering-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderOrdering();$('ordering-chests').children[activeOrderingChest-1]?.focus();window.scrollTo(0,0);});
 
 function openLessonContent(lesson){
  $('lesson-dialog').close();$('forest-page').hidden=true;
