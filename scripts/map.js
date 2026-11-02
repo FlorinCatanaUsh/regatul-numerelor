@@ -88,6 +88,7 @@ function previousKey(profile,id){
  return !!p[({4:'comparisonKeyTaken',5:'orderingKeyTaken',6:'roundingKeyTaken'})[id]];
 }
 function forestStatus(id){
+ if(id===3&&mapProfile.lessonProgress?.[1]?.comparisonLockOpened===false)return 'locked';
  if(!lessonPermission(mapProfile,id)||!previousKey(mapProfile,id)||id===2&&!readingAvailable())return 'locked';
  return forestState.completed.includes(id)?'complete':'available';
 }
@@ -462,6 +463,11 @@ function renderForest(profile){
   if(lesson.id!==1&&lessonPermission(mapProfile,lesson.id))Object.assign(button.style,{backgroundImage:'url("'+$(lesson.id===2?'forest-unlocked-source':'forest-color-source').src+'")',backgroundSize:(10000/width)+'% '+(10000/height)+'%',backgroundPosition:(left/(100-width)*100)+'% '+(top/(100-height)*100)+'%',backgroundRepeat:'no-repeat'});
   const badge=document.createElement('span');badge.className='lesson-state';badge.setAttribute('aria-hidden','true');badge.textContent=state==='locked'?'🔒':state==='complete'?'✓':'↪';if(lesson.id!==2)button.append(badge);
   button.addEventListener('click',()=>showForestLesson(lesson));$('forest-lessons').append(button);
+  if(lesson.id===3&&mapProfile.lessonProgress?.[1]?.comparisonLockOpened===false){
+   const lock=document.createElement('button');lock.type='button';lock.className='lesson-lock';lock.textContent='🔒';lock.setAttribute('aria-label','Deschide lacătul lecției 3 cu cheia câștigată');
+   Object.assign(lock.style,{left:(left+width*.4)+'%',top:(top+height*.72)+'%',bottom:'auto'});
+   lock.addEventListener('click',async()=>{if(teacherMapReturn||lockBusy)return;lockBusy=true;lock.disabled=true;const sid=mapProfile.studentId;try{const r=await studentAuth.comparison('open_lock');if(mapProfile?.studentId!==sid||teacherMapReturn)return;renderMap(r.profile);renderForest(mapProfile);}catch(e){$('lesson-title').textContent='Lacătul lecției 3';$('lesson-message').textContent=e.message;$('lesson-dialog').showModal();}finally{lockBusy=false;lock.disabled=false;}});$('forest-lessons').append(lock);
+  }
   if(lesson.id===2&&(!mapProfile.formation?.lesson2Opened||!allowed)){
    const lock=document.createElement('button');lock.type='button';lock.className='lesson-lock';lock.textContent='🔒';lock.setAttribute('aria-label','Deschide lacătul lecției 2 cu cheia luată și permisiunea profesorului');
    Object.assign(lock.style,{left:(left+width*.40)+'%',top:(top+height*.72)+'%',bottom:'auto'});lock.addEventListener('click',()=>unlockLesson2(lock));$('forest-lessons').append(lock);

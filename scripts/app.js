@@ -1,7 +1,7 @@
 import { pupils } from '../data/students.js';
-import { studentAuth } from './auth.js?v=remove-class-notices';
-import { setupMap } from './map.js?v=remove-class-notices';
-import { setupTeacher } from './teacher.js?v=remove-class-notices';
+import { studentAuth } from './auth.js?v=lesson-three-lock';
+import { setupMap } from './map.js?v=lesson-three-lock';
+import { setupTeacher } from './teacher.js?v=lesson-three-lock';
 'use strict';
 
 const $ = id => document.getElementById(id);
