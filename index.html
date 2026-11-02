@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=comparison-art">
+<link rel="stylesheet" href="./styles/main.css?v=comparison-first-chest">
 </head>
 <body>
 <main>
@@ -67,11 +67,11 @@
 <section id="lesson-content-page" hidden aria-labelledby="lesson-content-title">
  <header class="map-toolbar"><button id="lesson-content-back" type="button">← Înapoi în pădure</button><div><h2 id="lesson-content-title"></h2></div></header>
  <div id="comparison-panel" hidden>
-  <p class="map-help">Alege o lădiță. Exercițiile lecției 3 urmează să fie adăugate. Pe telefon poți glisa imaginea lateral.</p>
+  <p class="map-help">Lădița 1 este disponibilă. Celelalte exerciții urmează să fie adăugate. Pe telefon poți glisa imaginea lateral.</p>
   <div class="map-scroll" tabindex="0" role="region" aria-label="Cele 12 lădițe ale lecției 3"><div class="comparison-art">
    <img id="comparison-image" src="./assets/compararea-cupola.webp" width="1672" height="941" alt="3. Compararea numerelor naturale: 12 lădițe numerotate, robotul cu 125 mai mic decât 152, bufnița, școala și cheia lecției 4 sub cupolă. Progres zero din 12 steluțe.">
    <button id="comparison-back-sign" type="button" aria-label="Înapoi la pădure"></button>
-   <div id="comparison-chests"></div>
+   <div id="comparison-chests"></div><span id="comparison-count" class="comparison-counter">0/12</span><progress id="comparison-bar" max="12" value="0" aria-label="Steluțe câștigate la lecția 3"></progress>
    <button id="comparison-key" type="button" disabled aria-label="Cheia lecției 4 este sub cupolă" title="Cheia va deveni disponibilă după adăugarea și rezolvarea exercițiilor."></button>
   </div></div>
  </div>
@@ -82,6 +82,22 @@
   <button id="comparison-dialog-return" type="button">Înapoi la lădițe</button>
  </dialog>
  <div class="lesson-content-body"><p id="lesson-content-message" role="status">Exercițiile acestei lecții urmează să fie adăugate.</p></div>
+</section>
+
+<section id="comparison-exercise-page" hidden aria-label="Lecția 3, lădița 1 — Compară 4 725 și 4 752">
+ <div class="map-scroll" tabindex="0" role="region" aria-label="Exercițiu de comparare a numerelor"><div class="comparison-exercise-art">
+  <img id="comparison-exercise-image" src="./assets/compararea-ladita1.webp" width="1672" height="941" alt="Compară numerele 4 725 și 4 752. Completează căsuța cu semnul potrivit: mai mic, mai mare sau egal.">
+  <output id="comparison-selected" aria-live="polite" aria-label="Semnul ales"></output>
+  <div id="comparison-choices" role="group" aria-label="Alege semnul potrivit">
+   <button id="comparison-choice-less" type="button" aria-label="Mai mic decât" aria-pressed="false"></button>
+   <button id="comparison-choice-greater" type="button" aria-label="Mai mare decât" aria-pressed="false"></button>
+   <button id="comparison-choice-equal" type="button" aria-label="Egal cu" aria-pressed="false"></button>
+  </div>
+  <button id="comparison-check" type="button" aria-label="Verifică răspunsul"></button>
+  <button id="comparison-exercise-back" type="button" aria-label="Înapoi la lădițele lecției 3"></button>
+  <output id="comparison-result" role="status" aria-live="polite"></output>
+ </div></div>
+ <p id="comparison-exercise-status" class="map-summary" role="status" aria-live="polite"></p>
 </section>
 
 <section id="reading-page" hidden aria-labelledby="reading-title">
@@ -223,6 +239,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=comparison-art"></script>
+<script type="module" src="./scripts/app.js?v=comparison-first-chest"></script>
 </body>
 </html>

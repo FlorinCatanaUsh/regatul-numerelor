@@ -39,7 +39,7 @@ function renderMap(profile) {
  $('map-summary').textContent=teacherClassMode?'Harta clasei. Comenzile de sus se aplică tuturor elevilor.':mapProfile.completedChapters.length+' din 8 capitole parcurse.';
 }
 function openStudentMap(profile){
- teacherMapReturn=null;teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('teacher-workspace').hidden=true;$('lesson-content-page').hidden=true;$('forest-mode').textContent='Elev';$('map-home').textContent='Ieșire';$('map-mode').textContent='Elev';renderMap(profile);$('map-page').hidden=false;$('forest-page').hidden=true;document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
+ teacherMapReturn=null;teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('teacher-workspace').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;$('lesson-content-page').hidden=true;$('forest-mode').textContent='Elev';$('map-home').textContent='Ieșire';$('map-mode').textContent='Elev';renderMap(profile);$('map-page').hidden=false;$('forest-page').hidden=true;document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
 }
 $('map-home').addEventListener('click',async()=>{if(teacherMapReturn){const back=teacherMapReturn;teacherMapReturn=null;mapProfile=null;forestState=null;$('map-page').hidden=true;$('forest-page').hidden=true;back();return;}const button=$('map-home');button.disabled=true;try{await studentAuth.logout();}catch{studentAuth.clear();}finally{button.disabled=false;$('map-page').hidden=true;$('forest-page').hidden=true;document.body.classList.remove('viewing-map');mapProfile=null;forestState=null;$('class-entry').focus();}});
 for(const id of ['chapter-close','chapter-back'])$(id).addEventListener('click',()=>$('chapter-dialog').close());
@@ -135,15 +135,20 @@ $('lesson-allow').addEventListener('click',()=>changeLessonAccess(true));
 $('lesson-block').addEventListener('click',()=>changeLessonAccess(false));
 $('lesson-preview').addEventListener('click',()=>{if(lessonAccessBusy||!teacherMapReturn)return;$('lesson-dialog').close();if(activeLesson.id===1)openFormation();else if(activeLesson.id===2)openReading();else openLessonContent(activeLesson);});
 $('lesson-dialog').addEventListener('cancel',event=>{if(lessonAccessBusy)event.preventDefault();});
-let comparisonReturnFocus=null;
+let comparisonReturnFocus=null,comparisonSelected=null,comparisonBusy=false,comparisonReady=false,comparisonRevision=0;
+const comparisonChoices=[['comparison-choice-less','<'],['comparison-choice-greater','>'],['comparison-choice-equal','=']];
 function renderComparison(){
+ const solved=[...new Set((mapProfile?.lessonProgress?.[1]?.comparisonSolved||[]).filter(id=>id===1))];
+ $('comparison-count').textContent=solved.length+'/12';$('comparison-bar').value=solved.length;
+ $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Lădița 1 este disponibilă; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
  $('comparison-chests').replaceChildren();
  const left=[[22.7,35.7,48,60.1],[21.5,34.4,47.4,60],[21.5,34.7,47.7,60.4]],top=[40.5,57.1,74.1];
  for(let id=1;id<=12;id++){
-  const row=Math.floor((id-1)/4),col=(id-1)%4,button=document.createElement('button');button.type='button';button.className='comparison-chest';
-  button.setAttribute('aria-label','Lecția 3, lădița '+id+' — exercițiul urmează să fie adăugat');
+  const row=Math.floor((id-1)/4),col=(id-1)%4,button=document.createElement('button');button.type='button';button.className='comparison-chest'+(solved.includes(id)?' complete':'');
+  button.setAttribute('aria-label','Lecția 3, lădița '+id+(id===1?(solved.includes(id)?' — rezolvată':' — compară 4 725 și 4 752'):' — exercițiul urmează să fie adăugat'));
+  if(solved.includes(id)){const star=document.createElement('span');star.textContent='★';button.append(star);}
   Object.assign(button.style,{left:left[row][col]+'%',top:top[row]+'%',width:'12.9%',height:'18%'});
-  button.addEventListener('click',()=>{comparisonReturnFocus=button;$('comparison-dialog-title').textContent='Lădița '+id+' · Compararea numerelor naturale';$('comparison-dialog').showModal();$('comparison-dialog-close').focus();});
+  button.addEventListener('click',()=>{if(id===1)return openComparisonExercise();comparisonReturnFocus=button;$('comparison-dialog-title').textContent='Lădița '+id+' · Compararea numerelor naturale';$('comparison-dialog').showModal();$('comparison-dialog-close').focus();});
   $('comparison-chests').append(button);
  }
 }
@@ -153,11 +158,56 @@ $('comparison-back-sign').addEventListener('click',()=>openForest());
 function openLessonContent(lesson){
  $('lesson-dialog').close();$('forest-page').hidden=true;
  $('lesson-content-title').textContent=lesson.id+'. '+lesson.title;
- $('comparison-panel').hidden=lesson.id!==3;if(lesson.id===3)renderComparison();
- $('lesson-content-message').textContent='Exercițiile acestei lecții urmează să fie adăugate.';
+ $('comparison-exercise-page').hidden=true;comparisonRevision++;$('comparison-panel').hidden=lesson.id!==3;if(lesson.id===3)renderComparison();
+ if(lesson.id!==3)$('lesson-content-message').textContent='Exercițiile acestei lecții urmează să fie adăugate.';
  $('lesson-content-page').hidden=false;$('lesson-content-back').focus();window.scrollTo(0,0);
 }
 $('lesson-content-back').addEventListener('click',()=>openForest());
+function setComparisonControls(){
+ const disabled=comparisonBusy||!comparisonReady||!!teacherMapReturn;
+ for(const [id] of comparisonChoices)$(id).disabled=disabled;
+ $('comparison-check').disabled=disabled;
+}
+function clearComparisonFeedback(){
+ $('comparison-result').textContent='';$('comparison-result').className='';$('comparison-result').setAttribute('aria-label','');
+ $('comparison-exercise-status').textContent=teacherMapReturn?'Vizualizare profesor. Progresul elevilor nu este modificat.':'';
+}
+function applyComparisonProfile(profile){
+ if(!profile||profile.studentId!==mapProfile?.studentId)throw new Error('Profilul elevului nu corespunde.');
+ renderMap(profile);renderForest(mapProfile);renderComparison();
+}
+async function openComparisonExercise(){
+ const revision=++comparisonRevision,sid=mapProfile.studentId;
+ comparisonSelected=null;comparisonBusy=false;comparisonReady=false;
+ $('comparison-selected').textContent='';for(const [id] of comparisonChoices){$(id).setAttribute('aria-pressed','false');}
+ clearComparisonFeedback();setComparisonControls();$('lesson-content-page').hidden=true;$('comparison-exercise-page').hidden=false;window.scrollTo(0,0);$('comparison-exercise-back').focus();
+ if(teacherMapReturn)return;
+ $('comparison-exercise-status').textContent='Se verifică accesul…';
+ try{
+  const r=await studentAuth.comparison('state');if(revision!==comparisonRevision||$('comparison-exercise-page').hidden||mapProfile?.studentId!==sid||teacherMapReturn)return;
+  applyComparisonProfile(r.profile);comparisonReady=true;setComparisonControls();clearComparisonFeedback();$('comparison-choice-less').focus();
+ }catch(error){if(revision===comparisonRevision&&!$('comparison-exercise-page').hidden){$('comparison-exercise-status').textContent=error.message;}}
+}
+for(const [id,sign] of comparisonChoices)$(id).addEventListener('click',()=>{
+ if(comparisonBusy||!comparisonReady||teacherMapReturn)return;
+ comparisonSelected=sign;$('comparison-selected').textContent=sign;
+ for(const [button,value] of comparisonChoices)$(button).setAttribute('aria-pressed',String(value===sign));clearComparisonFeedback();
+});
+$('comparison-check').addEventListener('click',async()=>{
+ if(comparisonBusy||!comparisonReady||teacherMapReturn)return;
+ if(!comparisonSelected){$('comparison-exercise-status').textContent='Alege unul dintre semnele <, > sau =.';return;}
+ comparisonBusy=true;setComparisonControls();$('comparison-exercise-status').textContent='Se verifică…';const revision=comparisonRevision,sid=mapProfile.studentId;
+ try{
+  const r=await studentAuth.comparison('answer',{chest:1,answer:comparisonSelected});
+  if(revision!==comparisonRevision||$('comparison-exercise-page').hidden||mapProfile?.studentId!==sid||teacherMapReturn)return;
+  applyComparisonProfile(r.profile);$('comparison-result').textContent=r.correct?'✓':'✕';$('comparison-result').className=r.correct?'correct':'incorrect';$('comparison-result').setAttribute('aria-label',r.correct?'Răspuns corect':'Răspuns greșit');
+  $('comparison-exercise-status').textContent=r.correct?'Corect! Steluța este salvată. Poți exersa din nou.':'Mai încearcă. Alege alt semn și verifică din nou.';
+ }catch(error){if(revision===comparisonRevision&&!$('comparison-exercise-page').hidden)$('comparison-exercise-status').textContent=error.message;}
+ finally{if(revision===comparisonRevision){comparisonBusy=false;setComparisonControls();}}
+});
+$('comparison-exercise-back').addEventListener('click',()=>{
+ comparisonRevision++;comparisonBusy=false;comparisonReady=false;$('comparison-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderComparison();$('comparison-chests').querySelector('button')?.focus();window.scrollTo(0,0);
+});
 function renderForest(profile){
  const p=profile.lessonProgress?.[1]||{unlocked:[1],completed:[]};
  const valid=items=>[...new Set((Array.isArray(items)?items:[]).filter(n=>Number.isInteger(n)&&n>=1&&n<=6))];
@@ -181,7 +231,7 @@ function renderForest(profile){
 }
 function openForest(){
  if(!mapProfile)return;
- $('lesson-content-page').hidden=true;
+ $('lesson-content-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;
  $('reading-page').hidden=true;
  $('formation-page').hidden=true;
  renderForest(mapProfile);$('map-page').hidden=true;$('forest-page').hidden=false;$('forest-back').focus();window.scrollTo(0,0);

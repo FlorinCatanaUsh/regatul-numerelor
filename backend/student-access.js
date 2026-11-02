@@ -45,6 +45,12 @@ Deno.serve(async req=>{
    const students=await rpc('regat_teacher_students',{p_token:token});
    return students===null?response({error:'Acces rezervat profesorului.'},403,origin):response({students},200,origin);
   }
+  if(body.action==='comparison'){
+   if(!['state','answer'].includes(body.operation)||body.operation==='answer'&&(!Number.isInteger(body.chest)||typeof body.answer!=='string'||!['<','>','='].includes(body.answer)))return response({error:'Alege unul dintre semnele <, > sau =.'},400,origin);
+   const r=await rpc('regat_comparison',{p_token:token,p_action:body.operation,p_chest:body.chest??null,p_answer:body.answer??null});
+   const errors={unauthorized:'Sesiunea a expirat. Autentifică-te din nou.',lesson_locked:'Lecția 3 este blocată de profesor.',chest_missing:'Exercițiul acestei lădițe urmează să fie adăugat.'};
+   return r?.ok?response(r,200,origin):response({error:errors[r?.error]||'Acțiunea nu a reușit.'},r?.error==='unauthorized'?401:403,origin);
+  }
   if(body.action==='reading'){
    if(!['state','answer','take_key'].includes(body.operation)||body.operation==='answer'&&(!Number.isInteger(body.chest)||typeof body.answer!=='string'||body.answer.length>500))return response({error:'Cerere invalidă.'},400,origin);
    const r=await rpc('regat_reading',{p_token:token,p_action:body.operation,p_chest:body.chest??null,p_answer:body.answer??null});

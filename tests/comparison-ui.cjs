@@ -1,0 +1,34 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+class Element{
+ constructor(id=''){this.id=id;this.hidden=true;this.children=[];this.style={};this.events={};this.attributes={};this.src='assets/'+id+'.webp';this.classList={add(){},remove(){}};}
+ addEventListener(type,fn){(this.events[type]??=[]).push(fn)}
+ async fire(type,event={}){for(const fn of this.events[type]||[])await fn({preventDefault(){},...event})}
+ setAttribute(k,v){this.attributes[k]=v} append(...els){this.children.push(...els)} replaceChildren(...els){this.children=els} querySelector(){return this.children[0]||new Element()} focus(){this.focused=true;} select(){} showModal(){this.open=true} close(){this.open=false;this.fire('close')}
+}
+const html=fs.readFileSync(require('path').join(__dirname,'../index.html'),'utf8'),elements=new Map();for(const m of html.matchAll(/id="([^"]+)"/g)){assert(!elements.has(m[1]),'duplicate id '+m[1]);elements.set(m[1],new Element(m[1]));}
+const $=id=>{assert(elements.has(id),'Missing id '+id);return elements.get(id)};
+let calls=[];let current;const context={document:{getElementById:$,createElement:()=>new Element(),body:new Element()},window:{scrollTo(){}},setTimeout,console};vm.createContext(context);
+vm.runInContext(fs.readFileSync(require('path').join(__dirname,'../scripts/map.js'),'utf8').replace('export function','function'),context);
+
+
+
+let fail=false,deferred=null,hold=false;
+current={studentId:'test',displayName:'Test',completedChapters:[],lessonProgress:{1:{unlocked:[1,3],completed:[],manualAccess:{3:true},comparisonSolved:[]}},formation:{solved:[],keyTaken:false},reading:{solved:[],keyTaken:false}};
+const ui=context.setupMap({pupils:[],entryDialog:$('entry'),studentAuth:{comparison:async(operation,fields={})=>{
+ calls.push([operation,fields]);if(fail)throw Error('Offline');if(operation==='state'){if(hold)return await new Promise(resolve=>deferred=resolve);return {profile:current};}
+ const correct=fields.answer==='<';if(correct){current=structuredClone(current);current.lessonProgress[1].comparisonSolved=[1];}return {correct,profile:current};
+}}});
+async function enter(){ui.open(current);await $('map-chapters').children[0].fire('click');await $('forest-progress').children[2].fire('click');}
+async function open(){await $('comparison-chests').children[0].fire('click');}
+(async()=>{
+ await enter();assert.equal($('comparison-count').textContent,'0/12');await open();assert.equal(calls.at(-1)[0],'state');assert.equal($('comparison-exercise-page').hidden,false);assert.equal($('comparison-check').disabled,false);assert.equal($('comparison-selected').textContent,'');
+ const n=calls.length;await $('comparison-check').fire('click');assert.equal(calls.length,n);assert.match($('comparison-exercise-status').textContent,/Alege/);
+ for(const choice of ['greater','equal']){await $('comparison-choice-'+choice).fire('click');await $('comparison-check').fire('click');assert.equal($('comparison-result').textContent,'✕');assert.equal($('comparison-count').textContent,'0/12');}
+ await $('comparison-choice-less').fire('click');assert.equal($('comparison-selected').textContent,'<');assert.equal($('comparison-choice-less').attributes['aria-pressed'],'true');assert.equal($('comparison-choice-equal').attributes['aria-pressed'],'false');await $('comparison-check').fire('click');assert.equal(calls.at(-1)[1].answer,'<');assert.equal($('comparison-result').textContent,'✓');assert.equal($('comparison-count').textContent,'1/12');await $('comparison-check').fire('click');assert.equal($('comparison-count').textContent,'1/12');
+ await $('comparison-exercise-back').fire('click');assert.equal($('lesson-content-page').hidden,false);assert.match($('comparison-chests').children[0].className,/complete/);await open();assert.equal($('comparison-selected').textContent,'');assert.equal($('comparison-count').textContent,'1/12');
+ await $('comparison-choice-less').fire('click');fail=true;await $('comparison-check').fire('click');assert.match($('comparison-exercise-status').textContent,/Offline/);assert.equal($('comparison-check').disabled,false);fail=false;await $('comparison-exercise-back').fire('click');
+ fail=true;await open();assert.match($('comparison-exercise-status').textContent,/Offline/);assert.equal($('comparison-check').disabled,true);fail=false;await $('comparison-exercise-back').fire('click');
+ hold=true;const pending=$('comparison-chests').children[0].fire('click');await Promise.resolve();await $('comparison-exercise-back').fire('click');deferred({profile:current});await pending;assert.equal($('comparison-exercise-page').hidden,true);assert.equal($('lesson-content-page').hidden,false);hold=false;
+ const before=calls.length;ui.teacherView(current,()=>{});await $('map-chapters').children[0].fire('click');await $('forest-progress').children[2].fire('click');await $('lesson-preview').fire('click');await open();assert.equal($('comparison-check').disabled,true);for(const id of ['less','greater','equal'])assert.equal($('comparison-choice-'+id).disabled,true);await $('comparison-choice-less').fire('click');await $('comparison-check').fire('click');assert.equal(calls.length,before);
+ console.log('PASS comparison UI: symbols, empty/wrong/correct/repeated answers, one persistent star, reset and back, state/error handling, stale requests, teacher read-only.');
+})().catch(e=>{console.error(e);process.exitCode=1});

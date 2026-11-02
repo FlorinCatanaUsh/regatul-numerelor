@@ -4,7 +4,7 @@ let passwordTarget=null;
 let passwordBusy=false;
 let passwordRevision=0;
 let teacherRows=[],rowsReady=false,activeTab='individual',groupBusy=false,loadRevision=0;
-const learningPages=['lesson-content-page','map-page','forest-page','formation-page','reading-page','reading-exercise-page','chest1-page','missing-page'];
+const learningPages=['comparison-exercise-page','lesson-content-page','map-page','forest-page','formation-page','reading-page','reading-exercise-page','chest1-page','missing-page'];
 function hideLearningPages(){for(const id of learningPages)$(id).hidden=true;}
 function updateClassControls(message){
  const permitted=teacherRows.filter(row=>row.formation?.lesson2Allowed).length;

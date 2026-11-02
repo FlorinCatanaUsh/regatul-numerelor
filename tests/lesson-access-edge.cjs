@@ -8,5 +8,7 @@ const request=(body,token='a'.repeat(64))=>new Request('https://test.invalid/fun
  let n=calls.length;r=await handler(request({action:'teacher_lesson_access',studentId:'all',lesson:7,allowed:true}));assert.equal(r.status,400);assert.equal(calls.length,n);
  r=await handler(request({action:'teacher_lesson_access',studentId:'all',lesson:3,allowed:true},null));assert.equal(r.status,401);assert.equal(calls.length,n);
  r=await handler(request({action:'teacher_lesson_access',studentId:'student-01',lesson:1,allowed:false}));assert.equal(r.status,200);assert.equal(calls.at(-1).args.p_student_id,'student-01');assert.equal(calls.at(-1).args.p_allowed,false);
+ r=await handler(request({action:'comparison',operation:'answer',chest:1,answer:'<'}));assert.equal(r.status,200);assert(calls.at(-1).url.endsWith('/rpc/regat_comparison'));assert.equal(calls.at(-1).args.p_answer,'<');
+ n=calls.length;r=await handler(request({action:'comparison',operation:'answer',chest:1,answer:'x'}));assert.equal(r.status,400);assert.equal(calls.length,n);
  console.log('PASS: lesson permission edge routing, scope and typed bounds, anonymous rejection.');
 })().catch(e=>{console.error(e);process.exitCode=1});
