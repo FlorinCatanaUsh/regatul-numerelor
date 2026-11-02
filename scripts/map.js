@@ -241,7 +241,7 @@ $('ordering-check').addEventListener('click',async()=>{
 });
 $('ordering-exercise-back').addEventListener('click',()=>{comparisonRevision++;orderingBusy=false;orderingReady=false;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderOrdering();$('ordering-chests').children[activeOrderingChest-1]?.focus();window.scrollTo(0,0);});
 
-const roundingExercises={1:{number:47,image:$('rounding-exercise-image').src},2:{number:464,image:$('rounding-exercise-source-2').src},3:{number:6446,image:$('rounding-exercise-source-3').src}};
+const roundingExercises={1:{number:47,unit:'zeci',digit:'unităților',image:$('rounding-exercise-image').src},2:{number:464,unit:'zeci',digit:'unităților',image:$('rounding-exercise-source-2').src},3:{number:6446,unit:'zeci',digit:'unităților',image:$('rounding-exercise-source-3').src},4:{number:7275,unit:'zeci',digit:'unităților',image:$('rounding-exercise-source-4').src},5:{number:482,unit:'sute',digit:'zecilor',image:$('rounding-exercise-source-5').src},6:{number:524,unit:'sute',digit:'zecilor',image:$('rounding-exercise-source-6').src},7:{number:6476,unit:'sute',digit:'zecilor',image:$('rounding-exercise-source-7').src},8:{number:3752,unit:'sute',digit:'zecilor',image:$('rounding-exercise-source-8').src}};
 let roundingReturnFocus=null,roundingBusy=false,roundingReady=false,activeRoundingChest=1;
 function renderRounding(){
  $('rounding-key').disabled=true;
@@ -251,12 +251,12 @@ function renderRounding(){
  const left=[[22.7,35.7,48,60.1],[21.5,34.4,47.4,60],[21.5,34.7,47.7,60.4]],top=[40.5,57.1,74.1];
  for(let id=1;id<=12;id++){
   const row=Math.floor((id-1)/4),col=(id-1)%4,button=document.createElement('button');button.type='button';button.className='comparison-chest'+(solved.includes(id)?' complete':'');if(solved.includes(id)){const star=document.createElement('span');star.textContent='★';button.append(star);}
-  button.setAttribute('aria-label','Lecția 5, lădița '+id+(roundingExercises[id]?' — rotunjește '+roundingExercises[id].number+' la zeci'+(solved.includes(id)?' — rezolvată':''):' — exercițiul urmează să fie adăugat'));
+  button.setAttribute('aria-label','Lecția 5, lădița '+id+(roundingExercises[id]?' — rotunjește '+roundingExercises[id].number+' la '+roundingExercises[id].unit+(solved.includes(id)?' — rezolvată':''):' — exercițiul urmează să fie adăugat'));
   Object.assign(button.style,{left:left[row][col]+'%',top:top[row]+'%',width:'12.9%',height:'18%'});
   button.addEventListener('click',()=>{if(roundingExercises[id])return openRoundingExercise(id);roundingReturnFocus=button;$('rounding-dialog-title').textContent='Lădița '+id;$('rounding-dialog').showModal();$('rounding-dialog-close').focus();});
   $('rounding-chests').append(button);
  }
- $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Primele trei lădițe sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
+ $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Primele opt lădițe sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
 }
 for(const id of ['rounding-dialog-close','rounding-dialog-return'])$(id).addEventListener('click',()=>$('rounding-dialog').close());
 $('rounding-dialog').addEventListener('close',()=>roundingReturnFocus?.focus());
@@ -266,8 +266,8 @@ function roundingMessage(message=''){ $('rounding-exercise-status').textContent=
 function applyRoundingProfile(profile){if(!profile||profile.studentId!==mapProfile?.studentId)throw new Error('Profilul elevului nu corespunde.');renderMap(profile);renderForest(mapProfile);renderRounding();}
 async function openRoundingExercise(id=1){
  const exercise=roundingExercises[id];if(!exercise)return;activeRoundingChest=id;
- $('rounding-exercise-image').src=exercise.image;$('rounding-exercise-image').alt='Rotunjește numărul '+exercise.number+' la zeci. Privește cifra unităților. 0, 1, 2, 3, 4: rotunjește prin eliminare. 5, 6, 7, 8, 9: rotunjește prin adăugare.';
- $('rounding-exercise-page').setAttribute('aria-label','Lecția 5, lădița '+id+' — Rotunjește '+exercise.number+' la zeci');$('rounding-answer').setAttribute('aria-label','Numărul '+exercise.number+' rotunjit la zeci');
+ $('rounding-exercise-image').src=exercise.image;$('rounding-exercise-image').alt='Rotunjește numărul '+exercise.number+' la '+exercise.unit+'. Privește cifra '+exercise.digit+'. 0, 1, 2, 3, 4: rotunjește prin eliminare. 5, 6, 7, 8, 9: rotunjește prin adăugare.';
+ $('rounding-exercise-page').setAttribute('aria-label','Lecția 5, lădița '+id+' — Rotunjește '+exercise.number+' la '+exercise.unit);$('rounding-answer').setAttribute('aria-label','Numărul '+exercise.number+' rotunjit la '+exercise.unit);
  const revision=++comparisonRevision,sid=mapProfile.studentId;roundingBusy=false;roundingReady=false;
  $('rounding-answer').value='';$('rounding-answer').className='';$('rounding-answer').setAttribute('aria-invalid','false');roundingControls();
  $('lesson-content-page').hidden=true;$('rounding-exercise-page').hidden=false;$('rounding-exercise-back').focus();window.scrollTo(0,0);
