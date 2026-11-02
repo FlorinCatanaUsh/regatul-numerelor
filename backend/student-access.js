@@ -46,9 +46,11 @@ Deno.serve(async req=>{
    return students===null?response({error:'Acces rezervat profesorului.'},403,origin):response({students},200,origin);
   }
   if(body.action==='roman'){
-   if(!['state','answer'].includes(body.operation)||body.operation==='answer'&&(!Number.isInteger(body.chest)||typeof body.answer!=='string'||body.answer.length>32||!/^([0-9]{1,5}|[IVXLCDMivxlcdm\s]{1,32})$/.test(body.answer.trim())))return response({error:'Scrie răspunsul în căsuță.'},400,origin);
-   const r=await rpc('regat_roman',{p_token:token,p_action:body.operation,p_chest:body.chest??null,p_answer:body.answer??null});
-   const errors={unauthorized:'Sesiunea a expirat. Autentifică-te din nou.',lesson_locked:'Lecția 6 este blocată de profesor.',chest_missing:'Exercițiul acestei lădițe urmează să fie adăugat.'};
+   if(!['state','answer','match'].includes(body.operation))return response({error:'Cerere invalidă.'},400,origin);
+   if(body.operation==='answer'&&(!Number.isInteger(body.chest)||typeof body.answer!=='string'||body.answer.length>32||!/^([0-9]{1,5}|[IVXLCDMivxlcdm\s]{1,32})$/.test(body.answer.trim())))return response({error:'Scrie răspunsul în căsuță.'},400,origin);
+   if(body.operation==='match'&&(!Number.isInteger(body.chest)||body.chest<5||body.chest>8||!Array.isArray(body.answer)||body.answer.length!==4||!body.answer.every(n=>Number.isInteger(n)&&n>=1&&n<=39)||new Set(body.answer).size!==4))return response({error:'Asociază toate cele patru numere.'},400,origin);
+   const r=await rpc('regat_roman',{p_token:token,p_action:body.operation,p_chest:body.chest??null,p_answer:body.operation==='match'?body.answer.join(','):body.answer??null});
+   const errors={unauthorized:'Sesiunea a expirat. Autentifică-te din nou.',lesson_locked:'Lecția 6 este blocată de profesor.',chest_missing:'Exercițiul acestei lădițe urmează să fie adăugat.',invalid_action:'Acțiune nepermisă.',invalid_answer:'Asociază toate cele patru numere.'};
    return r?.ok?response(r,200,origin):response({error:errors[r?.error]||'Acțiunea nu a reușit.'},r?.error==='unauthorized'?401:403,origin);
   }
   if(body.action==='rounding'){
