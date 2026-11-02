@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=valley-addition-screen">
+<link rel="stylesheet" href="./styles/main.css?v=addition-first-exercise">
 </head>
 <body>
 <main>
@@ -73,6 +73,15 @@
   <div id="addition-chests"></div><output id="addition-count" aria-label="Steluțe la adunarea fără trecere peste ordin">0/12</output>
   <button id="addition-key" type="button" disabled aria-label="Cheia lecției 2 — obține 6 steluțe"></button>
  </div></div><p id="addition-status" class="map-summary" role="status">Exercițiile vor fi adăugate pe rând.</p>
+</section>
+
+<section id="addition-exercise-page" hidden aria-label="Adunare — lădița 1">
+ <div class="map-scroll" tabindex="0" role="region" aria-label="Calculează 537 plus 142"><div class="addition-exercise-art">
+  <img src="./assets/valea-adunare-ex1.webp" width="1672" height="941" alt="537 plus 142, așezate pe verticală. Adună unitățile, zecile și sutele.">
+  <input id="addition-answer" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" autocomplete="off" aria-label="Rezultatul adunării 537 plus 142">
+  <button id="addition-exercise-back" type="button" aria-label="Înapoi la lădițe"></button>
+  <button id="addition-check" type="button" aria-label="Verifică răspunsul" disabled></button>
+ </div></div><p id="addition-exercise-status" class="map-summary" role="status" aria-live="polite"></p>
 </section>
 
 <section id="forest-page" hidden aria-labelledby="forest-title">
@@ -412,6 +421,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=valley-addition-screen"></script>
+<script type="module" src="./scripts/app.js?v=addition-first-exercise"></script>
 </body>
 </html>

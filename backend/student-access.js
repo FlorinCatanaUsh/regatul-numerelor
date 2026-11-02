@@ -45,6 +45,11 @@ Deno.serve(async req=>{
    const students=await rpc('regat_teacher_students',{p_token:token});
    return students===null?response({error:'Acces rezervat profesorului.'},403,origin):response({students},200,origin);
   }
+  if(body.action==='addition'){
+   if(!['state','answer'].includes(body.operation)||body.operation==='answer'&&(body.chest!==1||typeof body.answer!=='string'||!/^\d{1,5}$/.test(body.answer.trim())))return response({error:'Scrie răspunsul în căsuță.'},400,origin);
+   const r=await rpc('regat_addition',{p_token:token,p_action:body.operation,p_chest:body.chest??null,p_answer:body.answer??null});
+   return r?.ok?response(r,200,origin):response({error:r?.error==='unauthorized'?'Sesiunea a expirat. Autentifică-te din nou.':'Capitolul 2 nu este încă deblocat.'},r?.error==='unauthorized'?401:403,origin);
+  }
   if(body.action==='roman'){
    if(!['state','answer','match','take_crystal'].includes(body.operation))return response({error:'Cerere invalidă.'},400,origin);
    if(body.operation==='answer'&&(!Number.isInteger(body.chest)||typeof body.answer!=='string'||body.answer.length>32||!/^([0-9]{1,5}|[IVXLCDMivxlcdm\s]{1,32})$/.test(body.answer.trim())))return response({error:'Scrie răspunsul în căsuță.'},400,origin);

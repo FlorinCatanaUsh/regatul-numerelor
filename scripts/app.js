@@ -1,7 +1,7 @@
 import { pupils } from '../data/students.js';
-import { studentAuth } from './auth.js?v=valley-addition-screen';
-import { setupMap } from './map.js?v=valley-addition-screen';
-import { setupTeacher } from './teacher.js?v=valley-addition-screen';
+import { studentAuth } from './auth.js?v=addition-first-exercise';
+import { setupMap } from './map.js?v=addition-first-exercise';
+import { setupTeacher } from './teacher.js?v=addition-first-exercise';
 'use strict';
 
 const $ = id => document.getElementById(id);
