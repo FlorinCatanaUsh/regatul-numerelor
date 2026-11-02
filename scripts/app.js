@@ -1,7 +1,7 @@
 import { pupils } from '../data/students.js';
-import { studentAuth } from './auth.js?v=map-progress-fog';
-import { setupMap } from './map.js?v=map-progress-fog';
-import { setupTeacher } from './teacher.js?v=map-progress-fog';
+import { studentAuth } from './auth.js?v=map-fog-75';
+import { setupMap } from './map.js?v=map-fog-75';
+import { setupTeacher } from './teacher.js?v=map-fog-75';
 'use strict';
 
 const $ = id => document.getElementById(id);

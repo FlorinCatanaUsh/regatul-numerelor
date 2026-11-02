@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=map-progress-fog">
+<link rel="stylesheet" href="./styles/main.css?v=map-fog-75">
 </head>
 <body>
 <main>
@@ -42,7 +42,7 @@
      <filter id="fog-clouds" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".008 .014" numOctaves="3" seed="8"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope=".22"/></feComponentTransfer><feBlend in="SourceGraphic" mode="soft-light"/></filter>
      <mask id="fog-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1672" height="941"><rect width="1672" height="941" fill="white"/><g id="map-fog-reveals"></g></mask>
     </defs>
-    <g mask="url(#fog-mask)"><rect width="1672" height="941" fill="url(#fog-color)" filter="url(#fog-clouds)"/></g>
+    <g mask="url(#fog-mask)" opacity="0.75"><rect width="1672" height="941" fill="url(#fog-color)" filter="url(#fog-clouds)"/></g>
    </svg>
    <div id="map-chapters"></div>
    <div class="chapter-progress" id="chapter-progress" role="group" aria-label="Progresul meu în cele opt capitole"></div>
@@ -388,6 +388,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=map-progress-fog"></script>
+<script type="module" src="./scripts/app.js?v=map-fog-75"></script>
 </body>
 </html>
