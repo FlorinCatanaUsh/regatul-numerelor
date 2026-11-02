@@ -172,3 +172,5 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
 .ordering-exercise-art>img[hidden]{display:none!important}
 
 #ordering-key:not(:disabled){cursor:pointer}#ordering-key:not(:disabled):hover,#ordering-key:focus-visible{outline:3px solid #ffdf72;outline-offset:2px}
+
+#rounding-panel[hidden]{display:none!important}#rounding-back-sign,#rounding-key{position:absolute;padding:0;border:0;border-radius:16px;background:transparent}#rounding-back-sign{left:.5%;top:2%;width:16%;height:11%;cursor:pointer}#rounding-back-sign:hover,#rounding-back-sign:focus-visible{outline:3px solid #ffdf72;outline-offset:2px;background:#fff3a51f}#rounding-key{left:83%;top:58%;width:15%;height:28%;cursor:default}#rounding-dialog-return{display:block;min-height:44px;width:100%;border:1px solid #a78343;border-radius:12px;background:#37564c;color:#fff2cf;padding:10px;margin-top:20px}

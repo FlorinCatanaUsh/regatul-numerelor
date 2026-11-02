@@ -241,11 +241,29 @@ $('ordering-check').addEventListener('click',async()=>{
 });
 $('ordering-exercise-back').addEventListener('click',()=>{comparisonRevision++;orderingBusy=false;orderingReady=false;$('ordering-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderOrdering();$('ordering-chests').children[activeOrderingChest-1]?.focus();window.scrollTo(0,0);});
 
+let roundingReturnFocus=null;
+function renderRounding(){
+ $('rounding-key').disabled=true;
+ $('rounding-chests').replaceChildren();
+ const left=[[22.7,35.7,48,60.1],[21.5,34.4,47.4,60],[21.5,34.7,47.7,60.4]],top=[40.5,57.1,74.1];
+ for(let id=1;id<=12;id++){
+  const row=Math.floor((id-1)/4),col=(id-1)%4,button=document.createElement('button');button.type='button';button.className='comparison-chest';
+  button.setAttribute('aria-label','Lecția 5, lădița '+id+' — exercițiul urmează să fie adăugat');
+  Object.assign(button.style,{left:left[row][col]+'%',top:top[row]+'%',width:'12.9%',height:'18%'});
+  button.addEventListener('click',()=>{roundingReturnFocus=button;$('rounding-dialog-title').textContent='Lădița '+id;$('rounding-dialog').showModal();$('rounding-dialog-close').focus();});
+  $('rounding-chests').append(button);
+ }
+ $('lesson-content-message').textContent='0 din 12 steluțe. Exercițiile de rotunjire urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
+}
+for(const id of ['rounding-dialog-close','rounding-dialog-return'])$(id).addEventListener('click',()=>$('rounding-dialog').close());
+$('rounding-dialog').addEventListener('close',()=>roundingReturnFocus?.focus());
+$('rounding-back-sign').addEventListener('click',()=>openForest());
 function openLessonContent(lesson){
  $('lesson-dialog').close();$('forest-page').hidden=true;
  $('lesson-content-title').textContent=lesson.id+'. '+lesson.title;
  $('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;comparisonBusy=false;orderingBusy=false;$('comparison-panel').hidden=lesson.id!==3;if(lesson.id===3)renderComparison();$('ordering-panel').hidden=lesson.id!==4;if(lesson.id===4)renderOrdering();
- if(lesson.id!==3&&lesson.id!==4)$('lesson-content-message').textContent='Exercițiile acestei lecții urmează să fie adăugate.';
+ $('rounding-panel').hidden=lesson.id!==5;if(lesson.id===5)renderRounding();
+ if(lesson.id!==3&&lesson.id!==4&&lesson.id!==5)$('lesson-content-message').textContent='Exercițiile acestei lecții urmează să fie adăugate.';
  $('lesson-content-page').hidden=false;$('lesson-content-back').focus();window.scrollTo(0,0);
 }
 $('lesson-content-back').addEventListener('click',()=>openForest());
