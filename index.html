@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=ordering-four-chests">
+<link rel="stylesheet" href="./styles/main.css?v=ordering-eight-chests">
 </head>
 <body>
 <main>
@@ -77,12 +77,13 @@
   </div></div>
  </div>
  <div id="ordering-panel" hidden>
-  <p class="map-help">Lădițele 1–4 sunt disponibile. Celelalte exerciții de ordonare urmează să fie adăugate. Pe telefon poți glisa imaginea lateral.</p>
+  <p class="map-help">Lădițele 1–8 sunt disponibile. Celelalte exerciții de ordonare urmează să fie adăugate. Pe telefon poți glisa imaginea lateral.</p>
   <div class="map-scroll" tabindex="0" role="region" aria-label="Cele 12 lădițe ale lecției 4"><div class="comparison-art">
    <img id="ordering-image" src="./assets/ordonarea-cupola.webp" width="1672" height="941" alt="4. Ordonarea numerelor naturale: 12 lădițe numerotate, săgeți crescător și descrescător, robotul cu 125, 152, 215 în ordine crescătoare, bufnița, școala și cheia lecției 5 sub cupolă.">
+   <img id="ordering-key-image" hidden src="./assets/ordonarea-cheie.webp" alt=""><img id="ordering-empty-image" hidden src="./assets/ordonarea-goala.webp" alt="">
    <button id="ordering-back-sign" type="button" aria-label="Înapoi la pădure"></button>
    <div id="ordering-chests"></div><span id="ordering-count" class="comparison-counter">0/12</span><progress id="ordering-bar" max="12" value="0" aria-label="Steluțe câștigate la lecția 4"></progress>
-   <button id="ordering-key" type="button" disabled aria-label="Cheia lecției 5 este sub cupolă" title="Cheia va deveni disponibilă după adăugarea și rezolvarea exercițiilor."></button>
+   <button id="ordering-key" type="button" disabled aria-label="Cheia lecției 5 este sub cupolă" title="Obține 6 steluțe și apasă cheia pentru a o lua."></button>
   </div></div>
  </div>
  <dialog id="ordering-dialog" class="chapter-dialog" aria-labelledby="ordering-dialog-title">
@@ -106,13 +107,18 @@
   <img id="ordering-exercise-source-2" hidden src="./assets/ordonarea-ladita2.webp" alt="">
   <img id="ordering-exercise-source-3" hidden src="./assets/ordonarea-ladita3.webp" alt="">
   <img id="ordering-exercise-source-4" hidden src="./assets/ordonarea-ladita4.webp" alt="">
+  <img id="ordering-exercise-source-5" hidden src="./assets/ordonarea-ladita5.webp" alt="">
+  <img id="ordering-exercise-source-6" hidden src="./assets/ordonarea-ladita6.webp" alt="">
+  <img id="ordering-exercise-source-7" hidden src="./assets/ordonarea-ladita7.webp" alt="">
+  <img id="ordering-exercise-source-8" hidden src="./assets/ordonarea-ladita8.webp" alt="">
+
   <div role="group" aria-label="Numere de mutat">
    <button id="ordering-number-0" class="ordering-number" type="button" aria-label="Alege numărul 3 205" aria-pressed="false"></button>
    <button id="ordering-number-1" class="ordering-number" type="button" aria-label="Alege numărul 2 530" aria-pressed="false"></button>
    <button id="ordering-number-2" class="ordering-number" type="button" aria-label="Alege numărul 3 052" aria-pressed="false"></button>
    <button id="ordering-number-3" class="ordering-number" type="button" aria-label="Alege numărul 2 503" aria-pressed="false"></button>
   </div>
-  <div role="group" aria-label="Căsuțe în ordine crescătoare">
+  <div id="ordering-slots" role="group" aria-label="Căsuțe în ordine crescătoare">
    <button id="ordering-slot-0" class="ordering-slot" type="button" aria-label="Căsuța 1, goală" aria-pressed="false"></button>
    <button id="ordering-slot-1" class="ordering-slot" type="button" aria-label="Căsuța 2, goală" aria-pressed="false"></button>
    <button id="ordering-slot-2" class="ordering-slot" type="button" aria-label="Căsuța 3, goală" aria-pressed="false"></button>
@@ -290,6 +296,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=ordering-four-chests"></script>
+<script type="module" src="./scripts/app.js?v=ordering-eight-chests"></script>
 </body>
 </html>

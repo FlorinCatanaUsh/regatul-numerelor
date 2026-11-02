@@ -46,9 +46,9 @@ Deno.serve(async req=>{
    return students===null?response({error:'Acces rezervat profesorului.'},403,origin):response({students},200,origin);
   }
   if(body.action==='ordering'){
-   if(!['state','answer'].includes(body.operation)||body.operation==='answer'&&(!Number.isInteger(body.chest)||!Array.isArray(body.answer)||body.answer.length!==4||!body.answer.every(n=>Number.isInteger(n)&&n>=0&&n<=10000)))return response({error:'Așază cele patru numere în căsuțe.'},400,origin);
+   if(!['state','answer','take_key'].includes(body.operation)||body.operation==='answer'&&(!Number.isInteger(body.chest)||!Array.isArray(body.answer)||body.answer.length!==4||!body.answer.every(n=>Number.isInteger(n)&&n>=0&&n<=10000)))return response({error:'Așază cele patru numere în căsuțe.'},400,origin);
    const r=await rpc('regat_ordering',{p_token:token,p_action:body.operation,p_chest:body.chest??null,p_answer:body.operation==='answer'?body.answer.join(','):null});
-   const errors={unauthorized:'Sesiunea a expirat. Autentifică-te din nou.',lesson_locked:'Lecția 4 este blocată de profesor.',chest_missing:'Exercițiul acestei lădițe urmează să fie adăugat.'};
+   const errors={six_stars:'Obține 6 steluțe pentru a elibera cheia lecției 5.',unauthorized:'Sesiunea a expirat. Autentifică-te din nou.',lesson_locked:'Lecția 4 este blocată de profesor.',chest_missing:'Exercițiul acestei lădițe urmează să fie adăugat.'};
    return r?.ok?response(r,200,origin):response({error:errors[r?.error]||'Acțiunea nu a reușit.'},r?.error==='unauthorized'?401:403,origin);
   }
   if(body.action==='comparison'){
