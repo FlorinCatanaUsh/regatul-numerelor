@@ -46,7 +46,7 @@ Deno.serve(async req=>{
    return students===null?response({error:'Acces rezervat profesorului.'},403,origin):response({students},200,origin);
   }
   if(body.action==='addition'){
-   if(!['state','answer'].includes(body.operation)||body.operation==='answer'&&(body.chest!==1||typeof body.answer!=='string'||!/^\d{1,5}$/.test(body.answer.trim())))return response({error:'Scrie răspunsul în căsuță.'},400,origin);
+   if(!['state','answer'].includes(body.operation)||body.operation==='answer'&&(!Number.isInteger(body.chest)||body.chest<1||body.chest>12||typeof body.answer!=='string'||!/^\d{1,5}$/.test(body.answer.trim())))return response({error:'Scrie răspunsul în căsuță.'},400,origin);
    const r=await rpc('regat_addition',{p_token:token,p_action:body.operation,p_chest:body.chest??null,p_answer:body.answer??null});
    return r?.ok?response(r,200,origin):response({error:r?.error==='unauthorized'?'Sesiunea a expirat. Autentifică-te din nou.':'Capitolul 2 nu este încă deblocat.'},r?.error==='unauthorized'?401:403,origin);
   }
