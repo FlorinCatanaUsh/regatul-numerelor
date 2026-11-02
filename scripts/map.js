@@ -241,7 +241,7 @@ $('ordering-check').addEventListener('click',async()=>{
 });
 $('ordering-exercise-back').addEventListener('click',()=>{comparisonRevision++;orderingBusy=false;orderingReady=false;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderOrdering();$('ordering-chests').children[activeOrderingChest-1]?.focus();window.scrollTo(0,0);});
 
-const roundingExercises={1:{number:47,unit:'zeci',digit:'unităților',image:$('rounding-exercise-image').src},2:{number:464,unit:'zeci',digit:'unităților',image:$('rounding-exercise-source-2').src},3:{number:6446,unit:'zeci',digit:'unităților',image:$('rounding-exercise-source-3').src},4:{number:7275,unit:'zeci',digit:'unităților',image:$('rounding-exercise-source-4').src},5:{number:482,unit:'sute',digit:'zecilor',image:$('rounding-exercise-source-5').src},6:{number:524,unit:'sute',digit:'zecilor',image:$('rounding-exercise-source-6').src},7:{number:6476,unit:'sute',digit:'zecilor',image:$('rounding-exercise-source-7').src},8:{number:3752,unit:'sute',digit:'zecilor',image:$('rounding-exercise-source-8').src}};
+const roundingExercises={1:{number:47,unit:'zeci',digit:'unităților',image:$('rounding-exercise-image').src},2:{number:464,unit:'zeci',digit:'unităților',image:$('rounding-exercise-source-2').src},3:{number:6446,unit:'zeci',digit:'unităților',image:$('rounding-exercise-source-3').src},4:{number:7275,unit:'zeci',digit:'unităților',image:$('rounding-exercise-source-4').src},5:{number:482,unit:'sute',digit:'zecilor',image:$('rounding-exercise-source-5').src},6:{number:524,unit:'sute',digit:'zecilor',image:$('rounding-exercise-source-6').src},7:{number:6476,unit:'sute',digit:'zecilor',image:$('rounding-exercise-source-7').src},8:{number:3752,unit:'sute',digit:'zecilor',image:$('rounding-exercise-source-8').src},9:{number:2346,unit:'mii',digit:'sutelor',image:$('rounding-exercise-source-9').src},10:{number:4782,unit:'mii',digit:'sutelor',image:$('rounding-exercise-source-10').src},11:{number:6499,unit:'mii',digit:'sutelor',image:$('rounding-exercise-source-11').src},12:{number:8500,unit:'mii',digit:'sutelor',image:$('rounding-exercise-source-12').src}};
 let roundingReturnFocus=null,roundingBusy=false,roundingReady=false,activeRoundingChest=1;
 function renderRounding(){
  $('rounding-key').disabled=true;
@@ -256,7 +256,7 @@ function renderRounding(){
   button.addEventListener('click',()=>{if(roundingExercises[id])return openRoundingExercise(id);roundingReturnFocus=button;$('rounding-dialog-title').textContent='Lădița '+id;$('rounding-dialog').showModal();$('rounding-dialog-close').focus();});
   $('rounding-chests').append(button);
  }
- $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Primele opt lădițe sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
+ $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Toate cele 12 lădițe sunt disponibile.'+(teacherMapReturn?' Vizualizare profesor.':'');
 }
 for(const id of ['rounding-dialog-close','rounding-dialog-return'])$(id).addEventListener('click',()=>$('rounding-dialog').close());
 $('rounding-dialog').addEventListener('close',()=>roundingReturnFocus?.focus());
