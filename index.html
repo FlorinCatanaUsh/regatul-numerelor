@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=comparison-twelve-chests">
+<link rel="stylesheet" href="./styles/main.css?v=ordering-map">
 </head>
 <body>
 <main>
@@ -76,6 +76,21 @@
    <button id="comparison-key" type="button" disabled aria-label="Cheia lecției 4 este sub cupolă" title="Obține 6 steluțe pentru a elibera cheia lecției 4."></button>
   </div></div>
  </div>
+ <div id="ordering-panel" hidden>
+  <p class="map-help">Alege o lădiță. Exercițiile de ordonare urmează să fie adăugate. Pe telefon poți glisa imaginea lateral.</p>
+  <div class="map-scroll" tabindex="0" role="region" aria-label="Cele 12 lădițe ale lecției 4"><div class="comparison-art">
+   <img id="ordering-image" src="./assets/ordonarea-cupola.webp" width="1672" height="941" alt="4. Ordonarea numerelor naturale: 12 lădițe numerotate, săgeți crescător și descrescător, robotul cu 125, 152, 215 în ordine crescătoare, bufnița, școala și cheia lecției 5 sub cupolă.">
+   <button id="ordering-back-sign" type="button" aria-label="Înapoi la pădure"></button>
+   <div id="ordering-chests"></div><span id="ordering-count" class="comparison-counter">0/12</span><progress id="ordering-bar" max="12" value="0" aria-label="Steluțe câștigate la lecția 4"></progress>
+   <button id="ordering-key" type="button" disabled aria-label="Cheia lecției 5 este sub cupolă" title="Cheia va deveni disponibilă după adăugarea și rezolvarea exercițiilor."></button>
+  </div></div>
+ </div>
+ <dialog id="ordering-dialog" class="chapter-dialog" aria-labelledby="ordering-dialog-title">
+  <button id="ordering-dialog-close" class="close" type="button" aria-label="Închide">×</button>
+  <p class="eyebrow">Lecția 4</p><h2 id="ordering-dialog-title"></h2>
+  <p>Exercițiul acestei lădițe urmează să fie adăugat.</p>
+  <button id="ordering-dialog-return" type="button">Înapoi la lădițe</button>
+ </dialog>
  <dialog id="comparison-dialog" class="chapter-dialog" aria-labelledby="comparison-dialog-title">
   <button id="comparison-dialog-close" class="close" type="button" aria-label="Închide">×</button>
   <p class="eyebrow">Lecția 3</p><h2 id="comparison-dialog-title"></h2>
@@ -251,6 +266,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=comparison-twelve-chests"></script>
+<script type="module" src="./scripts/app.js?v=ordering-map"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 import { pupils } from '../data/students.js';
-import { studentAuth } from './auth.js?v=comparison-twelve-chests';
-import { setupMap } from './map.js?v=comparison-twelve-chests';
-import { setupTeacher } from './teacher.js?v=comparison-twelve-chests';
+import { studentAuth } from './auth.js?v=ordering-map';
+import { setupMap } from './map.js?v=ordering-map';
+import { setupTeacher } from './teacher.js?v=ordering-map';
 'use strict';
 
 const $ = id => document.getElementById(id);

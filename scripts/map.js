@@ -169,11 +169,28 @@ $('comparison-key').addEventListener('click',async()=>{
  finally{if(revision===comparisonRevision){comparisonBusy=false;const button=$('comparison-key');button.disabled=!!mapProfile?.lessonProgress?.[1]?.comparisonKeyTaken||!!teacherMapReturn||(mapProfile?.lessonProgress?.[1]?.comparisonSolved||[]).length<6;}}
 });
 $('comparison-back-sign').addEventListener('click',()=>openForest());
+let orderingReturnFocus=null;
+function renderOrdering(){
+ $('ordering-count').textContent='0/12';$('ordering-bar').value=0;$('ordering-key').disabled=true;
+ $('lesson-content-message').textContent='0 din 12 steluțe. Exercițiile de ordonare urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
+ $('ordering-chests').replaceChildren();
+ const left=[[22.7,35.7,48,60.1],[21.5,34.4,47.4,60],[21.5,34.7,47.7,60.4]],top=[40.5,57.1,74.1];
+ for(let id=1;id<=12;id++){
+  const row=Math.floor((id-1)/4),col=(id-1)%4,button=document.createElement('button');button.type='button';button.className='comparison-chest';
+  button.setAttribute('aria-label','Lecția 4, lădița '+id+' — exercițiul urmează să fie adăugat');
+  Object.assign(button.style,{left:left[row][col]+'%',top:top[row]+'%',width:'12.9%',height:'18%'});
+  button.addEventListener('click',()=>{orderingReturnFocus=button;$('ordering-dialog-title').textContent='Lădița '+id+' · Ordonarea numerelor naturale';$('ordering-dialog').showModal();$('ordering-dialog-close').focus();});
+  $('ordering-chests').append(button);
+ }
+}
+for(const id of ['ordering-dialog-close','ordering-dialog-return'])$(id).addEventListener('click',()=>$('ordering-dialog').close());
+$('ordering-dialog').addEventListener('close',()=>orderingReturnFocus?.focus());
+$('ordering-back-sign').addEventListener('click',()=>openForest());
 function openLessonContent(lesson){
  $('lesson-dialog').close();$('forest-page').hidden=true;
  $('lesson-content-title').textContent=lesson.id+'. '+lesson.title;
- $('comparison-exercise-page').hidden=true;comparisonRevision++;comparisonBusy=false;$('comparison-panel').hidden=lesson.id!==3;if(lesson.id===3)renderComparison();
- if(lesson.id!==3)$('lesson-content-message').textContent='Exercițiile acestei lecții urmează să fie adăugate.';
+ $('comparison-exercise-page').hidden=true;comparisonRevision++;comparisonBusy=false;$('comparison-panel').hidden=lesson.id!==3;if(lesson.id===3)renderComparison();$('ordering-panel').hidden=lesson.id!==4;if(lesson.id===4)renderOrdering();
+ if(lesson.id!==3&&lesson.id!==4)$('lesson-content-message').textContent='Exercițiile acestei lecții urmează să fie adăugate.';
  $('lesson-content-page').hidden=false;$('lesson-content-back').focus();window.scrollTo(0,0);
 }
 $('lesson-content-back').addEventListener('click',()=>openForest());
