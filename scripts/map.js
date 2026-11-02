@@ -288,7 +288,7 @@ $('rounding-check').addEventListener('click',checkRounding);
 $('rounding-answer').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();checkRounding();}});
 $('rounding-answer').addEventListener('input',()=>{if(!roundingBusy){$('rounding-answer').className='';$('rounding-answer').setAttribute('aria-invalid','false');roundingMessage();}});
 $('rounding-exercise-back').addEventListener('click',()=>{comparisonRevision++;roundingBusy=false;roundingReady=false;$('roman-exercise-page').hidden=true;$('rounding-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderRounding();$('rounding-chests').children[activeRoundingChest-1]?.focus();window.scrollTo(0,0);});
-const romanExercises={1:{number:'III',unit:'cifre arabe',digit:'',image:$('roman-exercise-image').src}};
+const romanExercises={1:{number:'III',unit:'cifre arabe',hint:'Cifrele identice se adună.',image:$('roman-exercise-image').src},2:{number:'XIV',unit:'cifre arabe',hint:'I înaintea lui V se scade. În celelalte cazuri, valorile se adună.',image:$('roman-exercise-source-2').src},3:{number:'23',unit:'cifre romane',romanAnswer:true,hint:'Descompune numărul în zeci și unități. Scrie întâi zecile, apoi unitățile.',image:$('roman-exercise-source-3').src}};
 let romanReturnFocus=null,romanBusy=false,romanReady=false,activeRomanChest=1;
 function renderRoman(){
  $('roman-key').disabled=true;
@@ -303,7 +303,7 @@ function renderRoman(){
   button.addEventListener('click',()=>{if(romanExercises[id])return openRomanExercise(id);romanReturnFocus=button;$('roman-dialog-title').textContent='Lădița '+id;$('roman-dialog').showModal();$('roman-dialog-close').focus();});
   $('roman-chests').append(button);
  }
- $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Prima lădiță este disponibilă; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
+ $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Primele trei lădițe sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
 }
 for(const id of ['roman-dialog-close','roman-dialog-return'])$(id).addEventListener('click',()=>$('roman-dialog').close());
 $('roman-dialog').addEventListener('close',()=>romanReturnFocus?.focus());
@@ -313,8 +313,9 @@ function romanMessage(message=''){ $('roman-exercise-status').textContent=messag
 function applyRomanProfile(profile){if(!profile||profile.studentId!==mapProfile?.studentId)throw new Error('Profilul elevului nu corespunde.');renderMap(profile);renderForest(mapProfile);renderRoman();}
 async function openRomanExercise(id=1){
  const exercise=romanExercises[id];if(!exercise)return;activeRomanChest=id;
- $('roman-exercise-image').src=exercise.image;$('roman-exercise-image').alt='Scrie cu cifre arabe numărul roman '+exercise.number+'. Indiciu: I = 1, V = 5, X = 10. Cifrele identice se adună.';
- $('roman-exercise-page').setAttribute('aria-label','Lecția 6, lădița '+id+' — Scrie '+exercise.number+' cu cifre arabe');$('roman-answer').setAttribute('aria-label','Numărul '+exercise.number+' scris cu cifre arabe');
+ $('roman-exercise-image').src=exercise.image;$('roman-exercise-image').alt='Scrie cu '+exercise.unit+' numărul '+exercise.number+'. Indiciu: I = 1, V = 5, X = 10. '+exercise.hint;
+ $('roman-exercise-page').setAttribute('aria-label','Lecția 6, lădița '+id+' — Scrie '+exercise.number+' cu '+exercise.unit);$('roman-answer').setAttribute('aria-label','Numărul '+exercise.number+' scris cu '+exercise.unit);
+ $('roman-answer').setAttribute('inputmode',exercise.romanAnswer?'text':'numeric');$('roman-answer').setAttribute('pattern',exercise.romanAnswer?'[IVXLCDMivxlcdm ]*':'[0-9]*');$('roman-answer').setAttribute('maxlength',exercise.romanAnswer?'20':'5');$('roman-answer').setAttribute('autocapitalize',exercise.romanAnswer?'characters':'off');$('roman-answer').setAttribute('spellcheck','false');$('roman-answer').style.fontSize=exercise.romanAnswer?'clamp(32px,4vw,66px)':'';
  const revision=++comparisonRevision,sid=mapProfile.studentId;romanBusy=false;romanReady=false;
  $('roman-answer').value='';$('roman-answer').className='';$('roman-answer').setAttribute('aria-invalid','false');romanControls();
  $('lesson-content-page').hidden=true;$('roman-exercise-page').hidden=false;$('roman-exercise-back').focus();window.scrollTo(0,0);
@@ -325,7 +326,8 @@ async function openRomanExercise(id=1){
 }
 async function checkRoman(){
  if(romanBusy||!romanReady||teacherMapReturn)return;
- const answer=$('roman-answer').value.trim();if(!/^\d{1,5}$/.test(answer)){romanMessage('Scrie un număr în căsuță.');$('roman-answer').focus();return;}
+ const exercise=romanExercises[activeRomanChest];const answer=exercise.romanAnswer?$('roman-answer').value.replace(/\s/g,'').toUpperCase():$('roman-answer').value.trim();
+ if(!(exercise.romanAnswer?/^[IVXLCDM]{1,15}$/:/^\d{1,5}$/).test(answer)){romanMessage(exercise.romanAnswer?'Scrie răspunsul cu cifre romane.':'Scrie un număr în căsuță.');$('roman-answer').focus();return;}
  const revision=comparisonRevision,sid=mapProfile.studentId;romanBusy=true;romanControls();romanMessage('Se verifică…');
  try{const r=await studentAuth.roman('answer',{chest:activeRomanChest,answer});if(revision!==comparisonRevision||$('roman-exercise-page').hidden||mapProfile?.studentId!==sid||teacherMapReturn)return;applyRomanProfile(r.profile);$('roman-answer').className=r.correct?'correct':'incorrect';$('roman-answer').setAttribute('aria-invalid',String(!r.correct));romanMessage(r.correct?'Corect! Ai câștigat steluța acestei lădițe.':'Mai încearcă!');}
  catch(error){if(revision===comparisonRevision&&!$('roman-exercise-page').hidden)romanMessage(error.message);}

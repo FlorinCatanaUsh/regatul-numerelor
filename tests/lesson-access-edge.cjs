@@ -18,5 +18,9 @@ const request=(body,token='a'.repeat(64))=>new Request('https://test.invalid/fun
  r=await handler(request({action:'rounding',operation:'answer',chest:1,answer:'50'}));assert.equal(r.status,200);assert(calls.at(-1).url.endsWith('/rpc/regat_rounding'));assert.equal(calls.at(-1).args.p_answer,'50');
  n=calls.length;for(const answer of ['',50,'abc','50.0','123456']){r=await handler(request({action:'rounding',operation:'answer',chest:1,answer}));assert.equal(r.status,400);assert.equal(calls.length,n);}
  r=await handler(request({action:'rounding',operation:'state'},null));assert.equal(r.status,401);assert.equal(calls.length,n);
+ r=await handler(request({action:'roman',operation:'answer',chest:2,answer:'14'}));assert.equal(r.status,200);assert(calls.at(-1).url.endsWith('/rpc/regat_roman'));assert.equal(calls.at(-1).args.p_chest,2);
+ r=await handler(request({action:'roman',operation:'answer',chest:3,answer:'xx iii'}));assert.equal(r.status,200);assert.equal(calls.at(-1).args.p_answer,'xx iii');n=calls.length;
+ for(const answer of ['',null,23,'hello','X'.repeat(33)]){r=await handler(request({action:'roman',operation:'answer',chest:3,answer}));assert.equal(r.status,400);assert.equal(calls.length,n);}
+ r=await handler(request({action:'roman',operation:'answer',chest:3,answer:'XXIII'},null));assert.equal(r.status,401);assert.equal(calls.length,n);
  console.log('PASS: lesson permission edge routing, scope and typed bounds, anonymous rejection.');
 })().catch(e=>{console.error(e);process.exitCode=1});
