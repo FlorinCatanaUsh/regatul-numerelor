@@ -7,9 +7,7 @@ let teacherRows=[],rowsReady=false,activeTab='individual',groupBusy=false,loadRe
 const learningPages=['rounding-exercise-page','ordering-exercise-page','comparison-exercise-page','lesson-content-page','map-page','forest-page','formation-page','reading-page','reading-exercise-page','chest1-page','missing-page'];
 function hideLearningPages(){for(const id of learningPages)$(id).hidden=true;}
 function updateClassControls(message){
- const permitted=teacherRows.filter(row=>row.formation?.lesson2Allowed).length;
  for(const id of ['teacher-tab-individual','teacher-tab-class','teacher-reload','teacher-logout','teacher-own-password'])$(id).disabled=groupBusy;
- $('teacher-class-status').textContent=message??(rowsReady?permitted+' din '+teacherRows.length+' elevi au permisiune pentru lecția 2. Elevii pot intra după ce iau cheia din prima lecție.':'Reîncarcă pentru a verifica accesul clasei.');
 }
 function lessonAllowed(row,id){
  if(id===2)return !!row.formation?.lesson2Allowed;
