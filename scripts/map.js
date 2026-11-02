@@ -172,7 +172,7 @@ $('comparison-back-sign').addEventListener('click',()=>openForest());
 let orderingReturnFocus=null;
 function renderOrdering(){
  const solved=[...new Set((mapProfile?.lessonProgress?.[1]?.orderingSolved||[]).filter(id=>orderingExercises[id]))];$('ordering-count').textContent=solved.length+'/12';$('ordering-bar').value=solved.length;$('ordering-key').disabled=true;
- $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Lădițele 1–3 sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
+ $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Lădițele 1–4 sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
  $('ordering-chests').replaceChildren();
  const left=[[22.7,35.7,48,60.1],[21.5,34.4,47.4,60],[21.5,34.7,47.7,60.4]],top=[40.5,57.1,74.1];
  for(let id=1;id<=12;id++){
@@ -186,7 +186,7 @@ function renderOrdering(){
 for(const id of ['ordering-dialog-close','ordering-dialog-return'])$(id).addEventListener('click',()=>$('ordering-dialog').close());
 $('ordering-dialog').addEventListener('close',()=>orderingReturnFocus?.focus());
 $('ordering-back-sign').addEventListener('click',()=>openForest());
-const orderingExercises={1:{numbers:[3205,2530,3052,2503],image:$('ordering-exercise-image').src},2:{numbers:[4678,2034,476,4001],image:$('ordering-exercise-source-2').src},3:{numbers:[391,5078,712,299],image:$('ordering-exercise-source-3').src}};
+const orderingExercises={1:{numbers:[3205,2530,3052,2503],image:$('ordering-exercise-image').src},2:{numbers:[4678,2034,476,4001],image:$('ordering-exercise-source-2').src},3:{numbers:[391,5078,712,299],image:$('ordering-exercise-source-3').src},4:{numbers:[1001,11,9999,999],image:$('ordering-exercise-source-4').src}};
 let orderingNumbers=orderingExercises[1].numbers,activeOrderingChest=1;
 const orderingBank=[0,1,2,3].map(i=>$('ordering-number-'+i)),orderingSlots=[0,1,2,3].map(i=>$('ordering-slot-'+i));
 let orderingPlaces=[null,null,null,null],orderingSelected=null,orderingBusy=false,orderingReady=false;
