@@ -288,7 +288,7 @@ $('rounding-check').addEventListener('click',checkRounding);
 $('rounding-answer').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();checkRounding();}});
 $('rounding-answer').addEventListener('input',()=>{if(!roundingBusy){$('rounding-answer').className='';$('rounding-answer').setAttribute('aria-invalid','false');roundingMessage();}});
 $('rounding-exercise-back').addEventListener('click',()=>{comparisonRevision++;roundingBusy=false;roundingReady=false;$('roman-exercise-page').hidden=true;$('rounding-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderRounding();$('rounding-chests').children[activeRoundingChest-1]?.focus();window.scrollTo(0,0);});
-const romanExercises={1:{number:'III',unit:'cifre arabe',hint:'Cifrele identice se adună.',image:$('roman-exercise-image').src},2:{number:'XIV',unit:'cifre arabe',hint:'I înaintea lui V se scade. În celelalte cazuri, valorile se adună.',image:$('roman-exercise-source-2').src},3:{number:'23',unit:'cifre romane',romanAnswer:true,hint:'Descompune numărul în zeci și unități. Scrie întâi zecile, apoi unitățile.',image:$('roman-exercise-source-3').src}};
+const romanExercises={1:{number:'III',unit:'cifre arabe',hint:'Cifrele identice se adună.',image:$('roman-exercise-image').src},2:{number:'XIV',unit:'cifre arabe',hint:'I înaintea lui V se scade. În celelalte cazuri, valorile se adună.',image:$('roman-exercise-source-2').src},3:{number:'23',unit:'cifre romane',romanAnswer:true,hint:'Descompune numărul în zeci și unități. Scrie întâi zecile, apoi unitățile.',image:$('roman-exercise-source-3').src},4:{number:'19',unit:'cifre romane',romanAnswer:true,hint:'Descompune numărul în zeci și unități. I înaintea lui X se scade.',image:$('roman-exercise-source-4').src}};
 let romanReturnFocus=null,romanBusy=false,romanReady=false,activeRomanChest=1;
 function renderRoman(){
  $('roman-key').disabled=true;
@@ -303,7 +303,7 @@ function renderRoman(){
   button.addEventListener('click',()=>{if(romanExercises[id])return openRomanExercise(id);romanReturnFocus=button;$('roman-dialog-title').textContent='Lădița '+id;$('roman-dialog').showModal();$('roman-dialog-close').focus();});
   $('roman-chests').append(button);
  }
- $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Primele trei lădițe sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
+ $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Primele patru lădițe sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
 }
 for(const id of ['roman-dialog-close','roman-dialog-return'])$(id).addEventListener('click',()=>$('roman-dialog').close());
 $('roman-dialog').addEventListener('close',()=>romanReturnFocus?.focus());

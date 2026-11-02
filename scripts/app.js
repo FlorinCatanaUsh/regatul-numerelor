@@ -1,7 +1,7 @@
 import { pupils } from '../data/students.js';
-import { studentAuth } from './auth.js?v=roman-three-chests';
-import { setupMap } from './map.js?v=roman-three-chests';
-import { setupTeacher } from './teacher.js?v=roman-three-chests';
+import { studentAuth } from './auth.js?v=roman-four-chests';
+import { setupMap } from './map.js?v=roman-four-chests';
+import { setupTeacher } from './teacher.js?v=roman-four-chests';
 'use strict';
 
 const $ = id => document.getElementById(id);
