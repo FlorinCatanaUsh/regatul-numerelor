@@ -8,8 +8,6 @@ const learningPages=['rounding-exercise-page','ordering-exercise-page','comparis
 function hideLearningPages(){for(const id of learningPages)$(id).hidden=true;}
 function updateClassControls(message){
  const permitted=teacherRows.filter(row=>row.formation?.lesson2Allowed).length;
- $('teacher-class-allow').disabled=groupBusy||!rowsReady||!teacherRows.length||permitted===teacherRows.length;
- $('teacher-class-block').disabled=groupBusy||!rowsReady||permitted===0;
  for(const id of ['teacher-tab-individual','teacher-tab-class','teacher-reload','teacher-logout','teacher-own-password'])$(id).disabled=groupBusy;
  $('teacher-class-status').textContent=message??(rowsReady?permitted+' din '+teacherRows.length+' elevi au permisiune pentru lecția 2. Elevii pot intra după ce iau cheia din prima lecție.':'Reîncarcă pentru a verifica accesul clasei.');
 }
@@ -55,14 +53,6 @@ async function loadTeacherStudents(){
   if(activeTab==='class')mapUI.updateClassPermissions(classPermissions());return true;
  }catch(error){if(revision!==loadRevision)return false;$('teacher-status').textContent=error.message;updateClassControls(error.message);return false;}
 }
-async function classPermission(allowed){
- if(groupBusy||!rowsReady)return;groupBusy=true;updateClassControls('Se salvează comanda pentru toată clasa…');
- try{
-  const result=await studentAuth.allowLesson2('all',allowed);
-  const refreshed=await loadTeacherStudents();mapUI.updateClassPermission(allowed);
-  groupBusy=false;updateClassControls((allowed?'Acces permis':'Acces blocat')+' la lecția 2 pentru toți cei '+result.affected+' elevi.'+(allowed?' Fiecare elev are nevoie și de cheia din prima lecție.':'')+(refreshed?'':' Comanda a fost salvată. Reîncarcă pentru a actualiza lista.'));
- }catch(error){groupBusy=false;updateClassControls(error.message);}
-}
 async function openTeacher(profile){
  if(profile.role!=='teacher')throw new Error('Acces rezervat profesorului.');
  $('teacher-workspace').hidden=false;document.body.classList.add('viewing-map');selectTab('individual');$('teacher-logout').focus();window.scrollTo(0,0);await loadTeacherStudents();
@@ -73,8 +63,6 @@ for(const mode of ['individual','class'])$('teacher-tab-'+mode).addEventListener
  if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)||groupBusy)return;
  event.preventDefault();const next=event.key==='Home'?'individual':event.key==='End'?'class':mode==='individual'?'class':'individual';selectTab(next);$('teacher-tab-'+next).focus();
 });
-$('teacher-class-allow').addEventListener('click',()=>classPermission(true));
-$('teacher-class-block').addEventListener('click',()=>classPermission(false));
 function openPasswordEditor(id,name){
  passwordTarget=id;passwordRevision++;const own=id==='teacher';
  $('password-editor-title').textContent=own?'Parola mea':'Parola — '+name;
