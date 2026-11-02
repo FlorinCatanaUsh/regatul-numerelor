@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=forest-crystal">
+<link rel="stylesheet" href="./styles/main.css?v=valley-map-stars">
 </head>
 <body>
 <main>
@@ -44,13 +44,25 @@
     </defs>
     <g mask="url(#fog-mask)" opacity="0.75"><rect width="1672" height="941" fill="url(#fog-color)" filter="url(#fog-clouds)"/></g>
    </svg>
+   <div id="map-stars" class="star-plaque" role="status"></div>
    <div id="map-chapters"></div>
    <div class="chapter-progress" id="chapter-progress" role="group" aria-label="Progresul meu în cele opt capitole"></div>
    <button class="map-castle" id="map-castle" aria-label="Castelul provocării finale — închis"></button>
   </div>
  </div>
  <p class="map-summary" id="map-summary" role="status"></p>
+
+</section>
+
  <dialog class="chapter-dialog" id="chapter-dialog" aria-labelledby="chapter-title"><button id="chapter-close" class="close" aria-label="Închide detaliile capitolului">×</button><p class="eyebrow">Regatul numerelor</p><h2 id="chapter-title"></h2><p id="chapter-description"></p><p id="chapter-access" class="notice"></p><button id="chapter-back" type="button">Înapoi la hartă</button></dialog>
+<section id="valley-page" hidden aria-label="Valea adunării și scăderii">
+ <header class="map-toolbar"><button id="valley-back" type="button">← Harta magică</button><div><h2>Valea adunării și scăderii</h2><p id="valley-student"></p></div></header>
+ <div class="map-scroll" tabindex="0" role="region" aria-label="Cele șapte lecții din Valea adunării și scăderii"><div class="valley-art">
+  <img src="./assets/valea-harta.webp" width="1672" height="941" alt="Valea adunării și scăderii: școala Dăneasa, șapte lecții, panou de progres și steluțele capitolului.">
+  <button id="valley-back-sign" type="button" aria-label="Înapoi la harta magică"></button>
+  <div id="valley-lessons"></div><div id="valley-progress" role="group" aria-label="Lecții parcurse în capitolul 2"></div>
+  <output id="valley-stars" aria-label="Steluțe în capitolul 2">0</output>
+ </div></div><p id="valley-summary" class="map-summary"></p>
 </section>
 
 <section id="forest-page" hidden aria-labelledby="forest-title">
@@ -62,6 +74,7 @@
    <img id="forest-color-source" hidden src="./assets/padure-color.webp" alt="">
    <img id="forest-unlocked-source" hidden src="./assets/padure-lectia2.webp" alt="">
    <button id="forest-back-sign" class="forest-back-sign" type="button" aria-label="Înapoi la harta magică"></button>
+   <div id="forest-stars" class="star-plaque" role="status"></div>
    <div id="forest-lessons"></div>
    <div id="forest-progress" class="forest-progress" role="group" aria-label="Progresul meu în cele șase lecții"></div>
   </div>
@@ -389,6 +402,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=forest-crystal"></script>
+<script type="module" src="./scripts/app.js?v=valley-map-stars"></script>
 </body>
 </html>

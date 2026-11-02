@@ -4,7 +4,7 @@ let passwordTarget=null;
 let passwordBusy=false;
 let passwordRevision=0;
 let teacherRows=[],rowsReady=false,activeTab='individual',groupBusy=false,loadRevision=0;
-const learningPages=['rounding-exercise-page','ordering-exercise-page','comparison-exercise-page','lesson-content-page','map-page','forest-page','formation-page','reading-page','reading-exercise-page','chest1-page','missing-page'];
+const learningPages=['valley-page','rounding-exercise-page','ordering-exercise-page','comparison-exercise-page','lesson-content-page','map-page','forest-page','formation-page','reading-page','reading-exercise-page','chest1-page','missing-page'];
 function hideLearningPages(){for(const id of learningPages)$(id).hidden=true;}
 function updateClassControls(message){
  for(const id of ['teacher-tab-individual','teacher-tab-class','teacher-reload','teacher-logout','teacher-own-password'])$(id).disabled=groupBusy;
