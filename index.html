@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=lesson-open-preview">
+<link rel="stylesheet" href="./styles/main.css?v=comparison-art">
 </head>
 <body>
 <main>
@@ -66,6 +66,21 @@
 
 <section id="lesson-content-page" hidden aria-labelledby="lesson-content-title">
  <header class="map-toolbar"><button id="lesson-content-back" type="button">← Înapoi în pădure</button><div><h2 id="lesson-content-title"></h2></div></header>
+ <div id="comparison-panel" hidden>
+  <p class="map-help">Alege o lădiță. Exercițiile lecției 3 urmează să fie adăugate. Pe telefon poți glisa imaginea lateral.</p>
+  <div class="map-scroll" tabindex="0" role="region" aria-label="Cele 12 lădițe ale lecției 3"><div class="comparison-art">
+   <img id="comparison-image" src="./assets/compararea-cupola.webp" width="1672" height="941" alt="3. Compararea numerelor naturale: 12 lădițe numerotate, robotul cu 125 mai mic decât 152, bufnița, școala și cheia lecției 4 sub cupolă. Progres zero din 12 steluțe.">
+   <button id="comparison-back-sign" type="button" aria-label="Înapoi la pădure"></button>
+   <div id="comparison-chests"></div>
+   <button id="comparison-key" type="button" disabled aria-label="Cheia lecției 4 este sub cupolă" title="Cheia va deveni disponibilă după adăugarea și rezolvarea exercițiilor."></button>
+  </div></div>
+ </div>
+ <dialog id="comparison-dialog" class="chapter-dialog" aria-labelledby="comparison-dialog-title">
+  <button id="comparison-dialog-close" class="close" type="button" aria-label="Închide">×</button>
+  <p class="eyebrow">Lecția 3</p><h2 id="comparison-dialog-title"></h2>
+  <p>Exercițiul acestei lădițe urmează să fie adăugat.</p>
+  <button id="comparison-dialog-return" type="button">Înapoi la lădițe</button>
+ </dialog>
  <div class="lesson-content-body"><p id="lesson-content-message" role="status">Exercițiile acestei lecții urmează să fie adăugate.</p></div>
 </section>
 
@@ -208,6 +223,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=lesson-open-preview"></script>
+<script type="module" src="./scripts/app.js?v=comparison-art"></script>
 </body>
 </html>

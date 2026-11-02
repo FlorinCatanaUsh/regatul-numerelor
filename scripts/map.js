@@ -135,9 +135,25 @@ $('lesson-allow').addEventListener('click',()=>changeLessonAccess(true));
 $('lesson-block').addEventListener('click',()=>changeLessonAccess(false));
 $('lesson-preview').addEventListener('click',()=>{if(lessonAccessBusy||!teacherMapReturn)return;$('lesson-dialog').close();if(activeLesson.id===1)openFormation();else if(activeLesson.id===2)openReading();else openLessonContent(activeLesson);});
 $('lesson-dialog').addEventListener('cancel',event=>{if(lessonAccessBusy)event.preventDefault();});
+let comparisonReturnFocus=null;
+function renderComparison(){
+ $('comparison-chests').replaceChildren();
+ const left=[[22.7,35.7,48,60.1],[21.5,34.4,47.4,60],[21.5,34.7,47.7,60.4]],top=[40.5,57.1,74.1];
+ for(let id=1;id<=12;id++){
+  const row=Math.floor((id-1)/4),col=(id-1)%4,button=document.createElement('button');button.type='button';button.className='comparison-chest';
+  button.setAttribute('aria-label','Lecția 3, lădița '+id+' — exercițiul urmează să fie adăugat');
+  Object.assign(button.style,{left:left[row][col]+'%',top:top[row]+'%',width:'12.9%',height:'18%'});
+  button.addEventListener('click',()=>{comparisonReturnFocus=button;$('comparison-dialog-title').textContent='Lădița '+id+' · Compararea numerelor naturale';$('comparison-dialog').showModal();$('comparison-dialog-close').focus();});
+  $('comparison-chests').append(button);
+ }
+}
+for(const id of ['comparison-dialog-close','comparison-dialog-return'])$(id).addEventListener('click',()=>$('comparison-dialog').close());
+$('comparison-dialog').addEventListener('close',()=>comparisonReturnFocus?.focus());
+$('comparison-back-sign').addEventListener('click',()=>openForest());
 function openLessonContent(lesson){
  $('lesson-dialog').close();$('forest-page').hidden=true;
  $('lesson-content-title').textContent=lesson.id+'. '+lesson.title;
+ $('comparison-panel').hidden=lesson.id!==3;if(lesson.id===3)renderComparison();
  $('lesson-content-message').textContent='Exercițiile acestei lecții urmează să fie adăugate.';
  $('lesson-content-page').hidden=false;$('lesson-content-back').focus();window.scrollTo(0,0);
 }

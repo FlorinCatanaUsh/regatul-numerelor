@@ -1,7 +1,7 @@
 import { pupils } from '../data/students.js';
-import { studentAuth } from './auth.js?v=lesson-open-preview';
-import { setupMap } from './map.js?v=lesson-open-preview';
-import { setupTeacher } from './teacher.js?v=lesson-open-preview';
+import { studentAuth } from './auth.js?v=comparison-art';
+import { setupMap } from './map.js?v=comparison-art';
+import { setupTeacher } from './teacher.js?v=comparison-art';
 'use strict';
 
 const $ = id => document.getElementById(id);
