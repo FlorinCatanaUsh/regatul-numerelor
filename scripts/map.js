@@ -135,20 +135,21 @@ $('lesson-allow').addEventListener('click',()=>changeLessonAccess(true));
 $('lesson-block').addEventListener('click',()=>changeLessonAccess(false));
 $('lesson-preview').addEventListener('click',()=>{if(lessonAccessBusy||!teacherMapReturn)return;$('lesson-dialog').close();if(activeLesson.id===1)openFormation();else if(activeLesson.id===2)openReading();else openLessonContent(activeLesson);});
 $('lesson-dialog').addEventListener('cancel',event=>{if(lessonAccessBusy)event.preventDefault();});
-let comparisonReturnFocus=null,comparisonSelected=null,comparisonBusy=false,comparisonReady=false,comparisonRevision=0;
+let comparisonReturnFocus=null,comparisonSelected=null,comparisonBusy=false,comparisonReady=false,comparisonRevision=0,activeComparisonChest=null;
+const comparisonExercises={1:{left:'4 725',right:'4 752',image:$('comparison-exercise-image').src},2:{left:'6 308',right:'6 280',image:$('comparison-exercise-source-2').src}};
 const comparisonChoices=[['comparison-choice-less','<'],['comparison-choice-greater','>'],['comparison-choice-equal','=']];
 function renderComparison(){
- const solved=[...new Set((mapProfile?.lessonProgress?.[1]?.comparisonSolved||[]).filter(id=>id===1))];
+ const solved=[...new Set((mapProfile?.lessonProgress?.[1]?.comparisonSolved||[]).filter(id=>comparisonExercises[id]))];
  $('comparison-count').textContent=solved.length+'/12';$('comparison-bar').value=solved.length;
- $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Lădița 1 este disponibilă; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
+ $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Lădițele 1–2 sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
  $('comparison-chests').replaceChildren();
  const left=[[22.7,35.7,48,60.1],[21.5,34.4,47.4,60],[21.5,34.7,47.7,60.4]],top=[40.5,57.1,74.1];
  for(let id=1;id<=12;id++){
   const row=Math.floor((id-1)/4),col=(id-1)%4,button=document.createElement('button');button.type='button';button.className='comparison-chest'+(solved.includes(id)?' complete':'');
-  button.setAttribute('aria-label','Lecția 3, lădița '+id+(id===1?(solved.includes(id)?' — rezolvată':' — compară 4 725 și 4 752'):' — exercițiul urmează să fie adăugat'));
+  button.setAttribute('aria-label','Lecția 3, lădița '+id+(comparisonExercises[id]?(solved.includes(id)?' — rezolvată':' — compară '+comparisonExercises[id].left+' și '+comparisonExercises[id].right):' — exercițiul urmează să fie adăugat'));
   if(solved.includes(id)){const star=document.createElement('span');star.textContent='★';button.append(star);}
   Object.assign(button.style,{left:left[row][col]+'%',top:top[row]+'%',width:'12.9%',height:'18%'});
-  button.addEventListener('click',()=>{if(id===1)return openComparisonExercise();comparisonReturnFocus=button;$('comparison-dialog-title').textContent='Lădița '+id+' · Compararea numerelor naturale';$('comparison-dialog').showModal();$('comparison-dialog-close').focus();});
+  button.addEventListener('click',()=>{if(comparisonExercises[id])return openComparisonExercise(id);comparisonReturnFocus=button;$('comparison-dialog-title').textContent='Lădița '+id+' · Compararea numerelor naturale';$('comparison-dialog').showModal();$('comparison-dialog-close').focus();});
   $('comparison-chests').append(button);
  }
 }
@@ -176,7 +177,10 @@ function applyComparisonProfile(profile){
  if(!profile||profile.studentId!==mapProfile?.studentId)throw new Error('Profilul elevului nu corespunde.');
  renderMap(profile);renderForest(mapProfile);renderComparison();
 }
-async function openComparisonExercise(){
+async function openComparisonExercise(id){
+ const exercise=comparisonExercises[id];if(!exercise)return;activeComparisonChest=id;
+ $('comparison-exercise-image').src=exercise.image;$('comparison-exercise-image').alt='Compară numerele '+exercise.left+' și '+exercise.right+'. Completează căsuța cu semnul potrivit: mai mic, mai mare sau egal.';
+ $('comparison-exercise-page').setAttribute('aria-label','Lecția 3, lădița '+id+' — Compară '+exercise.left+' și '+exercise.right);
  const revision=++comparisonRevision,sid=mapProfile.studentId;
  comparisonSelected=null;comparisonBusy=false;comparisonReady=false;
  $('comparison-selected').textContent='';for(const [id] of comparisonChoices){$(id).setAttribute('aria-pressed','false');}
@@ -198,7 +202,7 @@ $('comparison-check').addEventListener('click',async()=>{
  if(!comparisonSelected){$('comparison-exercise-status').textContent='Alege unul dintre semnele <, > sau =.';return;}
  comparisonBusy=true;setComparisonControls();$('comparison-exercise-status').textContent='Se verifică…';const revision=comparisonRevision,sid=mapProfile.studentId;
  try{
-  const r=await studentAuth.comparison('answer',{chest:1,answer:comparisonSelected});
+  const r=await studentAuth.comparison('answer',{chest:activeComparisonChest,answer:comparisonSelected});
   if(revision!==comparisonRevision||$('comparison-exercise-page').hidden||mapProfile?.studentId!==sid||teacherMapReturn)return;
   applyComparisonProfile(r.profile);$('comparison-result').textContent=r.correct?'✓':'✕';$('comparison-result').className=r.correct?'correct':'incorrect';$('comparison-result').setAttribute('aria-label',r.correct?'Răspuns corect':'Răspuns greșit');
   $('comparison-exercise-status').textContent=r.correct?'Corect! Steluța este salvată. Poți exersa din nou.':'Mai încearcă. Alege alt semn și verifică din nou.';
@@ -206,7 +210,7 @@ $('comparison-check').addEventListener('click',async()=>{
  finally{if(revision===comparisonRevision){comparisonBusy=false;setComparisonControls();}}
 });
 $('comparison-exercise-back').addEventListener('click',()=>{
- comparisonRevision++;comparisonBusy=false;comparisonReady=false;$('comparison-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderComparison();$('comparison-chests').querySelector('button')?.focus();window.scrollTo(0,0);
+ comparisonRevision++;comparisonBusy=false;comparisonReady=false;$('comparison-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderComparison();$('comparison-chests').children[(activeComparisonChest||1)-1]?.focus();window.scrollTo(0,0);
 });
 function renderForest(profile){
  const p=profile.lessonProgress?.[1]||{unlocked:[1],completed:[]};

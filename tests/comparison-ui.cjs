@@ -16,10 +16,10 @@ let fail=false,deferred=null,hold=false;
 current={studentId:'test',displayName:'Test',completedChapters:[],lessonProgress:{1:{unlocked:[1,3],completed:[],manualAccess:{3:true},comparisonSolved:[]}},formation:{solved:[],keyTaken:false},reading:{solved:[],keyTaken:false}};
 const ui=context.setupMap({pupils:[],entryDialog:$('entry'),studentAuth:{comparison:async(operation,fields={})=>{
  calls.push([operation,fields]);if(fail)throw Error('Offline');if(operation==='state'){if(hold)return await new Promise(resolve=>deferred=resolve);return {profile:current};}
- const correct=fields.answer==='<';if(correct){current=structuredClone(current);current.lessonProgress[1].comparisonSolved=[1];}return {correct,profile:current};
+ const correct=fields.answer===({1:'<',2:'>'}[fields.chest]);if(correct){current=structuredClone(current);current.lessonProgress[1].comparisonSolved=[...new Set([...current.lessonProgress[1].comparisonSolved,fields.chest])];}return {correct,profile:current};
 }}});
 async function enter(){ui.open(current);await $('map-chapters').children[0].fire('click');await $('forest-progress').children[2].fire('click');}
-async function open(){await $('comparison-chests').children[0].fire('click');}
+async function open(id=1){await $('comparison-chests').children[id-1].fire('click');}
 (async()=>{
  await enter();assert.equal($('comparison-count').textContent,'0/12');await open();assert.equal(calls.at(-1)[0],'state');assert.equal($('comparison-exercise-page').hidden,false);assert.equal($('comparison-check').disabled,false);assert.equal($('comparison-selected').textContent,'');
  const n=calls.length;await $('comparison-check').fire('click');assert.equal(calls.length,n);assert.match($('comparison-exercise-status').textContent,/Alege/);
@@ -29,6 +29,10 @@ async function open(){await $('comparison-chests').children[0].fire('click');}
  await $('comparison-choice-less').fire('click');fail=true;await $('comparison-check').fire('click');assert.match($('comparison-exercise-status').textContent,/Offline/);assert.equal($('comparison-check').disabled,false);fail=false;await $('comparison-exercise-back').fire('click');
  fail=true;await open();assert.match($('comparison-exercise-status').textContent,/Offline/);assert.equal($('comparison-check').disabled,true);fail=false;await $('comparison-exercise-back').fire('click');
  hold=true;const pending=$('comparison-chests').children[0].fire('click');await Promise.resolve();await $('comparison-exercise-back').fire('click');deferred({profile:current});await pending;assert.equal($('comparison-exercise-page').hidden,true);assert.equal($('lesson-content-page').hidden,false);hold=false;
+ await open(2);assert.match($('comparison-exercise-image').src,/source-2/);assert.match($('comparison-exercise-image').alt,/6 308.*6 280/);assert.equal($('comparison-selected').textContent,'');
+ await $('comparison-choice-less').fire('click');await $('comparison-check').fire('click');assert.equal($('comparison-result').textContent,'✕');assert.equal($('comparison-count').textContent,'1/12');
+ await $('comparison-choice-greater').fire('click');await $('comparison-check').fire('click');assert.equal(calls.at(-1)[1].chest,2);assert.equal(calls.at(-1)[1].answer,'>');assert.equal($('comparison-result').textContent,'✓');assert.equal($('comparison-count').textContent,'2/12');await $('comparison-check').fire('click');assert.equal($('comparison-count').textContent,'2/12');
+ await $('comparison-exercise-back').fire('click');assert.match($('comparison-chests').children[1].className,/complete/);await open(1);assert.match($('comparison-exercise-image').alt,/4 725.*4 752/);assert.equal($('comparison-selected').textContent,'');assert.equal($('comparison-count').textContent,'2/12');await $('comparison-exercise-back').fire('click');
  const before=calls.length;ui.teacherView(current,()=>{});await $('map-chapters').children[0].fire('click');await $('forest-progress').children[2].fire('click');await $('lesson-preview').fire('click');await open();assert.equal($('comparison-check').disabled,true);for(const id of ['less','greater','equal'])assert.equal($('comparison-choice-'+id).disabled,true);await $('comparison-choice-less').fire('click');await $('comparison-check').fire('click');assert.equal(calls.length,before);
- console.log('PASS comparison UI: symbols, empty/wrong/correct/repeated answers, one persistent star, reset and back, state/error handling, stale requests, teacher read-only.');
+ console.log('PASS comparison UI: symbols, empty/wrong/correct/repeated answers, two distinct persistent stars, reset and back, state/error handling, stale requests, teacher read-only.');
 })().catch(e=>{console.error(e);process.exitCode=1});
