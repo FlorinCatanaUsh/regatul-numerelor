@@ -39,7 +39,7 @@ function renderMap(profile) {
  $('map-summary').textContent=teacherClassMode?'Harta clasei. Comenzile de sus se aplică tuturor elevilor.':mapProfile.completedChapters.length+' din 8 capitole parcurse.';
 }
 function openStudentMap(profile){
- teacherMapReturn=null;teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('teacher-workspace').hidden=true;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;$('lesson-content-page').hidden=true;$('forest-mode').textContent='Elev';$('map-home').textContent='Ieșire';$('map-mode').textContent='Elev';renderMap(profile);$('map-page').hidden=false;$('forest-page').hidden=true;document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
+ teacherMapReturn=null;teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('teacher-workspace').hidden=true;$('roman-exercise-page').hidden=true;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;$('lesson-content-page').hidden=true;$('forest-mode').textContent='Elev';$('map-home').textContent='Ieșire';$('map-mode').textContent='Elev';renderMap(profile);$('map-page').hidden=false;$('forest-page').hidden=true;document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
 }
 $('map-home').addEventListener('click',async()=>{if(teacherMapReturn){const back=teacherMapReturn;teacherMapReturn=null;mapProfile=null;forestState=null;$('map-page').hidden=true;$('forest-page').hidden=true;back();return;}const button=$('map-home');button.disabled=true;try{await studentAuth.logout();}catch{studentAuth.clear();}finally{button.disabled=false;$('map-page').hidden=true;$('forest-page').hidden=true;document.body.classList.remove('viewing-map');mapProfile=null;forestState=null;$('class-entry').focus();}});
 for(const id of ['chapter-close','chapter-back'])$(id).addEventListener('click',()=>$('chapter-dialog').close());
@@ -239,7 +239,7 @@ $('ordering-check').addEventListener('click',async()=>{
  catch(error){if(revision===comparisonRevision&&!$('ordering-exercise-page').hidden)orderingMessage(error.message,'error');}
  finally{if(revision===comparisonRevision){orderingBusy=false;for(const [id,button] of orderingBank.entries())button.disabled=!orderingReady||!!teacherMapReturn||orderingPlaces.includes(id);for(const button of orderingSlots)button.disabled=!orderingReady||!!teacherMapReturn;$('ordering-check').disabled=!orderingReady||!!teacherMapReturn;}}
 });
-$('ordering-exercise-back').addEventListener('click',()=>{comparisonRevision++;orderingBusy=false;orderingReady=false;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderOrdering();$('ordering-chests').children[activeOrderingChest-1]?.focus();window.scrollTo(0,0);});
+$('ordering-exercise-back').addEventListener('click',()=>{comparisonRevision++;orderingBusy=false;orderingReady=false;$('roman-exercise-page').hidden=true;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderOrdering();$('ordering-chests').children[activeOrderingChest-1]?.focus();window.scrollTo(0,0);});
 
 const roundingExercises={1:{number:47,unit:'zeci',digit:'unităților',image:$('rounding-exercise-image').src},2:{number:464,unit:'zeci',digit:'unităților',image:$('rounding-exercise-source-2').src},3:{number:6446,unit:'zeci',digit:'unităților',image:$('rounding-exercise-source-3').src},4:{number:7275,unit:'zeci',digit:'unităților',image:$('rounding-exercise-source-4').src},5:{number:482,unit:'sute',digit:'zecilor',image:$('rounding-exercise-source-5').src},6:{number:524,unit:'sute',digit:'zecilor',image:$('rounding-exercise-source-6').src},7:{number:6476,unit:'sute',digit:'zecilor',image:$('rounding-exercise-source-7').src},8:{number:3752,unit:'sute',digit:'zecilor',image:$('rounding-exercise-source-8').src},9:{number:2346,unit:'mii',digit:'sutelor',image:$('rounding-exercise-source-9').src},10:{number:4782,unit:'mii',digit:'sutelor',image:$('rounding-exercise-source-10').src},11:{number:6499,unit:'mii',digit:'sutelor',image:$('rounding-exercise-source-11').src},12:{number:8500,unit:'mii',digit:'sutelor',image:$('rounding-exercise-source-12').src}};
 let roundingReturnFocus=null,roundingBusy=false,roundingReady=false,activeRoundingChest=1;
@@ -287,13 +287,60 @@ async function checkRounding(){
 $('rounding-check').addEventListener('click',checkRounding);
 $('rounding-answer').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();checkRounding();}});
 $('rounding-answer').addEventListener('input',()=>{if(!roundingBusy){$('rounding-answer').className='';$('rounding-answer').setAttribute('aria-invalid','false');roundingMessage();}});
-$('rounding-exercise-back').addEventListener('click',()=>{comparisonRevision++;roundingBusy=false;roundingReady=false;$('rounding-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderRounding();$('rounding-chests').children[activeRoundingChest-1]?.focus();window.scrollTo(0,0);});
+$('rounding-exercise-back').addEventListener('click',()=>{comparisonRevision++;roundingBusy=false;roundingReady=false;$('roman-exercise-page').hidden=true;$('rounding-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderRounding();$('rounding-chests').children[activeRoundingChest-1]?.focus();window.scrollTo(0,0);});
+const romanExercises={1:{number:'III',unit:'cifre arabe',digit:'',image:$('roman-exercise-image').src}};
+let romanReturnFocus=null,romanBusy=false,romanReady=false,activeRomanChest=1;
+function renderRoman(){
+ $('roman-key').disabled=true;
+ const solved=[...new Set((mapProfile?.lessonProgress?.[1]?.romanSolved||[]).filter(id=>romanExercises[id]))];
+ $('roman-count').textContent=solved.length+'/12';$('roman-bar').value=solved.length;
+ $('roman-chests').replaceChildren();
+ const left=[[22.7,35.7,48,60.1],[21.5,34.4,47.4,60],[21.5,34.7,47.7,60.4]],top=[40.5,57.1,74.1];
+ for(let id=1;id<=12;id++){
+  const row=Math.floor((id-1)/4),col=(id-1)%4,button=document.createElement('button');button.type='button';button.className='comparison-chest'+(solved.includes(id)?' complete':'');if(solved.includes(id)){const star=document.createElement('span');star.textContent='★';button.append(star);}
+  button.setAttribute('aria-label','Lecția 6, lădița '+id+(romanExercises[id]?' — scrie '+romanExercises[id].number+' cu '+romanExercises[id].unit+(solved.includes(id)?' — rezolvată':''):' — exercițiul urmează să fie adăugat'));
+  Object.assign(button.style,{left:left[row][col]+'%',top:top[row]+'%',width:'12.9%',height:'18%'});
+  button.addEventListener('click',()=>{if(romanExercises[id])return openRomanExercise(id);romanReturnFocus=button;$('roman-dialog-title').textContent='Lădița '+id;$('roman-dialog').showModal();$('roman-dialog-close').focus();});
+  $('roman-chests').append(button);
+ }
+ $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Prima lădiță este disponibilă; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
+}
+for(const id of ['roman-dialog-close','roman-dialog-return'])$(id).addEventListener('click',()=>$('roman-dialog').close());
+$('roman-dialog').addEventListener('close',()=>romanReturnFocus?.focus());
+$('roman-back-sign').addEventListener('click',()=>openForest());
+function romanControls(){const disabled=romanBusy||!romanReady||!!teacherMapReturn;$('roman-answer').disabled=disabled;$('roman-check').disabled=disabled;}
+function romanMessage(message=''){ $('roman-exercise-status').textContent=message; }
+function applyRomanProfile(profile){if(!profile||profile.studentId!==mapProfile?.studentId)throw new Error('Profilul elevului nu corespunde.');renderMap(profile);renderForest(mapProfile);renderRoman();}
+async function openRomanExercise(id=1){
+ const exercise=romanExercises[id];if(!exercise)return;activeRomanChest=id;
+ $('roman-exercise-image').src=exercise.image;$('roman-exercise-image').alt='Scrie cu cifre arabe numărul roman '+exercise.number+'. Indiciu: I = 1, V = 5, X = 10. Cifrele identice se adună.';
+ $('roman-exercise-page').setAttribute('aria-label','Lecția 6, lădița '+id+' — Scrie '+exercise.number+' cu cifre arabe');$('roman-answer').setAttribute('aria-label','Numărul '+exercise.number+' scris cu cifre arabe');
+ const revision=++comparisonRevision,sid=mapProfile.studentId;romanBusy=false;romanReady=false;
+ $('roman-answer').value='';$('roman-answer').className='';$('roman-answer').setAttribute('aria-invalid','false');romanControls();
+ $('lesson-content-page').hidden=true;$('roman-exercise-page').hidden=false;$('roman-exercise-back').focus();window.scrollTo(0,0);
+ romanMessage(teacherMapReturn?'Vizualizare profesor. Progresul elevilor nu este modificat.':'Se verifică accesul…');
+ if(teacherMapReturn)return;
+ try{const r=await studentAuth.roman('state');if(revision!==comparisonRevision||$('roman-exercise-page').hidden||mapProfile?.studentId!==sid||teacherMapReturn)return;applyRomanProfile(r.profile);romanReady=true;romanControls();romanMessage();$('roman-answer').focus();}
+ catch(error){if(revision===comparisonRevision&&!$('roman-exercise-page').hidden)romanMessage(error.message);}
+}
+async function checkRoman(){
+ if(romanBusy||!romanReady||teacherMapReturn)return;
+ const answer=$('roman-answer').value.trim();if(!/^\d{1,5}$/.test(answer)){romanMessage('Scrie un număr în căsuță.');$('roman-answer').focus();return;}
+ const revision=comparisonRevision,sid=mapProfile.studentId;romanBusy=true;romanControls();romanMessage('Se verifică…');
+ try{const r=await studentAuth.roman('answer',{chest:activeRomanChest,answer});if(revision!==comparisonRevision||$('roman-exercise-page').hidden||mapProfile?.studentId!==sid||teacherMapReturn)return;applyRomanProfile(r.profile);$('roman-answer').className=r.correct?'correct':'incorrect';$('roman-answer').setAttribute('aria-invalid',String(!r.correct));romanMessage(r.correct?'Corect! Ai câștigat steluța acestei lădițe.':'Mai încearcă!');}
+ catch(error){if(revision===comparisonRevision&&!$('roman-exercise-page').hidden)romanMessage(error.message);}
+ finally{if(revision===comparisonRevision){romanBusy=false;romanControls();}}
+}
+$('roman-check').addEventListener('click',checkRoman);
+$('roman-answer').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();checkRoman();}});
+$('roman-answer').addEventListener('input',()=>{if(!romanBusy){$('roman-answer').className='';$('roman-answer').setAttribute('aria-invalid','false');romanMessage();}});
+$('roman-exercise-back').addEventListener('click',()=>{comparisonRevision++;romanBusy=false;romanReady=false;$('roman-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderRoman();$('roman-chests').children[activeRomanChest-1]?.focus();window.scrollTo(0,0);});
 function openLessonContent(lesson){
  $('lesson-dialog').close();$('forest-page').hidden=true;
  $('lesson-content-title').textContent=lesson.id+'. '+lesson.title;
- $('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;comparisonBusy=false;orderingBusy=false;$('comparison-panel').hidden=lesson.id!==3;if(lesson.id===3)renderComparison();$('ordering-panel').hidden=lesson.id!==4;if(lesson.id===4)renderOrdering();
- $('rounding-panel').hidden=lesson.id!==5;if(lesson.id===5)renderRounding();
- if(lesson.id!==3&&lesson.id!==4&&lesson.id!==5)$('lesson-content-message').textContent='Exercițiile acestei lecții urmează să fie adăugate.';
+ $('roman-exercise-page').hidden=true;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;comparisonBusy=false;orderingBusy=false;$('comparison-panel').hidden=lesson.id!==3;if(lesson.id===3)renderComparison();$('ordering-panel').hidden=lesson.id!==4;if(lesson.id===4)renderOrdering();
+ $('rounding-panel').hidden=lesson.id!==5;if(lesson.id===5)renderRounding();$('roman-panel').hidden=lesson.id!==6;if(lesson.id===6)renderRoman();
+ if(lesson.id!==3&&lesson.id!==4&&lesson.id!==5&&lesson.id!==6)$('lesson-content-message').textContent='Exercițiile acestei lecții urmează să fie adăugate.';
  $('lesson-content-page').hidden=false;$('lesson-content-back').focus();window.scrollTo(0,0);
 }
 $('lesson-content-back').addEventListener('click',()=>openForest());
@@ -343,7 +390,7 @@ $('comparison-check').addEventListener('click',async()=>{
  finally{if(revision===comparisonRevision){comparisonBusy=false;setComparisonControls();}}
 });
 $('comparison-exercise-back').addEventListener('click',()=>{
- comparisonRevision++;comparisonBusy=false;comparisonReady=false;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderComparison();$('comparison-chests').children[(activeComparisonChest||1)-1]?.focus();window.scrollTo(0,0);
+ comparisonRevision++;comparisonBusy=false;comparisonReady=false;$('roman-exercise-page').hidden=true;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderComparison();$('comparison-chests').children[(activeComparisonChest||1)-1]?.focus();window.scrollTo(0,0);
 });
 function renderForest(profile){
  const p=profile.lessonProgress?.[1]||{unlocked:[1],completed:[]};
@@ -368,7 +415,7 @@ function renderForest(profile){
 }
 function openForest(){
  if(!mapProfile)return;
- $('lesson-content-page').hidden=true;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;
+ $('lesson-content-page').hidden=true;$('roman-exercise-page').hidden=true;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;
  $('reading-page').hidden=true;
  $('formation-page').hidden=true;
  renderForest(mapProfile);$('map-page').hidden=true;$('forest-page').hidden=false;$('forest-back').focus();window.scrollTo(0,0);

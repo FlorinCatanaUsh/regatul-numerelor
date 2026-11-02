@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=rounding-twelve-chests">
+<link rel="stylesheet" href="./styles/main.css?v=roman-first-chest">
 </head>
 <body>
 <main>
@@ -86,8 +86,23 @@
    <button id="ordering-key" type="button" disabled aria-label="Cheia lecției 5 este sub cupolă" title="Obține 6 steluțe și apasă cheia pentru a o lua."></button>
   </div></div>
  </div>
+ <div id="roman-panel" hidden>
+  <p class="map-help">Prima lădiță este disponibilă. Rezolvă exercițiul pentru a câștiga o steluță. Pe telefon poți glisa imaginea lateral.</p>
+  <div class="map-scroll" tabindex="0" role="region" aria-label="Cele 12 lădițe ale lecției 6"><div class="comparison-art">
+   <img id="roman-image" src="./assets/romane-cupola.webp" width="1672" height="941" alt="6. Cifre romane: 12 lădițe I–XII, roboțel legionar, bufniță și școală.">
+   <button id="roman-back-sign" type="button" aria-label="Înapoi la pădure"></button>
+   <div id="roman-chests"></div><span id="roman-count" class="comparison-counter">0/12</span><progress id="roman-bar" max="12" value="0" aria-label="Steluțe câștigate la lecția 6"></progress>
+   <button id="roman-key" type="button" disabled aria-label="Cheia următoarei aventuri este sub cupolă" title="Obține 6 steluțe pentru a elibera cheia."></button>
+  </div></div>
+ </div>
+ <dialog id="roman-dialog" class="chapter-dialog" aria-labelledby="roman-dialog-title">
+  <button id="roman-dialog-close" class="close" type="button" aria-label="Închide">×</button>
+  <p class="eyebrow">Lecția 6 · Cifre romane</p><h2 id="roman-dialog-title"></h2>
+  <p>Exercițiul acestei lădițe urmează să fie adăugat.</p>
+  <button id="roman-dialog-return" type="button">Înapoi la lădițe</button>
+ </dialog>
  <div id="rounding-panel" hidden>
-  <p class="map-help">Primele două lădițe sunt disponibile. Rezolvă exercițiul pentru a câștiga o steluță. Pe telefon poți glisa imaginea lateral.</p>
+  <p class="map-help">Toate cele 12 lădițe sunt disponibile. Rezolvă exercițiul pentru a câștiga o steluță. Pe telefon poți glisa imaginea lateral.</p>
   <div class="map-scroll" tabindex="0" role="region" aria-label="Cele 12 lădițe ale lecției 5"><div class="comparison-art">
    <img id="rounding-image" src="./assets/rotunjirea-cupola.webp" width="1672" height="941" alt="5. Rotunjirea numerelor naturale: 12 lădițe numerotate, robotul cu exemplul 147 aproximativ 150, bufnița, școala și cheia lecției 6 sub cupolă. Progres zero din 12 steluțe.">
    <button id="rounding-back-sign" type="button" aria-label="Înapoi la pădure"></button>
@@ -114,6 +129,16 @@
   <button id="comparison-dialog-return" type="button">Înapoi la lădițe</button>
  </dialog>
  <div class="lesson-content-body"><p id="lesson-content-message" role="status">Exercițiile acestei lecții urmează să fie adăugate.</p></div>
+</section>
+
+<section id="roman-exercise-page" hidden aria-label="Lecția 6, lădița I — Scrie numărul III cu cifre arabe">
+ <div class="map-scroll" tabindex="0" role="region" aria-label="Exercițiu cu cifre romane"><div class="roman-exercise-art">
+  <img id="roman-exercise-image" src="./assets/romane-ladita1.webp" width="1672" height="941" alt="Scrie cu cifre arabe numărul roman III. Indiciu: I = 1, V = 5, X = 10. Cifrele identice se adună.">
+  <input id="roman-answer" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" autocomplete="off" aria-label="Numărul III scris cu cifre arabe" disabled>
+  <p id="roman-exercise-status" class="exercise-status" role="status" aria-live="polite"></p>
+  <button id="roman-check" type="button" aria-label="Verifică răspunsul" disabled></button>
+  <button id="roman-exercise-back" type="button" aria-label="Înapoi la lădițe"></button>
+ </div></div>
 </section>
 
 <section id="rounding-exercise-page" hidden aria-label="Lecția 5, lădița 1 — Rotunjește 47 la zeci">
@@ -337,6 +362,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=rounding-twelve-chests"></script>
+<script type="module" src="./scripts/app.js?v=roman-first-chest"></script>
 </body>
 </html>

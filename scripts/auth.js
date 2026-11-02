@@ -22,6 +22,7 @@ const studentAuth = (()=>{
   async profile(){return (await request('profile')).profile;},
   async teacherLogin(password){token=null;const r=await request('teacher_login',{password});if(typeof r.token!=='string'||r.profile?.role!=='teacher')throw new Error('Răspuns de autentificare invalid.');token=r.token;return r.profile;},
   async students(){return (await request('teacher_students')).students;},
+  async roman(operation,fields={}){return await request('roman',{operation,...fields});},
   async rounding(operation,fields={}){return await request('rounding',{operation,...fields});},
   async ordering(operation,fields={}){return await request('ordering',{operation,...fields});},
   async comparison(operation,fields={}){return await request('comparison',{operation,...fields});},
