@@ -19,7 +19,7 @@ const ui=context.setupMap({pupils:[],entryDialog:$('entry'),studentAuth:{allowLe
 }}});
 ui.setLessonAccessChangedHandler(async()=>refreshes++);
 current={studentId:'test',displayName:'Test pupil',completedChapters:[],lessonProgress:{1:{unlocked:[1],completed:[]}},formation:{solved:[],keyTaken:false,lesson2Allowed:false,lesson2Opened:false},reading:{solved:[],keyTaken:false}};
-async function menu(id){await $('forest-progress').children[id-1].fire('click');assert.equal($('lesson-dialog').open,true);assert.equal($('lesson-access-controls').hidden,false);assert.equal($('lesson-preview').hidden,id>2);}
+async function menu(id){await $('forest-progress').children[id-1].fire('click');assert.equal($('lesson-dialog').open,true);assert.equal($('lesson-access-controls').hidden,false);assert.equal($('lesson-preview').hidden,false);}
 (async()=>{
  ui.teacherView(current,()=>{});await $('map-chapters').children[0].fire('click');
  for(let id=1;id<=6;id++){
@@ -32,5 +32,9 @@ async function menu(id){await $('forest-progress').children[id-1].fire('click');
  ui.open(current);await $('map-chapters').children[0].fire('click');await $('forest-progress').children[0].fire('click');assert.equal($('lesson-access-controls').hidden,true);assert.equal($('formation-page').hidden,true);const n=calls.length;await $('lesson-allow').fire('click');assert.equal(calls.length,n);await $('lesson-return').fire('click');
  ui.classView({lessonAccess:Object.fromEntries([1,2,3,4,5,6].map(id=>[id,{allowed:0,total:2}]))},()=>{});await $('map-chapters').children[0].fire('click');
  for(let id=1;id<=6;id++){await menu(id);assert.match($('lesson-access-scope').textContent,/toată clasa/);await $('lesson-allow').fire('click');assert.deepEqual(calls.at(-1),['all',id,true]);assert.match($('lesson-access-scope').textContent,/2 din 2/);await $('lesson-block').fire('click');assert.deepEqual(calls.at(-1),['all',id,false]);await $('lesson-return').fire('click');}
+ for(let id=3;id<=6;id++){
+  await menu(id);const before=calls.length;await $('lesson-preview').fire('click');assert.equal($('lesson-content-page').hidden,false);assert.equal($('lesson-dialog').open,false);assert.match($('lesson-content-title').textContent,new RegExp('^'+id+'\\.'));assert.match($('lesson-content-message').textContent,/urmează să fie adăugate/);assert.equal(calls.length,before);await $('lesson-content-back').fire('click');assert.equal($('lesson-content-page').hidden,true);assert.equal($('forest-page').hidden,false);
+ }
+ current.lessonProgress[1].manualAccess[3]=true;current.lessonProgress[1].unlocked.push(3);ui.open(current);await $('map-chapters').children[0].fire('click');const before=calls.length;await $('forest-progress').children[2].fire('click');assert.equal($('lesson-content-page').hidden,false);assert.equal($('lesson-content-title').textContent,'3. Compararea numerelor naturale');assert.equal(calls.length,before);
  assert(refreshes>20);console.log('PASS: all six lesson menus, individual and whole-class access/block, scope/counts, persistence callbacks, key retained, blocked student access and hidden teacher controls, errors.');
 })().catch(e=>{console.error(e);process.exitCode=1});

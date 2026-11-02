@@ -39,7 +39,7 @@ function renderMap(profile) {
  $('map-summary').textContent=teacherClassMode?'Harta clasei. Comenzile de sus se aplică tuturor elevilor.':mapProfile.completedChapters.length+' din 8 capitole parcurse.';
 }
 function openStudentMap(profile){
- teacherMapReturn=null;teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('teacher-workspace').hidden=true;$('forest-mode').textContent='Elev';$('map-home').textContent='Ieșire';$('map-mode').textContent='Elev';renderMap(profile);$('map-page').hidden=false;$('forest-page').hidden=true;document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
+ teacherMapReturn=null;teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('teacher-workspace').hidden=true;$('lesson-content-page').hidden=true;$('forest-mode').textContent='Elev';$('map-home').textContent='Ieșire';$('map-mode').textContent='Elev';renderMap(profile);$('map-page').hidden=false;$('forest-page').hidden=true;document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
 }
 $('map-home').addEventListener('click',async()=>{if(teacherMapReturn){const back=teacherMapReturn;teacherMapReturn=null;mapProfile=null;forestState=null;$('map-page').hidden=true;$('forest-page').hidden=true;back();return;}const button=$('map-home');button.disabled=true;try{await studentAuth.logout();}catch{studentAuth.clear();}finally{button.disabled=false;$('map-page').hidden=true;$('forest-page').hidden=true;document.body.classList.remove('viewing-map');mapProfile=null;forestState=null;$('class-entry').focus();}});
 for(const id of ['chapter-close','chapter-back'])$(id).addEventListener('click',()=>$('chapter-dialog').close());
@@ -89,7 +89,7 @@ function lessonAccessCounts(){
 }
 function renderLessonAccess(message=''){
  const teacher=!!teacherMapReturn;$('lesson-access-controls').hidden=!teacher;
- $('lesson-preview').hidden=!teacher||activeLesson.id>2;
+ $('lesson-preview').hidden=!teacher;
  if(!teacher)return;
  const count=lessonAccessCounts();
  $('lesson-access-scope').textContent=teacherClassMode?'Comandă pentru toată clasa. Acces permis pentru '+count.allowed+' din '+count.total+' elevi.':'Comandă pentru '+mapProfile.displayName+'. Acces '+(count.allowed?'permis.':'blocat.');
@@ -105,11 +105,12 @@ function showForestLesson(lesson){
  if(!teacherMapReturn){
   if(lesson.id===1&&forestStatus(1)!=='locked'){openFormation();return;}
   if(lesson.id===2&&readingAvailable()){openReading();return;}
+  if(lesson.id>2&&forestStatus(lesson.id)!=='locked'){openLessonContent(lesson);return;}
  }
  const state=forestStatus(lesson.id);
  $('lesson-title').textContent=lesson.id+'. '+lesson.title;
  $('lesson-message').textContent=teacherMapReturn?'Gestionează accesul la această lecție.':state==='locked'?'Lecția este blocată de profesor.':state==='complete'?'Ai parcurs această lecție.':'Ai acces la această lecție.';
- $('lesson-note').textContent=lesson.id>2?'Exercițiile acestei lecții urmează să fie adăugate. Permisiunea de acces se salvează acum.':'Deschiderea lecției nu modifică progresul elevilor.';
+ $('lesson-note').textContent=lesson.id>2?'Exercițiile acestei lecții urmează să fie adăugate.':'Deschiderea lecției nu modifică progresul elevilor.';
  if(lesson.id===2)$('lesson-note').textContent='Elevul are nevoie de cheia luată din lecția 1 și de permisiunea profesorului. Apoi atinge lacătul pentru a deschide lecția.';
  renderLessonAccess();$('lesson-dialog').showModal();$('lesson-close').focus();
 }
@@ -132,8 +133,15 @@ async function changeLessonAccess(allowed){
 }
 $('lesson-allow').addEventListener('click',()=>changeLessonAccess(true));
 $('lesson-block').addEventListener('click',()=>changeLessonAccess(false));
-$('lesson-preview').addEventListener('click',()=>{if(lessonAccessBusy||!teacherMapReturn)return;$('lesson-dialog').close();if(activeLesson.id===1)openFormation();else if(activeLesson.id===2)openReading();});
+$('lesson-preview').addEventListener('click',()=>{if(lessonAccessBusy||!teacherMapReturn)return;$('lesson-dialog').close();if(activeLesson.id===1)openFormation();else if(activeLesson.id===2)openReading();else openLessonContent(activeLesson);});
 $('lesson-dialog').addEventListener('cancel',event=>{if(lessonAccessBusy)event.preventDefault();});
+function openLessonContent(lesson){
+ $('lesson-dialog').close();$('forest-page').hidden=true;
+ $('lesson-content-title').textContent=lesson.id+'. '+lesson.title;
+ $('lesson-content-message').textContent='Exercițiile acestei lecții urmează să fie adăugate.';
+ $('lesson-content-page').hidden=false;$('lesson-content-back').focus();window.scrollTo(0,0);
+}
+$('lesson-content-back').addEventListener('click',()=>openForest());
 function renderForest(profile){
  const p=profile.lessonProgress?.[1]||{unlocked:[1],completed:[]};
  const valid=items=>[...new Set((Array.isArray(items)?items:[]).filter(n=>Number.isInteger(n)&&n>=1&&n<=6))];
@@ -157,6 +165,7 @@ function renderForest(profile){
 }
 function openForest(){
  if(!mapProfile)return;
+ $('lesson-content-page').hidden=true;
  $('reading-page').hidden=true;
  $('formation-page').hidden=true;
  renderForest(mapProfile);$('map-page').hidden=true;$('forest-page').hidden=false;$('forest-back').focus();window.scrollTo(0,0);
