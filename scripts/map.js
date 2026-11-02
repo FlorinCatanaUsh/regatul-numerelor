@@ -509,7 +509,7 @@ function renderForest(profile){
   const button=document.createElement('button');button.type='button';button.className='lesson-hotspot '+state;button.setAttribute('aria-label',lesson.id+'. '+lesson.title+' — '+label);button.setAttribute('aria-disabled','false');
   const [left,top,width,height]=lesson.box;Object.assign(button.style,{left:left+'%',top:top+'%',width:width+'%',height:height+'%'});
   if(lesson.id!==1&&lessonPermission(mapProfile,lesson.id))Object.assign(button.style,{backgroundImage:'url("'+$(lesson.id===2?'forest-unlocked-source':'forest-color-source').src+'")',backgroundSize:(10000/width)+'% '+(10000/height)+'%',backgroundPosition:(left/(100-width)*100)+'% '+(top/(100-height)*100)+'%',backgroundRepeat:'no-repeat'});
-  const badge=document.createElement('span');badge.className='lesson-state';badge.setAttribute('aria-hidden','true');badge.textContent=state==='locked'?'🔒':state==='complete'?'✓':'↪';if(lesson.id!==2)button.append(badge);
+  const badge=document.createElement('span');badge.className='lesson-state';badge.setAttribute('aria-hidden','true');badge.textContent=state==='locked'?'🔒':state==='complete'?'✓':'↪';if(lesson.id!==2||state==='complete')button.append(badge);
   button.addEventListener('click',()=>showForestLesson(lesson));$('forest-lessons').append(button);
   if(lesson.id===3&&mapProfile.lessonProgress?.[1]?.comparisonLockOpened===false){
    const lock=document.createElement('button');lock.type='button';lock.className='lesson-lock';lock.textContent='🔒';lock.setAttribute('aria-label','Deschide lacătul lecției 3 cu cheia câștigată');
