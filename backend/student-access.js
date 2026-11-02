@@ -54,7 +54,7 @@ Deno.serve(async req=>{
    return r?.ok?response(r,200,origin):response({error:errors[r?.error]||'Acțiunea nu a reușit.'},r?.error==='unauthorized'?401:403,origin);
   }
   if(body.action==='rounding'){
-   if(!['state','answer'].includes(body.operation)||body.operation==='answer'&&(!Number.isInteger(body.chest)||typeof body.answer!=='string'||!/^\d{1,5}$/.test(body.answer.trim())))return response({error:'Scrie un număr în căsuță.'},400,origin);
+   if(!['state','answer','take_key'].includes(body.operation)||body.operation==='answer'&&(!Number.isInteger(body.chest)||typeof body.answer!=='string'||!/^\d{1,5}$/.test(body.answer.trim())))return response({error:'Scrie un număr în căsuță.'},400,origin);
    const r=await rpc('regat_rounding',{p_token:token,p_action:body.operation,p_chest:body.chest??null,p_answer:body.answer??null});
    const errors={unauthorized:'Sesiunea a expirat. Autentifică-te din nou.',lesson_locked:'Lecția 5 este blocată de profesor.',chest_missing:'Exercițiul acestei lădițe urmează să fie adăugat.'};
    return r?.ok?response(r,200,origin):response({error:errors[r?.error]||'Acțiunea nu a reușit.'},r?.error==='unauthorized'?401:403,origin);

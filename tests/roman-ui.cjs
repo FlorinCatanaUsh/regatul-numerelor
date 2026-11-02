@@ -12,7 +12,7 @@ vm.runInContext(fs.readFileSync(require('path').join(__dirname,'../scripts/map.j
 
 
 
-let profile={studentId:'test',displayName:'QA',completedChapters:[],lessonProgress:{1:{unlocked:[1,6],completed:[],manualAccess:{6:true}}},formation:{solved:[]},reading:{solved:[]}};
+let profile={studentId:'test',displayName:'QA',completedChapters:[],lessonProgress:{1:{roundingKeyTaken:true,unlocked:[1,6],completed:[],manualAccess:{6:true}}},formation:{solved:[]},reading:{solved:[]}};
 let fail=false,pending=null;
 const ui=context.setupMap({pupils:[],entryDialog:$('entry'),studentAuth:{roman:async(action,fields)=>{calls.push({action,...fields});if(pending)return await pending;if(fail)throw Error('Offline');if(action==='answer'){const correct=fields.answer===({1:'3',2:'14',3:'XXIII',4:'XIX'})[fields.chest];if(correct)profile.lessonProgress[1].romanSolved=[...new Set([...(profile.lessonProgress[1].romanSolved||[]),fields.chest])];return {correct,profile:structuredClone(profile)};}return {profile:structuredClone(profile)};}}});
 async function open(){ui.open(profile);await $('map-chapters').children[0].fire('click');await $('forest-progress').children[5].fire('click');await $('roman-chests').children[0].fire('click');}

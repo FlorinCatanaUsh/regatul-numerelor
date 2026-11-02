@@ -12,7 +12,7 @@ vm.runInContext(fs.readFileSync(require('path').join(__dirname,'../scripts/map.j
 
 
 
-let profile={studentId:'test',displayName:'QA',completedChapters:[],lessonProgress:{1:{unlocked:[1,5],completed:[],manualAccess:{5:true}}},formation:{solved:[]},reading:{solved:[]}};
+let profile={studentId:'test',displayName:'QA',completedChapters:[],lessonProgress:{1:{orderingKeyTaken:true,unlocked:[1,5],completed:[],manualAccess:{5:true}}},formation:{solved:[]},reading:{solved:[]}};
 let fail=false,pending=null;
 const ui=context.setupMap({pupils:[],entryDialog:$('entry'),studentAuth:{rounding:async(action,fields)=>{calls.push({action,...fields});if(pending)return await pending;if(fail)throw Error('Offline');if(action==='answer'){const correct=Number(fields.answer)===({1:50,2:460,3:6450,4:7280,5:500,6:500,7:6500,8:3800,9:2000,10:5000,11:6000,12:9000})[fields.chest];if(correct)profile.lessonProgress[1].roundingSolved=[...new Set([...(profile.lessonProgress[1].roundingSolved||[]),fields.chest])];return {correct,profile:structuredClone(profile)};}return {profile:structuredClone(profile)};}}});
 async function open(){ui.open(profile);await $('map-chapters').children[0].fire('click');await $('forest-progress').children[4].fire('click');await $('rounding-chests').children[0].fire('click');}

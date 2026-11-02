@@ -1,7 +1,7 @@
 import { pupils } from '../data/students.js';
-import { studentAuth } from './auth.js?v=roman-reverse-matching';
-import { setupMap } from './map.js?v=roman-reverse-matching';
-import { setupTeacher } from './teacher.js?v=roman-reverse-matching';
+import { studentAuth } from './auth.js?v=lesson-key-locks';
+import { setupMap } from './map.js?v=lesson-key-locks';
+import { setupTeacher } from './teacher.js?v=lesson-key-locks';
 'use strict';
 
 const $ = id => document.getElementById(id);

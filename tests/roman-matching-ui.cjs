@@ -12,7 +12,7 @@ vm.runInContext(fs.readFileSync(require('path').join(__dirname,'../scripts/map.j
 
 
 
-let profile={studentId:'test',displayName:'QA',completedChapters:[],lessonProgress:{1:{unlocked:[1,6],completed:[],manualAccess:{6:true},romanSolved:[1,2,3,4]}},formation:{solved:[]},reading:{solved:[]}};
+let profile={studentId:'test',displayName:'QA',completedChapters:[],lessonProgress:{1:{roundingKeyTaken:true,unlocked:[1,6],completed:[],manualAccess:{6:true},romanSolved:[1,2,3,4]}},formation:{solved:[]},reading:{solved:[]}};
 let fail=false,pending=null;
 const expected={5:[6,12,24,31],6:[4,19,27,35],7:[9,16,29,38],8:[14,22,34,39],9:[7,18,26,39],10:[4,13,29,35],11:[9,21,32,37],12:[14,23,28,36]},choices={5:[24,9,31,6,12],6:[27,35,14,19,4],7:[16,29,38,9,26],8:[39,24,14,34,22],9:[26,7,34,39,18],10:[35,19,4,29,13],11:[32,9,37,24,21],12:[28,36,14,33,23]};
 const ui=context.setupMap({pupils:[],entryDialog:$('entry'),studentAuth:{roman:async(action,fields)=>{calls.push({action,...fields});if(pending)return await pending;if(fail)throw Error('Offline');if(action==='match'){const matches=fields.answer.map((v,i)=>v===expected[fields.chest][i]),correct=matches.every(Boolean);if(correct)profile.lessonProgress[1].romanSolved=[...new Set([...profile.lessonProgress[1].romanSolved,fields.chest])];return {correct,matches,profile:structuredClone(profile)};}return {profile:structuredClone(profile)};}}});

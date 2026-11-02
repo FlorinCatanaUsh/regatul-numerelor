@@ -13,7 +13,7 @@ vm.runInContext(fs.readFileSync(require('path').join(__dirname,'../scripts/map.j
 
 
 let fail=false,deferred=null,hold=false;
-current={studentId:'test',displayName:'Test',completedChapters:[],lessonProgress:{1:{unlocked:[1,3],completed:[],manualAccess:{3:true},comparisonSolved:[]}},formation:{solved:[],keyTaken:false},reading:{solved:[],keyTaken:false}};
+current={studentId:'test',displayName:'Test',completedChapters:[],lessonProgress:{1:{unlocked:[1,3],completed:[],manualAccess:{3:true},comparisonSolved:[]}},formation:{solved:[],keyTaken:false},reading:{solved:[],keyTaken:true}};
 const ui=context.setupMap({pupils:[],entryDialog:$('entry'),studentAuth:{comparison:async(operation,fields={})=>{
  calls.push([operation,fields]);if(fail)throw Error('Offline');if(operation==='state'){if(hold)return await new Promise(resolve=>deferred=resolve);return {profile:current};}
  if(operation==='take_key'){current=structuredClone(current);current.lessonProgress[1].comparisonKeyTaken=true;current.lessonProgress[1].unlocked.push(4);current.lessonProgress[1].completed.push(3);return {profile:current};}
