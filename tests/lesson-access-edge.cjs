@@ -24,6 +24,7 @@ const request=(body,token='a'.repeat(64))=>new Request('https://test.invalid/fun
  r=await handler(request({action:'roman',operation:'answer',chest:3,answer:'XXIII'},null));assert.equal(r.status,401);assert.equal(calls.length,n);
  r=await handler(request({action:'roman',operation:'match',chest:5,answer:[6,12,24,31]}));assert.equal(r.status,200);assert.equal(calls.at(-1).args.p_action,'match');assert.equal(calls.at(-1).args.p_answer,'6,12,24,31');n=calls.length;
  for(const answer of [[6,6,24,31],[6,12,24],['6',12,24,31],[6,12,24,40],null]){r=await handler(request({action:'roman',operation:'match',chest:5,answer}));assert.equal(r.status,400);assert.equal(calls.length,n);}
+ for(const [chest,answer] of [[9,[7,18,26,39]],[10,[4,13,29,35]],[11,[9,21,32,37]],[12,[14,23,28,36]]]){r=await handler(request({action:'roman',operation:'match',chest,answer}));assert.equal(r.status,200);assert.equal(calls.at(-1).args.p_answer,answer.join(','));}n=calls.length;
  r=await handler(request({action:'roman',operation:'match',chest:4,answer:[6,12,24,31]}));assert.equal(r.status,400);assert.equal(calls.length,n);r=await handler(request({action:'roman',operation:'match',chest:5,answer:[6,12,24,31]},null));assert.equal(r.status,401);assert.equal(calls.length,n);
  console.log('PASS: lesson permission edge routing, scope and typed bounds, anonymous rejection.');
 })().catch(e=>{console.error(e);process.exitCode=1});

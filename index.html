@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=roman-matching-chests">
+<link rel="stylesheet" href="./styles/main.css?v=roman-reverse-matching">
 </head>
 <body>
 <main>
@@ -87,7 +87,7 @@
   </div></div>
  </div>
  <div id="roman-panel" hidden>
-  <p class="map-help">Primele opt lădițe sunt disponibile. Rezolvă exercițiul pentru a câștiga o steluță. Pe telefon poți glisa imaginea lateral.</p>
+  <p class="map-help">Toate cele 12 lădițe sunt disponibile. Rezolvă exercițiul pentru a câștiga o steluță. Pe telefon poți glisa imaginea lateral.</p>
   <div class="map-scroll" tabindex="0" role="region" aria-label="Cele 12 lădițe ale lecției 6"><div class="comparison-art">
    <img id="roman-image" src="./assets/romane-cupola.webp" width="1672" height="941" alt="6. Cifre romane: 12 lădițe I–XII, roboțel legionar, bufniță și școală.">
    <button id="roman-back-sign" type="button" aria-label="Înapoi la pădure"></button>
@@ -132,11 +132,13 @@
 </section>
 
 <section id="roman-match-page" hidden aria-label="Lecția 6 — Asociere cifre romane">
- <div class="map-scroll" tabindex="0" role="region" aria-label="Asociază cele patru numere romane cu variantele arabe"><div class="roman-match-art">
+ <div class="map-scroll" tabindex="0" role="region" aria-label="Asociază cele patru numere de pe primul rând cu variantele de pe al doilea rând"><div id="roman-match-art" class="roman-match-art">
   <img id="roman-match-image" src="./assets/romane-ladita5.webp" width="1672" height="941" alt="Lădița V: asociază VI, XII, XXIV, XXXI cu 24, 9, 31, 6, 12. Un număr arab rămâne nefolosit.">
   <img id="roman-match-source-6" hidden src="./assets/romane-ladita6.webp" alt="">
   <img id="roman-match-source-7" hidden src="./assets/romane-ladita7.webp" alt="">
   <img id="roman-match-source-8" hidden src="./assets/romane-ladita8.webp" alt="">
+  <img id="roman-match-source-reverse" hidden src="./assets/romane-asociere-inversa.webp" alt="">
+  <div id="roman-match-badge" hidden aria-hidden="true"></div>
   <svg id="roman-match-lines" viewBox="0 0 1672 941" aria-hidden="true"></svg>
   <div id="roman-match-romans"></div><div id="roman-match-arabic"></div>
   <button id="roman-match-back" type="button" aria-label="Înapoi la lădițe"></button>
@@ -380,6 +382,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=roman-matching-chests"></script>
+<script type="module" src="./scripts/app.js?v=roman-reverse-matching"></script>
 </body>
 </html>
