@@ -136,12 +136,12 @@ $('lesson-block').addEventListener('click',()=>changeLessonAccess(false));
 $('lesson-preview').addEventListener('click',()=>{if(lessonAccessBusy||!teacherMapReturn)return;$('lesson-dialog').close();if(activeLesson.id===1)openFormation();else if(activeLesson.id===2)openReading();else openLessonContent(activeLesson);});
 $('lesson-dialog').addEventListener('cancel',event=>{if(lessonAccessBusy)event.preventDefault();});
 let comparisonReturnFocus=null,comparisonSelected=null,comparisonBusy=false,comparisonReady=false,comparisonRevision=0,activeComparisonChest=null;
-const comparisonExercises={1:{left:'4 725',right:'4 752',image:$('comparison-exercise-image').src},2:{left:'6 308',right:'6 280',image:$('comparison-exercise-source-2').src},3:{left:'670',right:'4 000',image:$('comparison-exercise-source-3').src},4:{left:'2 194',right:'2 301',image:$('comparison-exercise-source-4').src}};
+const comparisonExercises={1:{left:'4 725',right:'4 752',image:$('comparison-exercise-image').src},2:{left:'6 308',right:'6 280',image:$('comparison-exercise-source-2').src},3:{left:'670',right:'4 000',image:$('comparison-exercise-source-3').src},4:{left:'2 194',right:'2 301',image:$('comparison-exercise-source-4').src},5:{left:'6 548',right:'6 548',image:$('comparison-exercise-source-5').src}};
 const comparisonChoices=[['comparison-choice-less','<'],['comparison-choice-greater','>'],['comparison-choice-equal','=']];
 function renderComparison(){
  const solved=[...new Set((mapProfile?.lessonProgress?.[1]?.comparisonSolved||[]).filter(id=>comparisonExercises[id]))];
  $('comparison-count').textContent=solved.length+'/12';$('comparison-bar').value=solved.length;
- $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Lădițele 1–4 sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
+ $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Lădițele 1–5 sunt disponibile; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
  $('comparison-chests').replaceChildren();
  const left=[[22.7,35.7,48,60.1],[21.5,34.4,47.4,60],[21.5,34.7,47.7,60.4]],top=[40.5,57.1,74.1];
  for(let id=1;id<=12;id++){
