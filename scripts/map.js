@@ -39,7 +39,7 @@ function renderMap(profile) {
  $('map-summary').textContent=teacherClassMode?'Harta clasei. Comenzile de sus se aplică tuturor elevilor.':mapProfile.completedChapters.length+' din 8 capitole parcurse.';
 }
 function openStudentMap(profile){
- teacherMapReturn=null;teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('teacher-workspace').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;$('lesson-content-page').hidden=true;$('forest-mode').textContent='Elev';$('map-home').textContent='Ieșire';$('map-mode').textContent='Elev';renderMap(profile);$('map-page').hidden=false;$('forest-page').hidden=true;document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
+ teacherMapReturn=null;teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('teacher-workspace').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;$('lesson-content-page').hidden=true;$('forest-mode').textContent='Elev';$('map-home').textContent='Ieșire';$('map-mode').textContent='Elev';renderMap(profile);$('map-page').hidden=false;$('forest-page').hidden=true;document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
 }
 $('map-home').addEventListener('click',async()=>{if(teacherMapReturn){const back=teacherMapReturn;teacherMapReturn=null;mapProfile=null;forestState=null;$('map-page').hidden=true;$('forest-page').hidden=true;back();return;}const button=$('map-home');button.disabled=true;try{await studentAuth.logout();}catch{studentAuth.clear();}finally{button.disabled=false;$('map-page').hidden=true;$('forest-page').hidden=true;document.body.classList.remove('viewing-map');mapProfile=null;forestState=null;$('class-entry').focus();}});
 for(const id of ['chapter-close','chapter-back'])$(id).addEventListener('click',()=>$('chapter-dialog').close());
@@ -171,25 +171,63 @@ $('comparison-key').addEventListener('click',async()=>{
 $('comparison-back-sign').addEventListener('click',()=>openForest());
 let orderingReturnFocus=null;
 function renderOrdering(){
- $('ordering-count').textContent='0/12';$('ordering-bar').value=0;$('ordering-key').disabled=true;
- $('lesson-content-message').textContent='0 din 12 steluțe. Exercițiile de ordonare urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
+ const solved=(mapProfile?.lessonProgress?.[1]?.orderingSolved||[]).includes(1);$('ordering-count').textContent=(solved?1:0)+'/12';$('ordering-bar').value=solved?1:0;$('ordering-key').disabled=true;
+ $('lesson-content-message').textContent=(solved?'1':'0')+' din 12 steluțe. Lădița 1 este disponibilă; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
  $('ordering-chests').replaceChildren();
  const left=[[22.7,35.7,48,60.1],[21.5,34.4,47.4,60],[21.5,34.7,47.7,60.4]],top=[40.5,57.1,74.1];
  for(let id=1;id<=12;id++){
-  const row=Math.floor((id-1)/4),col=(id-1)%4,button=document.createElement('button');button.type='button';button.className='comparison-chest';
-  button.setAttribute('aria-label','Lecția 4, lădița '+id+' — exercițiul urmează să fie adăugat');
+  const row=Math.floor((id-1)/4),col=(id-1)%4,button=document.createElement('button');button.type='button';button.className='comparison-chest'+(id===1&&solved?' complete':'');if(id===1&&solved){const star=document.createElement('span');star.textContent='★';button.append(star);}
+  button.setAttribute('aria-label','Lecția 4, lădița '+id+(id===1?(solved?' — rezolvată':' — ordonează crescător'):' — exercițiul urmează să fie adăugat'));
   Object.assign(button.style,{left:left[row][col]+'%',top:top[row]+'%',width:'12.9%',height:'18%'});
-  button.addEventListener('click',()=>{orderingReturnFocus=button;$('ordering-dialog-title').textContent='Lădița '+id+' · Ordonarea numerelor naturale';$('ordering-dialog').showModal();$('ordering-dialog-close').focus();});
+  button.addEventListener('click',()=>{if(id===1)return openOrderingExercise();orderingReturnFocus=button;$('ordering-dialog-title').textContent='Lădița '+id+' · Ordonarea numerelor naturale';$('ordering-dialog').showModal();$('ordering-dialog-close').focus();});
   $('ordering-chests').append(button);
  }
 }
 for(const id of ['ordering-dialog-close','ordering-dialog-return'])$(id).addEventListener('click',()=>$('ordering-dialog').close());
 $('ordering-dialog').addEventListener('close',()=>orderingReturnFocus?.focus());
 $('ordering-back-sign').addEventListener('click',()=>openForest());
+const orderingNumbers=[3205,2530,3052,2503],orderingBank=[0,1,2,3].map(i=>$('ordering-number-'+i)),orderingSlots=[0,1,2,3].map(i=>$('ordering-slot-'+i));
+let orderingPlaces=[null,null,null,null],orderingSelected=null,orderingBusy=false,orderingReady=false;
+const orderingLabel=n=>String(n).replace(/(\d)(?=(\d{3})+$)/g,'$1 ');
+function orderingMessage(text='',kind=''){$('ordering-exercise-status').textContent=text;$('ordering-exercise-status').className=kind;}
+function renderOrderingMove(){
+ const disabled=orderingBusy||!orderingReady||!!teacherMapReturn;
+ orderingBank.forEach((button,id)=>{const used=orderingPlaces.includes(id);button.disabled=disabled||used;button.className='ordering-number'+(used?' used':'')+(orderingSelected===id&&!used?' selected':'');button.setAttribute('aria-pressed',String(orderingSelected===id));});
+ orderingSlots.forEach((button,index)=>{const id=orderingPlaces[index];button.disabled=disabled;button.textContent=id===null?'':orderingLabel(orderingNumbers[id]);button.className='ordering-slot'+(id!==null&&id===orderingSelected?' selected':'');button.setAttribute('aria-pressed',String(id!==null&&id===orderingSelected));button.setAttribute('aria-label','Căsuța '+(index+1)+(id===null?', goală':', numărul '+orderingLabel(orderingNumbers[id])));});
+ $('ordering-check').disabled=disabled;
+}
+function applyOrderingProfile(profile){if(!profile||profile.studentId!==mapProfile?.studentId)throw new Error('Profilul elevului nu corespunde.');renderMap(profile);renderForest(mapProfile);renderOrdering();}
+async function openOrderingExercise(){
+ const revision=++comparisonRevision,sid=mapProfile.studentId;orderingPlaces=[null,null,null,null];orderingSelected=null;orderingBusy=false;orderingReady=false;
+ $('lesson-content-page').hidden=true;$('ordering-exercise-page').hidden=false;renderOrderingMove();orderingMessage(teacherMapReturn?'Vizualizare profesor. Progresul elevilor nu este modificat.':'Se verifică accesul…');$('ordering-exercise-back').focus();window.scrollTo(0,0);
+ if(teacherMapReturn)return;
+ try{const r=await studentAuth.ordering('state');if(revision!==comparisonRevision||$('ordering-exercise-page').hidden||mapProfile?.studentId!==sid||teacherMapReturn)return;applyOrderingProfile(r.profile);orderingReady=true;renderOrderingMove();orderingMessage();orderingBank[0].focus();}
+ catch(error){if(revision===comparisonRevision&&!$('ordering-exercise-page').hidden)orderingMessage(error.message,'error');}
+}
+orderingBank.forEach((button,id)=>button.addEventListener('click',()=>{if(button.disabled||orderingBusy||!orderingReady||teacherMapReturn)return;orderingSelected=orderingSelected===id?null:id;renderOrderingMove();orderingMessage(orderingSelected===null?'':'Atinge căsuța în care vrei să muți '+orderingLabel(orderingNumbers[id])+'.');}));
+orderingSlots.forEach((button,index)=>button.addEventListener('click',()=>{
+ if(button.disabled||orderingBusy||!orderingReady||teacherMapReturn)return;
+ const occupant=orderingPlaces[index];
+ if(orderingSelected===null){if(occupant===null){orderingMessage('Atinge mai întâi un număr.');return;}orderingSelected=occupant;renderOrderingMove();orderingMessage('Atinge căsuța în care vrei să muți '+orderingLabel(orderingNumbers[occupant])+'.');return;}
+ const old=orderingPlaces.indexOf(orderingSelected);
+ if(old===index){orderingSelected=null;renderOrderingMove();orderingMessage();return;}
+ if(old!==-1)orderingPlaces[old]=occupant;
+ orderingPlaces[index]=orderingSelected;orderingSelected=null;renderOrderingMove();orderingMessage();
+}));
+$('ordering-check').addEventListener('click',async()=>{
+ if(orderingBusy||!orderingReady||teacherMapReturn)return;
+ if(orderingPlaces.includes(null)){orderingMessage('Așază toate cele patru numere în căsuțe.','error');return;}
+ const revision=comparisonRevision,sid=mapProfile.studentId;orderingSelected=null;orderingBusy=true;renderOrderingMove();orderingMessage('Se verifică…');
+ try{const r=await studentAuth.ordering('answer',{chest:1,answer:orderingPlaces.map(id=>orderingNumbers[id])});if(revision!==comparisonRevision||$('ordering-exercise-page').hidden||mapProfile?.studentId!==sid||teacherMapReturn)return;applyOrderingProfile(r.profile);orderingSlots.forEach(button=>button.className='ordering-slot '+(r.correct?'correct':'incorrect'));orderingMessage(r.correct?'Corect! Steluța este salvată.':'Mai încearcă! Poți muta numerele între căsuțe.',r.correct?'success':'error');}
+ catch(error){if(revision===comparisonRevision&&!$('ordering-exercise-page').hidden)orderingMessage(error.message,'error');}
+ finally{if(revision===comparisonRevision){orderingBusy=false;for(const [id,button] of orderingBank.entries())button.disabled=!orderingReady||!!teacherMapReturn||orderingPlaces.includes(id);for(const button of orderingSlots)button.disabled=!orderingReady||!!teacherMapReturn;$('ordering-check').disabled=!orderingReady||!!teacherMapReturn;}}
+});
+$('ordering-exercise-back').addEventListener('click',()=>{comparisonRevision++;orderingBusy=false;orderingReady=false;$('ordering-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderOrdering();$('ordering-chests').children[0]?.focus();window.scrollTo(0,0);});
+
 function openLessonContent(lesson){
  $('lesson-dialog').close();$('forest-page').hidden=true;
  $('lesson-content-title').textContent=lesson.id+'. '+lesson.title;
- $('comparison-exercise-page').hidden=true;comparisonRevision++;comparisonBusy=false;$('comparison-panel').hidden=lesson.id!==3;if(lesson.id===3)renderComparison();$('ordering-panel').hidden=lesson.id!==4;if(lesson.id===4)renderOrdering();
+ $('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;comparisonBusy=false;$('comparison-panel').hidden=lesson.id!==3;if(lesson.id===3)renderComparison();$('ordering-panel').hidden=lesson.id!==4;if(lesson.id===4)renderOrdering();
  if(lesson.id!==3&&lesson.id!==4)$('lesson-content-message').textContent='Exercițiile acestei lecții urmează să fie adăugate.';
  $('lesson-content-page').hidden=false;$('lesson-content-back').focus();window.scrollTo(0,0);
 }
@@ -240,7 +278,7 @@ $('comparison-check').addEventListener('click',async()=>{
  finally{if(revision===comparisonRevision){comparisonBusy=false;setComparisonControls();}}
 });
 $('comparison-exercise-back').addEventListener('click',()=>{
- comparisonRevision++;comparisonBusy=false;comparisonReady=false;$('comparison-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderComparison();$('comparison-chests').children[(activeComparisonChest||1)-1]?.focus();window.scrollTo(0,0);
+ comparisonRevision++;comparisonBusy=false;comparisonReady=false;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderComparison();$('comparison-chests').children[(activeComparisonChest||1)-1]?.focus();window.scrollTo(0,0);
 });
 function renderForest(profile){
  const p=profile.lessonProgress?.[1]||{unlocked:[1],completed:[]};
@@ -265,7 +303,7 @@ function renderForest(profile){
 }
 function openForest(){
  if(!mapProfile)return;
- $('lesson-content-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;
+ $('lesson-content-page').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;
  $('reading-page').hidden=true;
  $('formation-page').hidden=true;
  renderForest(mapProfile);$('map-page').hidden=true;$('forest-page').hidden=false;$('forest-back').focus();window.scrollTo(0,0);
