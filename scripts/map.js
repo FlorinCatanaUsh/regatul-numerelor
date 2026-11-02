@@ -39,7 +39,7 @@ function renderMap(profile) {
  $('map-summary').textContent=teacherClassMode?'Harta clasei. Comenzile de sus se aplică tuturor elevilor.':mapProfile.completedChapters.length+' din 8 capitole parcurse.';
 }
 function openStudentMap(profile){
- teacherMapReturn=null;teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('teacher-workspace').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;$('lesson-content-page').hidden=true;$('forest-mode').textContent='Elev';$('map-home').textContent='Ieșire';$('map-mode').textContent='Elev';renderMap(profile);$('map-page').hidden=false;$('forest-page').hidden=true;document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
+ teacherMapReturn=null;teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('teacher-workspace').hidden=true;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;$('lesson-content-page').hidden=true;$('forest-mode').textContent='Elev';$('map-home').textContent='Ieșire';$('map-mode').textContent='Elev';renderMap(profile);$('map-page').hidden=false;$('forest-page').hidden=true;document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
 }
 $('map-home').addEventListener('click',async()=>{if(teacherMapReturn){const back=teacherMapReturn;teacherMapReturn=null;mapProfile=null;forestState=null;$('map-page').hidden=true;$('forest-page').hidden=true;back();return;}const button=$('map-home');button.disabled=true;try{await studentAuth.logout();}catch{studentAuth.clear();}finally{button.disabled=false;$('map-page').hidden=true;$('forest-page').hidden=true;document.body.classList.remove('viewing-map');mapProfile=null;forestState=null;$('class-entry').focus();}});
 for(const id of ['chapter-close','chapter-back'])$(id).addEventListener('click',()=>$('chapter-dialog').close());
@@ -239,29 +239,55 @@ $('ordering-check').addEventListener('click',async()=>{
  catch(error){if(revision===comparisonRevision&&!$('ordering-exercise-page').hidden)orderingMessage(error.message,'error');}
  finally{if(revision===comparisonRevision){orderingBusy=false;for(const [id,button] of orderingBank.entries())button.disabled=!orderingReady||!!teacherMapReturn||orderingPlaces.includes(id);for(const button of orderingSlots)button.disabled=!orderingReady||!!teacherMapReturn;$('ordering-check').disabled=!orderingReady||!!teacherMapReturn;}}
 });
-$('ordering-exercise-back').addEventListener('click',()=>{comparisonRevision++;orderingBusy=false;orderingReady=false;$('ordering-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderOrdering();$('ordering-chests').children[activeOrderingChest-1]?.focus();window.scrollTo(0,0);});
+$('ordering-exercise-back').addEventListener('click',()=>{comparisonRevision++;orderingBusy=false;orderingReady=false;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderOrdering();$('ordering-chests').children[activeOrderingChest-1]?.focus();window.scrollTo(0,0);});
 
-let roundingReturnFocus=null;
+let roundingReturnFocus=null,roundingBusy=false,roundingReady=false;
 function renderRounding(){
  $('rounding-key').disabled=true;
+ const solved=[...new Set((mapProfile?.lessonProgress?.[1]?.roundingSolved||[]).filter(id=>id===1))];
+ $('rounding-count').textContent=solved.length+'/12';$('rounding-bar').value=solved.length;
  $('rounding-chests').replaceChildren();
  const left=[[22.7,35.7,48,60.1],[21.5,34.4,47.4,60],[21.5,34.7,47.7,60.4]],top=[40.5,57.1,74.1];
  for(let id=1;id<=12;id++){
-  const row=Math.floor((id-1)/4),col=(id-1)%4,button=document.createElement('button');button.type='button';button.className='comparison-chest';
-  button.setAttribute('aria-label','Lecția 5, lădița '+id+' — exercițiul urmează să fie adăugat');
+  const row=Math.floor((id-1)/4),col=(id-1)%4,button=document.createElement('button');button.type='button';button.className='comparison-chest'+(solved.includes(id)?' complete':'');if(solved.includes(id)){const star=document.createElement('span');star.textContent='★';button.append(star);}
+  button.setAttribute('aria-label','Lecția 5, lădița '+id+(id===1?' — rotunjește 47 la zeci'+(solved.includes(id)?' — rezolvată':''):' — exercițiul urmează să fie adăugat'));
   Object.assign(button.style,{left:left[row][col]+'%',top:top[row]+'%',width:'12.9%',height:'18%'});
-  button.addEventListener('click',()=>{roundingReturnFocus=button;$('rounding-dialog-title').textContent='Lădița '+id;$('rounding-dialog').showModal();$('rounding-dialog-close').focus();});
+  button.addEventListener('click',()=>{if(id===1)return openRoundingExercise();roundingReturnFocus=button;$('rounding-dialog-title').textContent='Lădița '+id;$('rounding-dialog').showModal();$('rounding-dialog-close').focus();});
   $('rounding-chests').append(button);
  }
- $('lesson-content-message').textContent='0 din 12 steluțe. Exercițiile de rotunjire urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
+ $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Prima lădiță este disponibilă; celelalte exerciții urmează să fie adăugate.'+(teacherMapReturn?' Vizualizare profesor.':'');
 }
 for(const id of ['rounding-dialog-close','rounding-dialog-return'])$(id).addEventListener('click',()=>$('rounding-dialog').close());
 $('rounding-dialog').addEventListener('close',()=>roundingReturnFocus?.focus());
 $('rounding-back-sign').addEventListener('click',()=>openForest());
+function roundingControls(){const disabled=roundingBusy||!roundingReady||!!teacherMapReturn;$('rounding-answer').disabled=disabled;$('rounding-check').disabled=disabled;}
+function roundingMessage(message=''){ $('rounding-exercise-status').textContent=message; }
+function applyRoundingProfile(profile){if(!profile||profile.studentId!==mapProfile?.studentId)throw new Error('Profilul elevului nu corespunde.');renderMap(profile);renderForest(mapProfile);renderRounding();}
+async function openRoundingExercise(){
+ const revision=++comparisonRevision,sid=mapProfile.studentId;roundingBusy=false;roundingReady=false;
+ $('rounding-answer').value='';$('rounding-answer').className='';$('rounding-answer').setAttribute('aria-invalid','false');roundingControls();
+ $('lesson-content-page').hidden=true;$('rounding-exercise-page').hidden=false;$('rounding-exercise-back').focus();window.scrollTo(0,0);
+ roundingMessage(teacherMapReturn?'Vizualizare profesor. Progresul elevilor nu este modificat.':'Se verifică accesul…');
+ if(teacherMapReturn)return;
+ try{const r=await studentAuth.rounding('state');if(revision!==comparisonRevision||$('rounding-exercise-page').hidden||mapProfile?.studentId!==sid||teacherMapReturn)return;applyRoundingProfile(r.profile);roundingReady=true;roundingControls();roundingMessage();$('rounding-answer').focus();}
+ catch(error){if(revision===comparisonRevision&&!$('rounding-exercise-page').hidden)roundingMessage(error.message);}
+}
+async function checkRounding(){
+ if(roundingBusy||!roundingReady||teacherMapReturn)return;
+ const answer=$('rounding-answer').value.trim();if(!/^\d{1,5}$/.test(answer)){roundingMessage('Scrie un număr în căsuță.');$('rounding-answer').focus();return;}
+ const revision=comparisonRevision,sid=mapProfile.studentId;roundingBusy=true;roundingControls();roundingMessage('Se verifică…');
+ try{const r=await studentAuth.rounding('answer',{chest:1,answer});if(revision!==comparisonRevision||$('rounding-exercise-page').hidden||mapProfile?.studentId!==sid||teacherMapReturn)return;applyRoundingProfile(r.profile);$('rounding-answer').className=r.correct?'correct':'incorrect';$('rounding-answer').setAttribute('aria-invalid',String(!r.correct));roundingMessage(r.correct?'Corect! Ai câștigat steluța acestei lădițe.':'Mai încearcă!');}
+ catch(error){if(revision===comparisonRevision&&!$('rounding-exercise-page').hidden)roundingMessage(error.message);}
+ finally{if(revision===comparisonRevision){roundingBusy=false;roundingControls();}}
+}
+$('rounding-check').addEventListener('click',checkRounding);
+$('rounding-answer').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();checkRounding();}});
+$('rounding-answer').addEventListener('input',()=>{if(!roundingBusy){$('rounding-answer').className='';$('rounding-answer').setAttribute('aria-invalid','false');roundingMessage();}});
+$('rounding-exercise-back').addEventListener('click',()=>{comparisonRevision++;roundingBusy=false;roundingReady=false;$('rounding-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderRounding();$('rounding-chests').children[0]?.focus();window.scrollTo(0,0);});
 function openLessonContent(lesson){
  $('lesson-dialog').close();$('forest-page').hidden=true;
  $('lesson-content-title').textContent=lesson.id+'. '+lesson.title;
- $('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;comparisonBusy=false;orderingBusy=false;$('comparison-panel').hidden=lesson.id!==3;if(lesson.id===3)renderComparison();$('ordering-panel').hidden=lesson.id!==4;if(lesson.id===4)renderOrdering();
+ $('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;comparisonBusy=false;orderingBusy=false;$('comparison-panel').hidden=lesson.id!==3;if(lesson.id===3)renderComparison();$('ordering-panel').hidden=lesson.id!==4;if(lesson.id===4)renderOrdering();
  $('rounding-panel').hidden=lesson.id!==5;if(lesson.id===5)renderRounding();
  if(lesson.id!==3&&lesson.id!==4&&lesson.id!==5)$('lesson-content-message').textContent='Exercițiile acestei lecții urmează să fie adăugate.';
  $('lesson-content-page').hidden=false;$('lesson-content-back').focus();window.scrollTo(0,0);
@@ -313,7 +339,7 @@ $('comparison-check').addEventListener('click',async()=>{
  finally{if(revision===comparisonRevision){comparisonBusy=false;setComparisonControls();}}
 });
 $('comparison-exercise-back').addEventListener('click',()=>{
- comparisonRevision++;comparisonBusy=false;comparisonReady=false;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderComparison();$('comparison-chests').children[(activeComparisonChest||1)-1]?.focus();window.scrollTo(0,0);
+ comparisonRevision++;comparisonBusy=false;comparisonReady=false;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderComparison();$('comparison-chests').children[(activeComparisonChest||1)-1]?.focus();window.scrollTo(0,0);
 });
 function renderForest(profile){
  const p=profile.lessonProgress?.[1]||{unlocked:[1],completed:[]};
@@ -338,7 +364,7 @@ function renderForest(profile){
 }
 function openForest(){
  if(!mapProfile)return;
- $('lesson-content-page').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;
+ $('lesson-content-page').hidden=true;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;
  $('reading-page').hidden=true;
  $('formation-page').hidden=true;
  renderForest(mapProfile);$('map-page').hidden=true;$('forest-page').hidden=false;$('forest-back').focus();window.scrollTo(0,0);

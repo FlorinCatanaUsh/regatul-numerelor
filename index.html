@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=rounding-lesson-map">
+<link rel="stylesheet" href="./styles/main.css?v=rounding-first-chest">
 </head>
 <body>
 <main>
@@ -87,11 +87,11 @@
   </div></div>
  </div>
  <div id="rounding-panel" hidden>
-  <p class="map-help">Alege o lădiță. Exercițiile de rotunjire urmează să fie adăugate. Pe telefon poți glisa imaginea lateral.</p>
+  <p class="map-help">Prima lădiță este disponibilă. Rezolvă exercițiul pentru a câștiga o steluță. Pe telefon poți glisa imaginea lateral.</p>
   <div class="map-scroll" tabindex="0" role="region" aria-label="Cele 12 lădițe ale lecției 5"><div class="comparison-art">
    <img id="rounding-image" src="./assets/rotunjirea-cupola.webp" width="1672" height="941" alt="5. Rotunjirea numerelor naturale: 12 lădițe numerotate, robotul cu exemplul 147 aproximativ 150, bufnița, școala și cheia lecției 6 sub cupolă. Progres zero din 12 steluțe.">
    <button id="rounding-back-sign" type="button" aria-label="Înapoi la pădure"></button>
-   <div id="rounding-chests"></div>
+   <div id="rounding-chests"></div><span id="rounding-count" class="comparison-counter">0/12</span><progress id="rounding-bar" max="12" value="0" aria-label="Steluțe câștigate la lecția 5"></progress>
    <button id="rounding-key" type="button" disabled aria-label="Cheia lecției 6 este sub cupolă" title="Exercițiile de rotunjire urmează să fie adăugate."></button>
   </div></div>
  </div>
@@ -114,6 +114,16 @@
   <button id="comparison-dialog-return" type="button">Înapoi la lădițe</button>
  </dialog>
  <div class="lesson-content-body"><p id="lesson-content-message" role="status">Exercițiile acestei lecții urmează să fie adăugate.</p></div>
+</section>
+
+<section id="rounding-exercise-page" hidden aria-label="Lecția 5, lădița 1 — Rotunjește 47 la zeci">
+ <div class="map-scroll" tabindex="0" role="region" aria-label="Exercițiu de rotunjire la zeci"><div class="rounding-exercise-art">
+  <img id="rounding-exercise-image" src="./assets/rotunjirea-ladita1.webp" width="1672" height="941" alt="Rotunjește numărul 47 la zeci. Privește cifra unităților. 0, 1, 2, 3, 4: rotunjește prin eliminare. 5, 6, 7, 8, 9: rotunjește prin adăugare.">
+  <input id="rounding-answer" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" autocomplete="off" aria-label="Numărul 47 rotunjit la zeci" disabled>
+  <p id="rounding-exercise-status" class="exercise-status" role="status" aria-live="polite"></p>
+  <button id="rounding-check" type="button" aria-label="Verifică răspunsul" disabled></button>
+  <button id="rounding-exercise-back" type="button" aria-label="Înapoi la lădițe"></button>
+ </div></div>
 </section>
 
 <section id="ordering-exercise-page" hidden aria-label="Lecția 4, lădița 1 — Ordonează crescător">
@@ -316,6 +326,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=rounding-lesson-map"></script>
+<script type="module" src="./scripts/app.js?v=rounding-first-chest"></script>
 </body>
 </html>
