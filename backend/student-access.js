@@ -46,7 +46,7 @@ Deno.serve(async req=>{
    return students===null?response({error:'Acces rezervat profesorului.'},403,origin):response({students},200,origin);
   }
   if(body.action==='roman'){
-   if(!['state','answer','match'].includes(body.operation))return response({error:'Cerere invalidă.'},400,origin);
+   if(!['state','answer','match','take_crystal'].includes(body.operation))return response({error:'Cerere invalidă.'},400,origin);
    if(body.operation==='answer'&&(!Number.isInteger(body.chest)||typeof body.answer!=='string'||body.answer.length>32||!/^([0-9]{1,5}|[IVXLCDMivxlcdm\s]{1,32})$/.test(body.answer.trim())))return response({error:'Scrie răspunsul în căsuță.'},400,origin);
    if(body.operation==='match'&&(!Number.isInteger(body.chest)||body.chest<5||body.chest>12||!Array.isArray(body.answer)||body.answer.length!==4||!body.answer.every(n=>Number.isInteger(n)&&n>=1&&n<=39)||new Set(body.answer).size!==4))return response({error:'Asociază toate cele patru numere.'},400,origin);
    const r=await rpc('regat_roman',{p_token:token,p_action:body.operation,p_chest:body.chest??null,p_answer:body.operation==='match'?body.answer.join(','):body.answer??null});

@@ -1,7 +1,7 @@
 import { pupils } from '../data/students.js';
-import { studentAuth } from './auth.js?v=map-fog-75';
-import { setupMap } from './map.js?v=map-fog-75';
-import { setupTeacher } from './teacher.js?v=map-fog-75';
+import { studentAuth } from './auth.js?v=forest-crystal';
+import { setupMap } from './map.js?v=forest-crystal';
+import { setupTeacher } from './teacher.js?v=forest-crystal';
 'use strict';
 
 const $ = id => document.getElementById(id);

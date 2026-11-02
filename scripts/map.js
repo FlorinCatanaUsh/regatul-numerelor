@@ -41,10 +41,10 @@ function renderMap(profile) {
  $('map-chapters').replaceChildren();$('chapter-progress').replaceChildren();
  for(const chapter of chapters){
   const done=mapProfile.completedChapters.includes(chapter.id);
-  const state=done?'parcurs':chapter.id===1?'disponibil':'blocat';
+  const state=done?'parcurs':chapterRevealed(chapter.id)?'disponibil':'blocat';
   const hotspot=document.createElement('button');hotspot.type='button';hotspot.className='chapter-hotspot'+(done?' complete':'')+(chapterRevealed(chapter.id)?'':' fogged');hotspot.setAttribute('aria-label',chapter.id+'. '+chapter.title+' — '+state);
   const [left,top,width,height]=chapter.box;Object.assign(hotspot.style,{left:left+'%',top:top+'%',width:width+'%',height:height+'%'});
-  const badge=document.createElement('span');badge.className='chapter-state';badge.setAttribute('aria-hidden','true');badge.textContent=done?'✓':chapter.id===1?'↪':'🔒';hotspot.append(badge);hotspot.addEventListener('click',()=>showChapter(chapter));$('map-chapters').append(hotspot);
+  const badge=document.createElement('span');badge.className='chapter-state';badge.setAttribute('aria-hidden','true');badge.textContent=done?'✓':chapterRevealed(chapter.id)?'↪':'🔒';hotspot.append(badge);hotspot.addEventListener('click',()=>showChapter(chapter));$('map-chapters').append(hotspot);
   const tile=document.createElement('button');tile.type='button';tile.className='progress-tile'+(done?' complete':'');tile.textContent=String(chapter.id);tile.setAttribute('aria-label','Capitolul '+chapter.id+' — '+state);tile.addEventListener('click',()=>showChapter(chapter));$('chapter-progress').append(tile);
  }
  $('map-summary').textContent=teacherClassMode?'Harta clasei. Comenzile de sus se aplică tuturor elevilor.':mapProfile.completedChapters.length+' din 8 capitole parcurse.';
@@ -314,8 +314,15 @@ $('rounding-answer').addEventListener('input',()=>{if(!roundingBusy){$('rounding
 $('rounding-exercise-back').addEventListener('click',()=>{comparisonRevision++;roundingBusy=false;roundingReady=false;$('roman-match-page').hidden=true;$('roman-exercise-page').hidden=true;$('rounding-exercise-page').hidden=true;$('lesson-content-page').hidden=false;renderRounding();$('rounding-chests').children[activeRoundingChest-1]?.focus();window.scrollTo(0,0);});
 const romanExercises={1:{number:'III',unit:'cifre arabe',hint:'Cifrele identice se adună.',image:$('roman-exercise-image').src},2:{number:'XIV',unit:'cifre arabe',hint:'I înaintea lui V se scade. În celelalte cazuri, valorile se adună.',image:$('roman-exercise-source-2').src},3:{number:'23',unit:'cifre romane',romanAnswer:true,hint:'Descompune numărul în zeci și unități. Scrie întâi zecile, apoi unitățile.',image:$('roman-exercise-source-3').src},4:{number:'19',unit:'cifre romane',romanAnswer:true,hint:'Descompune numărul în zeci și unități. I înaintea lui X se scade.',image:$('roman-exercise-source-4').src},5:{matching:true,number:'asocieri',unit:'cifre arabe'},6:{matching:true,number:'asocieri',unit:'cifre arabe'},7:{matching:true,number:'asocieri',unit:'cifre arabe'},8:{matching:true,number:'asocieri',unit:'cifre arabe'},9:{matching:true,number:'asocieri',unit:'cifre romane'},10:{matching:true,number:'asocieri',unit:'cifre romane'},11:{matching:true,number:'asocieri',unit:'cifre romane'},12:{matching:true,number:'asocieri',unit:'cifre romane'}};
 let romanReturnFocus=null,romanBusy=false,romanReady=false,activeRomanChest=1;
+const romanCrystalDome=$('roman-image').src;
+let crystalBusy=false;
 function renderRoman(){
- $('roman-key').disabled=true;
+ const count=(mapProfile?.lessonProgress?.[1]?.romanSolved||[]).filter(id=>romanExercises[id]).length,taken=!!mapProfile?.lessonProgress?.[1]?.forestCrystalTaken;
+ $('roman-image').src=count>=6?$('roman-crystal-ready').src:romanCrystalDome;
+ $('roman-key').disabled=count<6||taken||!!teacherMapReturn||crystalBusy;
+ $('roman-key').className=count>=6&&!taken?'crystal-ready':'';
+ $('roman-key').setAttribute('aria-label',taken?'Cristalul pădurii a fost câștigat':count>=6?'Ia cristalul pădurii și dezvăluie capitolul 2':'Obține 6 steluțe pentru cristalul pădurii');
+ $('roman-key').title=taken?'Cristal câștigat':count>=6?'Ia cristalul pădurii':'Obține 6 steluțe';
  const solved=[...new Set((mapProfile?.lessonProgress?.[1]?.romanSolved||[]).filter(id=>romanExercises[id]))];
  $('roman-count').textContent=solved.length+'/12';$('roman-bar').value=solved.length;
  $('roman-chests').replaceChildren();
@@ -329,6 +336,13 @@ function renderRoman(){
  }
  $('lesson-content-message').textContent=solved.length+' din 12 steluțe. Toate cele 12 lădițe sunt disponibile.'+(teacherMapReturn?' Vizualizare profesor.':'');
 }
+$('roman-key').addEventListener('click',async()=>{
+ if(crystalBusy||teacherMapReturn||$('roman-key').disabled)return;
+ const sid=mapProfile.studentId,revision=comparisonRevision;crystalBusy=true;renderRoman();
+ try{const r=await studentAuth.roman('take_crystal');if(mapProfile?.studentId!==sid||revision!==comparisonRevision||teacherMapReturn)return;applyRomanProfile(r.profile);$('lesson-content-page').hidden=true;$('forest-page').hidden=true;$('map-page').hidden=false;$('map-summary').textContent='Ai cucerit Pădurea numerelor fermecate! Cristalul pădurii a dezvăluit Valea adunării și scăderii.';$('map-chapters').children[1]?.focus();window.scrollTo(0,0);}
+ catch(e){if(revision===comparisonRevision)$('lesson-content-message').textContent=e.message;}
+ finally{crystalBusy=false;renderRoman();}
+});
 for(const id of ['roman-dialog-close','roman-dialog-return'])$(id).addEventListener('click',()=>$('roman-dialog').close());
 $('roman-dialog').addEventListener('close',()=>romanReturnFocus?.focus());
 $('roman-back-sign').addEventListener('click',()=>openForest());
