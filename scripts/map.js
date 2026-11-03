@@ -74,6 +74,8 @@ for(const id of ['addition-back','addition-back-sign'])$(id).addEventListener('c
 for(const id of ['valley-back','valley-back-sign'])$(id).addEventListener('click',()=>{$('valley-page').hidden=true;$('map-page').hidden=false;renderMap(mapProfile);$('map-chapters').children[1]?.focus();window.scrollTo(0,0);});
 function chapterRevealed(id){return id===1||mapProfile.completedChapters.includes(id)||mapProfile.completedChapters.includes(id-1);}
 function renderMapFog(){
+ $('map-fog').style.display=teacherMapReturn?'none':'';
+ if(teacherMapReturn){$('map-image').alt='Regatul numerelor — harta completă, vizualizare profesor.';return;}
  // Each reveal follows the artwork's island, independent of viewport size.
  const zones=[[205,350,260,185],[655,345,230,155],[1070,330,225,170],[1445,175,235,190],[1465,485,220,185],[1010,600,245,165],[600,580,240,170],[255,625,235,165]];
  const clear=[[265,110,330,160],[835,95,310,140],[135,835,170,120]];
@@ -105,7 +107,7 @@ $('map-home').addEventListener('click',async()=>{if(teacherMapReturn){const back
 for(const id of ['chapter-close','chapter-back'])$(id).addEventListener('click',()=>$('chapter-dialog').close());
 $('map-castle').addEventListener('click',()=>{$('chapter-title').textContent='Castelul Marelui Cristal';$('chapter-description').textContent='Marea provocare finală a Regatului numerelor.';$('chapter-access').textContent='Castelul rămâne închis până la parcurgerea celor opt capitole și deblocarea de către profesor. Provocarea finală nu este încă configurată.';$('chapter-dialog').showModal();});
 const mapUI={open:openStudentMap,teacherView(profile,onBack){
- teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('forest-mode').textContent='Vizualizare profesor';renderMap(profile);teacherMapReturn=onBack;$('teacher-page').hidden=true;$('map-page').hidden=false;$('forest-page').hidden=true;
+ teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('forest-mode').textContent='Vizualizare profesor';teacherMapReturn=onBack;renderMap(profile);$('teacher-page').hidden=true;$('map-page').hidden=false;$('forest-page').hidden=true;
  $('map-home').textContent='← Panoul profesorului';$('map-mode').textContent='Vizualizare profesor';
  $('map-summary').textContent+=' Atinge insulița 1 pentru progresul celor 6 lecții. Vizualizarea nu modifică progresul.';
  document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
@@ -113,7 +115,7 @@ const mapUI={open:openStudentMap,teacherView(profile,onBack){
  teacherClassMode=true;document.body.classList.add('teacher-class-mode');
  const profile={studentId:'class',displayName:'Toată clasa',completedChapters:[],lessonProgress:{1:{unlocked:[1],completed:[]}},formation:{solved:[],keyTaken:false,lesson2Allowed,lesson2Opened:false},reading:{solved:[],keyTaken:false},classAccess:lessonAccess};
  profile.lessonProgress[1].manualAccess=Object.fromEntries(Object.entries(lessonAccess).filter(([id])=>id!=='2').map(([id,s])=>[id,s.total>0&&s.allowed===s.total]));
- renderMap(profile);teacherMapReturn=onBack;$('teacher-page').hidden=true;$('map-page').hidden=false;$('forest-page').hidden=true;
+ teacherMapReturn=onBack;renderMap(profile);$('teacher-page').hidden=true;$('map-page').hidden=false;$('forest-page').hidden=true;
  $('map-home').textContent='← Individual';$('map-mode').textContent='Toată clasa';$('forest-mode').textContent='Toată clasa';
  document.body.classList.add('viewing-map');window.scrollTo(0,0);
 },updateClassPermission(allowed){
