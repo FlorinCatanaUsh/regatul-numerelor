@@ -76,24 +76,25 @@ for(const row of proofRows){
  row.right.addEventListener('input',calculate);
  row.sign.addEventListener('change',calculate);
 }
-const proofExercises={1:[27,15],2:[274,158],3:[578,302],4:[578,302],5:[453,467,910],6:[453,467,920]};
+const proofExercises={1:[27,15],2:[274,158],3:[578,302],4:[578,302],5:[453,467,910],6:[453,467,920],7:[745,426,319]};
 const subtractionProofInputs=['proof-add-left','proof-add-right','proof-add-result'].map($);
 let proofRevision=0,proofBusy=false,activeProofChest=1;
 function openProofExercise(number){
  activeProofChest=number;
- const [left,right,givenSum]=proofExercises[number];
+ const [left,right,givenResult]=proofExercises[number];
  $('proof-chest-title').textContent=number;
  $('proof-chest-title').setAttribute('aria-label','Lădița '+number);
- const subtraction=number===3||number===4;
- const verifyGivenSum=givenSum!==undefined;
+ const subtraction=number===3||number===4||number===7;
+ const hasGivenResult=givenResult!==undefined;
+ const verifyGivenSum=hasGivenResult&&!subtraction;
  $('proof-row-1-label').textContent=verifyGivenSum?'Probă:':'Proba 1:';
  const checkBySubtraction=number===4;
  $('proof-fixed-sign').textContent=checkBySubtraction?'−':'+';
  $('proof-operation').textContent=left+(subtraction?' − ':' + ')+right+' =';
  $('proof-sum').setAttribute('aria-label',subtraction?'Diferența':'Suma');
- $('proof-sum').hidden=verifyGivenSum;
- $('proof-given-result').hidden=!verifyGivenSum;
- $('proof-given-result').textContent=givenSum??'';
+ $('proof-sum').hidden=hasGivenResult;
+ $('proof-given-result').hidden=!hasGivenResult;
+ $('proof-given-result').textContent=givenResult??'';
  $('proof-result-1').hidden=verifyGivenSum;
  for(const id of ['proof-verdict','proof-written-result']){
   const field=$(id);
@@ -101,7 +102,7 @@ function openProofExercise(number){
   field.disabled=!verifyGivenSum||!!teacherMapReturn;
   field.value='';
  }
- $('proof-title').textContent=verifyGivenSum?'Verifică prin probă dacă exercițiul următor a fost rezolvat corect:':checkBySubtraction?'Rezolvă scăderea și verifică prin scădere:':subtraction?'Rezolvă scăderea și verifică prin adunare:':'Rezolvă și verifică prin cele două probe ale adunării';
+ $('proof-title').textContent=number===7?'Verifică prin adunare dacă exercițiul următor a fost rezolvat corect:':verifyGivenSum?'Verifică prin probă dacă exercițiul următor a fost rezolvat corect:':checkBySubtraction?'Rezolvă scăderea și verifică prin scădere:':subtraction?'Rezolvă scăderea și verifică prin adunare:':'Rezolvă și verifică prin cele două probe ale adunării';
  $('proof-hint').textContent=checkBySubtraction?'Indiciu: La proba prin scădere caută prima dată numărul cel mai mare!':subtraction?'Indiciu: La proba prin adunare caută întotdeauna numerele cele mai mici.':'Indiciu: Proba adunării se realizează prin scădere.';
  $('proof-row-1').hidden=subtraction;
  $('proof-row-2').hidden=subtraction||verifyGivenSum;
@@ -115,7 +116,7 @@ function openProofExercise(number){
   row.result.textContent='—';
   row.left.disabled=row.right.disabled=row.sign.disabled=subtraction||(verifyGivenSum&&index===1)||!!teacherMapReturn;
  }
- $('proof-sum').disabled=verifyGivenSum||!!teacherMapReturn;
+ $('proof-sum').disabled=hasGivenResult||!!teacherMapReturn;
  $('proof-check').disabled=!!teacherMapReturn;
  $('proof-status').textContent=teacherMapReturn?'Previzualizare profesor.':'';
  $('proof-dialog').showModal();
@@ -125,15 +126,16 @@ $('proof-dialog').addEventListener('close',()=>{proofRevision++;proofBusy=false;
 $('proof-form').addEventListener('submit',async event=>{
  event.preventDefault();
  if(teacherMapReturn||proofBusy)return;
- const verifyGivenSum=proofExercises[activeProofChest][2]!==undefined;
- const sum=verifyGivenSum?$('proof-given-result').textContent:$('proof-sum').value;
- const subtraction=activeProofChest===3||activeProofChest===4;
+ const subtraction=activeProofChest===3||activeProofChest===4||activeProofChest===7;
+ const hasGivenResult=proofExercises[activeProofChest][2]!==undefined;
+ const verifyGivenSum=hasGivenResult&&!subtraction;
+ const sum=hasGivenResult?$('proof-given-result').textContent:$('proof-sum').value;
  const probes=subtraction?subtractionProofInputs.map(field=>/^\d{1,3}$/.test(field.value)?+field.value:null):proofRows.slice(0,verifyGivenSum?1:2).map(proofNumbers);
  const writtenResult=$('proof-written-result').value;
  const verdict=$('proof-verdict').value;
  const missingVerdict=verifyGivenSum&&(!/^\d{1,3}$/.test(writtenResult)||!['A','F'].includes(verdict));
  if(missingVerdict||!/^\d{1,3}$/.test(sum)||probes.some(p=>p===null)){
-  $('proof-status').textContent=verifyGivenSum?'Completează proba și alege A sau F.':subtraction?'Completează diferența și proba.':'Completează suma și cele două probe.';return;
+  $('proof-status').textContent=verifyGivenSum?'Completează proba și alege A sau F.':activeProofChest===7?'Completează proba.':subtraction?'Completează diferența și proba.':'Completează suma și cele două probe.';return;
  }
  const revision=proofRevision;
  proofBusy=$('proof-check').disabled=true;
