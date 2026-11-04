@@ -38,13 +38,51 @@ function renderStars(){
 const valleyLessons=['Adunarea fără trecere peste ordin','Scăderea fără trecere peste ordin','Adunarea cu trecere peste ordin','Scăderea cu trecere peste ordin','Proba adunării','Proba scăderii','Ordinea efectuării operațiilor'];
 function openValley(){
  $('addition-page').hidden=true;
+ $('subtraction-page').hidden=true;
  $('map-page').hidden=true;$('forest-page').hidden=true;$('valley-page').hidden=false;
  $('valley-student').textContent=mapProfile.displayName;$('valley-stars').textContent=String(chapterStars(mapProfile,2));
  $('valley-lessons').replaceChildren();$('valley-progress').replaceChildren();
  const boxes=[[21.5,41,15,17],[43.5,43,15,17],[61.5,44,15,17],[19.5,59,15,18],[38,61,15,18],[56,63,13,18],[72,62,14,18]];
- valleyLessons.forEach((title,i)=>{const id=i+1,b=document.createElement('button');b.type='button';b.className='valley-lesson';b.setAttribute('aria-label',id+'. '+title+' — exerciții în pregătire');const [left,top,width,height]=boxes[i];Object.assign(b.style,{left:left+'%',top:top+'%',width:width+'%',height:height+'%'});const show=()=>{if(id===1){openAddition();return;}$('chapter-title').textContent=id+'. '+title;$('chapter-description').textContent='Valea adunării și scăderii';$('chapter-access').textContent='Exercițiile acestei lecții sunt în pregătire.';$('chapter-dialog').showModal();};b.addEventListener('click',show);$('valley-lessons').append(b);const tile=document.createElement('button');tile.type='button';tile.className='valley-tile';tile.textContent=String(id);tile.setAttribute('aria-label','Lecția '+id+' — '+title);Object.assign(tile.style,{left:(i<4?[79.5,83,86.5,90][i]:[81,84.6,88.2][i-4])+'%',top:(i<4?9.8:16)+'%',width:'3%',height:'5%'});tile.addEventListener('click',show);$('valley-progress').append(tile);});
+ valleyLessons.forEach((title,i)=>{const id=i+1,b=document.createElement('button');b.type='button';b.className='valley-lesson';b.setAttribute('aria-label',id+'. '+title+(id>2?' — exerciții în pregătire':''));const [left,top,width,height]=boxes[i];Object.assign(b.style,{left:left+'%',top:top+'%',width:width+'%',height:height+'%'});const show=()=>{if(id===1){openAddition();return;}if(id===2){openSubtraction();return;}$('chapter-title').textContent=id+'. '+title;$('chapter-description').textContent='Valea adunării și scăderii';$('chapter-access').textContent='Exercițiile acestei lecții sunt în pregătire.';$('chapter-dialog').showModal();};b.addEventListener('click',show);$('valley-lessons').append(b);const tile=document.createElement('button');tile.type='button';tile.className='valley-tile';tile.textContent=String(id);tile.setAttribute('aria-label','Lecția '+id+' — '+title);Object.assign(tile.style,{left:(i<4?[79.5,83,86.5,90][i]:[81,84.6,88.2][i-4])+'%',top:(i<4?9.8:16)+'%',width:'3%',height:'5%'});tile.addEventListener('click',show);$('valley-progress').append(tile);});
  $('valley-summary').textContent='0 din 7 lecții parcurse. '+chapterStars(mapProfile,2)+' steluțe în acest capitol. Exercițiile vor fi adăugate pe rând.';
  $('valley-back').focus();window.scrollTo(0,0);
+}
+function openSubtraction() {
+ const chests = $('subtraction-chests');
+ chests.replaceChildren();
+ for (let number = 1; number <= 12; number++) {
+  const chest = document.createElement('button');
+  const row = Math.floor((number - 1) / 4);
+  const column = (number - 1) % 4;
+  chest.type = 'button';
+  chest.className = 'addition-chest';
+  chest.setAttribute('aria-label', 'Lădița ' + number + ' — scădere');
+  Object.assign(chest.style, {
+   left: [23, 36.3, 49.2, 61.5][column] + '%',
+   top: [40.5, 57.2, 75][row] + '%',
+   width: '12.7%',
+   height: '18.5%'
+  });
+  chest.addEventListener('click', () => {
+   $('chapter-title').textContent = 'Lădița ' + number;
+   $('chapter-description').textContent = valleyLessons[1];
+   $('chapter-access').textContent = 'Exercițiul acestei lădițe este în pregătire.';
+   $('chapter-dialog').showModal();
+   $('chapter-close').focus();
+  });
+  chests.append(chest);
+ }
+ $('valley-page').hidden = true;
+ $('subtraction-page').hidden = false;
+ $('subtraction-student').textContent = mapProfile.displayName;
+ $('subtraction-back').focus();
+ window.scrollTo(0, 0);
+}
+for (const id of ['subtraction-back', 'subtraction-back-sign']) {
+ $(id).addEventListener('click', () => {
+  openValley();
+  $('valley-lessons').children[1]?.focus();
+ });
 }
 const additionExercises=[[537,142],[324,251],[613,284],[452,327],[2345,432],[5106,273],[6421,358],[7032,645],[2345,4123],[5214,2635],[4032,1526],[6103,2784]];
 let activeAdditionChest=1;
@@ -101,9 +139,10 @@ function renderMap(profile) {
  $('map-summary').textContent=teacherClassMode?'Harta clasei. Comenzile de sus se aplică tuturor elevilor.':mapProfile.completedChapters.length+' din 8 capitole parcurse.';
 }
 function openStudentMap(profile){
+ $('subtraction-page').hidden=true;
  $('addition-exercise-page').hidden=true;$('addition-page').hidden=true;$('valley-page').hidden=true;teacherMapReturn=null;teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('teacher-workspace').hidden=true;$('roman-match-page').hidden=true;$('roman-exercise-page').hidden=true;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;$('lesson-content-page').hidden=true;$('forest-mode').textContent='Elev';$('map-home').textContent='Ieșire';$('map-mode').textContent='Elev';renderMap(profile);$('map-page').hidden=false;$('forest-page').hidden=true;document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
 }
-$('map-home').addEventListener('click',async()=>{if(teacherMapReturn){const back=teacherMapReturn;teacherMapReturn=null;mapProfile=null;forestState=null;$('map-page').hidden=true;$('forest-page').hidden=true;$('valley-page').hidden=true;back();return;}const button=$('map-home');button.disabled=true;try{await studentAuth.logout();}catch{studentAuth.clear();}finally{button.disabled=false;$('map-page').hidden=true;$('forest-page').hidden=true;document.body.classList.remove('viewing-map');mapProfile=null;forestState=null;$('class-entry').focus();}});
+$('map-home').addEventListener('click',async()=>{if(teacherMapReturn){const back=teacherMapReturn;teacherMapReturn=null;mapProfile=null;forestState=null;$('map-page').hidden=true;$('forest-page').hidden=true;$('valley-page').hidden=true;$('subtraction-page').hidden=true;back();return;}const button=$('map-home');button.disabled=true;try{await studentAuth.logout();}catch{studentAuth.clear();}finally{button.disabled=false;$('map-page').hidden=true;$('forest-page').hidden=true;document.body.classList.remove('viewing-map');mapProfile=null;forestState=null;$('class-entry').focus();}});
 for(const id of ['chapter-close','chapter-back'])$(id).addEventListener('click',()=>$('chapter-dialog').close());
 $('map-castle').addEventListener('click',()=>{$('chapter-title').textContent='Castelul Marelui Cristal';$('chapter-description').textContent='Marea provocare finală a Regatului numerelor.';$('chapter-access').textContent='Castelul rămâne închis până la parcurgerea celor opt capitole și deblocarea de către profesor. Provocarea finală nu este încă configurată.';$('chapter-dialog').showModal();});
 const mapUI={open:openStudentMap,teacherView(profile,onBack){
