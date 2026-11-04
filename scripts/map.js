@@ -63,7 +63,7 @@ const proofRows=[1,2].map(i=>({
  right:$('proof-right-'+i),result:$('proof-result-'+i)
 }));
 function proofNumbers({left,right,sign}){
- if(!/^\d{1,2}$/.test(left.value)||!/^\d{1,2}$/.test(right.value)||!['+','-'].includes(sign.value))return null;
+ if(!/^\d{1,3}$/.test(left.value)||!/^\d{1,3}$/.test(right.value)||!['+','-'].includes(sign.value))return null;
  return [+left.value,sign.value,+right.value];
 }
 for(const row of proofRows){
@@ -75,8 +75,13 @@ for(const row of proofRows){
  row.right.addEventListener('input',calculate);
  row.sign.addEventListener('change',calculate);
 }
-let proofRevision=0,proofBusy=false;
-function openProofExercise(){
+const proofExercises={1:[27,15],2:[274,158]};
+let proofRevision=0,proofBusy=false,activeProofChest=1;
+function openProofExercise(number){
+ activeProofChest=number;
+ const [left,right]=proofExercises[number];
+ $('proof-chest-title').textContent='Lecția 5 · Lădița '+number;
+ $('proof-operation').textContent=left+' + '+right+' =';
  proofRevision++;
  proofBusy=false;
  $('proof-sum').value='';
@@ -95,13 +100,13 @@ $('proof-form').addEventListener('submit',async event=>{
  event.preventDefault();
  if(teacherMapReturn||proofBusy)return;
  const probes=proofRows.map(proofNumbers),sum=$('proof-sum').value;
- if(!/^\d{1,2}$/.test(sum)||probes.some(p=>!p)){
+ if(!/^\d{1,3}$/.test(sum)||probes.some(p=>!p)){
   $('proof-status').textContent='Completează suma și cele două probe.';return;
  }
  const revision=proofRevision;
  proofBusy=$('proof-check').disabled=true;
  try{
-  const r=await studentAuth.proof('answer',{chest:1,answer:[+sum,...probes.flat()].join(',')});
+  const r=await studentAuth.proof('answer',{chest:activeProofChest,answer:[+sum,...probes.flat()].join(',')});
   if(revision!==proofRevision)return;
   renderMap(r.profile);
   updateProofProgress();
@@ -115,8 +120,9 @@ $('proof-form').addEventListener('submit',async event=>{
 function updateProofProgress(){
  const solved=mapProfile.lessonProgress?.[2]?.solvedByLesson?.[5]||[];
  $('proof-count').textContent=starCount(solved)+'/12';
- const chest=$('proof-chests').children[0];
- if(chest&&solved.includes(1)&&chest.className==='addition-chest'){
+ for(const number of solved){
+  const chest=$('proof-chests').children[number-1];
+  if(!chest||chest.className!=='addition-chest')continue;
   chest.className+=' complete';
   const star=document.createElement('span');star.textContent='★';chest.append(star);
  }
@@ -136,7 +142,7 @@ function openProofLesson() {
    height: '18.5%'
   });
   chest.addEventListener('click', () => {
-   if(number===1){openProofExercise();return;}
+   if(proofExercises[number]){openProofExercise(number);return;}
    $('chapter-title').textContent = 'Lădița ' + number;
    $('chapter-description').textContent = valleyLessons[4];
    $('chapter-access').textContent = 'Exercițiul acestei lădițe este în pregătire.';

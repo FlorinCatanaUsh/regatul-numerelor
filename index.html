@@ -111,20 +111,20 @@
  </div></div><p class="map-summary">Exercițiile vor fi adăugate pe rând.</p>
  <dialog id="proof-dialog" class="chapter-dialog" aria-labelledby="proof-title">
   <button id="proof-close" class="close" type="button" aria-label="Închide">×</button>
-  <p class="eyebrow">Lecția 5 · Lădița 1</p>
+  <p class="eyebrow" id="proof-chest-title">Lecția 5 · Lădița 1</p>
   <h2 id="proof-title">Rezolvă și verifică prin cele două probe ale adunării</h2>
   <form id="proof-form">
-  <div class="proof-row proof-sum"><label for="proof-sum">27 + 15 =</label><input id="proof-sum" inputmode="numeric" pattern="[0-9]{1,2}" maxlength="2" required></div>
+  <div class="proof-row proof-sum"><label id="proof-operation" for="proof-sum">27 + 15 =</label><input id="proof-sum" inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" required></div>
   <div class="proof-row"><span>Proba 1:</span>
-   <input id="proof-left-1" aria-label="Proba 1, primul număr" inputmode="numeric" pattern="[0-9]{1,2}" maxlength="2" required>
+   <input id="proof-left-1" aria-label="Proba 1, primul număr" inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" required>
    <select id="proof-sign-1" aria-label="Proba 1, semnul operației" required><option value="" selected disabled></option><option value="+">+</option><option value="-">−</option></select>
-   <input id="proof-right-1" aria-label="Proba 1, al doilea număr" inputmode="numeric" pattern="[0-9]{1,2}" maxlength="2" required>
+   <input id="proof-right-1" aria-label="Proba 1, al doilea număr" inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" required>
    <span>=</span><output id="proof-result-1" aria-label="Proba 1, rezultat calculat automat">—</output>
   </div>
   <div class="proof-row"><span>Proba 2:</span>
-   <input id="proof-left-2" aria-label="Proba 2, primul număr" inputmode="numeric" pattern="[0-9]{1,2}" maxlength="2" required>
+   <input id="proof-left-2" aria-label="Proba 2, primul număr" inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" required>
    <select id="proof-sign-2" aria-label="Proba 2, semnul operației" required><option value="" selected disabled></option><option value="+">+</option><option value="-">−</option></select>
-   <input id="proof-right-2" aria-label="Proba 2, al doilea număr" inputmode="numeric" pattern="[0-9]{1,2}" maxlength="2" required>
+   <input id="proof-right-2" aria-label="Proba 2, al doilea număr" inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" required>
    <span>=</span><output id="proof-result-2" aria-label="Proba 2, rezultat calculat automat">—</output>
   </div>
   <p class="notice">Indiciu: Proba adunării se realizează prin scădere.</p>
@@ -489,6 +489,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=proof-one"></script>
+<script type="module" src="./scripts/app.js?v=proof-two"></script>
 </body>
 </html>
