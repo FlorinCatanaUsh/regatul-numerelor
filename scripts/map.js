@@ -76,16 +76,16 @@ for(const row of proofRows){
  row.right.addEventListener('input',calculate);
  row.sign.addEventListener('change',calculate);
 }
-const proofExercises={1:[27,15],2:[274,158],3:[578,302],4:[578,302],5:[453,467]};
+const proofExercises={1:[27,15],2:[274,158],3:[578,302],4:[578,302],5:[453,467,910],6:[453,467,920]};
 const subtractionProofInputs=['proof-add-left','proof-add-right','proof-add-result'].map($);
 let proofRevision=0,proofBusy=false,activeProofChest=1;
 function openProofExercise(number){
  activeProofChest=number;
- const [left,right]=proofExercises[number];
+ const [left,right,givenSum]=proofExercises[number];
  $('proof-chest-title').textContent=number;
  $('proof-chest-title').setAttribute('aria-label','Lădița '+number);
  const subtraction=number===3||number===4;
- const verifyGivenSum=number===5;
+ const verifyGivenSum=givenSum!==undefined;
  $('proof-row-1-label').textContent=verifyGivenSum?'Probă:':'Proba 1:';
  const checkBySubtraction=number===4;
  $('proof-fixed-sign').textContent=checkBySubtraction?'−':'+';
@@ -93,6 +93,7 @@ function openProofExercise(number){
  $('proof-sum').setAttribute('aria-label',subtraction?'Diferența':'Suma');
  $('proof-sum').hidden=verifyGivenSum;
  $('proof-given-result').hidden=!verifyGivenSum;
+ $('proof-given-result').textContent=givenSum??'';
  $('proof-result-1').hidden=verifyGivenSum;
  for(const id of ['proof-verdict','proof-written-result']){
   const field=$(id);
@@ -124,7 +125,7 @@ $('proof-dialog').addEventListener('close',()=>{proofRevision++;proofBusy=false;
 $('proof-form').addEventListener('submit',async event=>{
  event.preventDefault();
  if(teacherMapReturn||proofBusy)return;
- const verifyGivenSum=activeProofChest===5;
+ const verifyGivenSum=proofExercises[activeProofChest][2]!==undefined;
  const sum=verifyGivenSum?$('proof-given-result').textContent:$('proof-sum').value;
  const subtraction=activeProofChest===3||activeProofChest===4;
  const probes=subtraction?subtractionProofInputs.map(field=>/^\d{1,3}$/.test(field.value)?+field.value:null):proofRows.slice(0,verifyGivenSum?1:2).map(proofNumbers);
@@ -143,7 +144,7 @@ $('proof-form').addEventListener('submit',async event=>{
   if(revision!==proofRevision)return;
   renderMap(r.profile);
   updateProofProgress();
-  $('proof-status').textContent=r.correct?(verifyGivenSum?'✓ Proba este corectă. Rezultatul 910 este greșit.':'✓ Corect!'):'✗ Mai încearcă.';
+  $('proof-status').textContent=r.correct?(verifyGivenSum?(activeProofChest===6?'✓ Proba confirmă rezultatul 920.':'✓ Proba este corectă. Rezultatul 910 este greșit.'):'✓ Corect!'):'✗ Mai încearcă.';
  }catch(error){
   if(revision===proofRevision)$('proof-status').textContent=error.message;
  }finally{
