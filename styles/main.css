@@ -305,15 +305,14 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
 @media(min-width:1000px){.teacher-toolbar-title p{display:block}}
 @media(max-width:720px){.teacher-toolbar{flex-wrap:wrap}.teacher-toolbar-title{order:-1;flex-basis:100%;margin:0}}
 
-#proof-dialog{--proof-text-size:clamp(22px,5.5vw,28px);width:min(590px,calc(100% - 20px));padding:clamp(12px,3vw,24px)}
+#proof-dialog{--proof-text-size:clamp(22px,5.5vw,28px);--proof-box:min(92px,calc((100% - clamp(7.5rem,30%,10rem)) / 4));width:min(590px,calc(100% - 20px));padding:clamp(12px,3vw,24px)}
 #proof-dialog h2{font-size:var(--proof-text-size)}
-.proof-row{display:grid;grid-template-columns:minmax(3.6rem,auto) repeat(3,minmax(2rem,1fr)) auto minmax(2.5rem,1fr);align-items:center;gap:clamp(3px,1vw,8px);margin:10px 0;font:bold var(--proof-text-size)/1.15 Georgia,serif}
-.proof-row input,.proof-row select,.proof-row output{width:100%;min-width:0;min-height:44px;text-align:center;border:1px solid #aa8747;border-radius:8px;background:#fffdf3;color:#234b42;font:inherit;padding:4px}
+.proof-row{display:grid;grid-template-columns:auto repeat(3,var(--proof-box)) auto var(--proof-box);justify-content:center;align-items:center;gap:clamp(3px,1vw,8px);margin:10px 0;font:bold var(--proof-text-size)/1.15 Georgia,serif}
+.proof-row input,.proof-row select,.proof-row output{width:100%;min-width:0;min-height:48px;text-align:center;border:1px solid #aa8747;border-radius:8px;background:#fffdf3;color:#234b42;font:inherit;padding:4px}
 .proof-row output{display:grid;place-items:center;background:#efe4c9}
-.proof-row select{padding-inline:0}
+.proof-row select{appearance:none;text-align-last:center;padding-inline:0;cursor:pointer}
 .proof-sum{display:flex;justify-content:center}
 .proof-sum label{margin:0}
-.proof-sum input{width:4rem}
-@media(max-width:350px){.proof-row{grid-template-columns:auto repeat(3,minmax(0,1fr)) auto minmax(0,1fr)}}
+.proof-sum input{width:var(--proof-box);flex:0 0 var(--proof-box)}
 #proof-check{min-height:44px;padding:6px 18px;background:#315d52;color:white;border:0;border-radius:8px;font-weight:700}
 #proof-status:empty{display:none}
