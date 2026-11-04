@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=subtraction-chests">
+<link rel="stylesheet" href="./styles/main.css?v=subtraction-exercises">
 </head>
 <body>
 <main>
@@ -80,15 +80,17 @@
  <div class="map-scroll" tabindex="0" role="region" aria-label="Cele 12 lădițe ale lecției de scădere"><div class="addition-art">
   <img src="./assets/valea-scadere-cupola.webp" width="1672" height="941" alt="Douăsprezece lădițe colorate, roboțelul cu 37 minus 14 egal 23, progres 0 din 12 steluțe și cheia lecției 3 sub cupolă.">
   <button id="subtraction-back-sign" type="button" aria-label="Înapoi la Valea adunării și scăderii"></button>
-  <div id="subtraction-chests"></div>
- </div></div><p class="map-summary">Exercițiile vor fi adăugate pe rând.</p>
+  <div id="subtraction-chests"></div><output id="subtraction-count" aria-label="Steluțe la scăderea fără trecere peste ordin">0/12</output>
+ </div></div><p class="map-summary">Alege una dintre cele 12 lădițe.</p>
 </section>
 
 <section id="addition-exercise-page" hidden aria-label="Adunare — lădița 1">
- <div class="map-scroll" tabindex="0" role="region" aria-label="Calculează adunarea pe verticală"><div class="addition-exercise-art">
-  <img src="./assets/valea-adunare-template.webp" width="1672" height="941" alt="Adunarea fără trecere peste ordin. Adună cifrele de același ordin.">
+ <div class="map-scroll" tabindex="0" role="region" aria-label="Calculează pe verticală"><div id="arithmetic-art" class="addition-exercise-art">
+  <img src="./assets/valea-adunare-template.webp" width="1672" height="941" alt="">
+  <span class="subtraction-exercise-title">2. SCĂDEREA FĂRĂ TRECERE PESTE ORDIN</span>
+  <span class="subtraction-exercise-hint">Scade cifrele de același ordin, începând cu unitățile.</span>
   <span id="addition-number" aria-hidden="true">1</span>
-  <div class="addition-operation" aria-hidden="true"><div id="addition-top">537</div><div class="addition-lower"><span>+</span><strong id="addition-bottom">142</strong></div></div>
+  <div class="addition-operation" aria-hidden="true"><div id="addition-top">537</div><div class="addition-lower"><span id="arithmetic-sign">+</span><strong id="addition-bottom">142</strong></div></div>
   <input id="addition-answer" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" autocomplete="off" aria-label="Rezultatul adunării 537 plus 142">
   <button id="addition-exercise-back" type="button" aria-label="Înapoi la lădițe"></button>
   <button id="addition-check" type="button" aria-label="Verifică răspunsul" disabled></button>
@@ -432,6 +434,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=subtraction-chests"></script>
+<script type="module" src="./scripts/app.js?v=subtraction-exercises"></script>
 </body>
 </html>
