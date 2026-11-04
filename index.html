@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=borrow-exercises">
+<link rel="stylesheet" href="./styles/main.css?v=teacher-ranking">
 </head>
 <body>
 <main>
@@ -420,10 +420,12 @@
 
 <section id="teacher-page" hidden aria-labelledby="teacher-title">
  <div class="teacher-content">
-  <h2 id="teacher-title">Lucru individual</h2>
-  <p>Alege un elev pentru a-i vedea harta sau pentru a-i schimba accesul și parola.</p>
+  <h2 id="teacher-title">Clasamentul clasei</h2>
+  <p>Apasă pe numele unui elev pentru a-i vedea harta și progresul. Clasamentul se actualizează automat.</p>
   <p id="teacher-status" role="status" aria-live="polite"></p>
-  <div id="teacher-students" class="teacher-students"></div>
+  <div class="teacher-ranking-scroll" tabindex="0" role="region" aria-label="Clasamentul elevilor, cu derulare laterală">
+   <div id="teacher-students" class="teacher-students"></div>
+  </div>
  </div>
  <dialog id="password-dialog" class="chapter-dialog" aria-labelledby="password-editor-title">
   <button id="password-editor-close" class="close" type="button" aria-label="Închide">×</button>
@@ -456,6 +458,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=borrow-exercises"></script>
+<script type="module" src="./scripts/app.js?v=teacher-ranking"></script>
 </body>
 </html>

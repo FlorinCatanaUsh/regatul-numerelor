@@ -208,3 +208,12 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
 .subtraction-exercise .subtraction-exercise-title,.subtraction-exercise .subtraction-exercise-hint,.carry-exercise .carry-exercise-title,.carry-exercise .carry-exercise-hint,.borrow-exercise .borrow-exercise-title,.borrow-exercise .borrow-exercise-hint{display:grid;position:absolute;place-items:center;text-align:center}
 .subtraction-exercise-title,.carry-exercise-title,.borrow-exercise-title{left:27.5%;top:5.5%;width:55.5%;height:8%;border-radius:1cqw;background:linear-gradient(#80401a,#50250f);color:#fff3ce;font:bold 2.55cqw/1 sans-serif;text-shadow:0 .15cqw .15cqw #321504}
 .subtraction-exercise-hint,.carry-exercise-hint,.borrow-exercise-hint{left:30.9%;top:81.2%;width:38.2%;height:4.7%;border-radius:.6cqw;background:#ffe3a0;color:#211708;font:bold 1.8cqw/1 sans-serif}
+
+#teacher-page .teacher-content{max-width:1320px}
+.teacher-ranking-scroll{overflow-x:auto}
+.teacher-students{display:flex;flex-direction:column;min-width:max-content;gap:6px}
+.teacher-student-card{display:grid;grid-template-columns:2.2rem 9rem 1fr 7.5rem 8.5rem 9.5rem;align-items:center;gap:8px;padding:6px 8px;white-space:nowrap;font-size:.88rem;font-variant-numeric:tabular-nums}
+.teacher-student-card .teacher-rank{text-align:right;padding-right:.35rem}
+.teacher-student-card .teacher-star-total{font-size:.9rem}
+.teacher-student-card button{margin:0;padding:5px 8px;font-size:.82rem}
+.teacher-student-card .teacher-student-name{text-align:left;overflow:hidden;text-overflow:ellipsis}
