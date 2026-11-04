@@ -217,3 +217,47 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
 .teacher-student-card .teacher-star-total{font-size:.9rem}
 .teacher-student-card button{margin:0;padding:5px 8px;font-size:.82rem}
 .teacher-student-card .teacher-student-name{text-align:left;overflow:hidden;text-overflow:ellipsis}
+
+
+/* Keep the name picker compact while leaving the password door full size. */
+#entry.roster-mode {
+ width:min(1040px,calc(100% - 16px));
+ max-height:calc(100svh - 16px);
+ border-width:clamp(10px,2vw,24px);
+ border-radius:28px;
+ clip-path:inset(0 round 28px);
+}
+#entry.roster-mode .dialog-head {padding:8px 48px 5px}
+#entry.roster-mode .eyebrow {margin-bottom:2px}
+#entry.roster-mode h2 {font-size:clamp(22px,3.5vw,30px)}
+#entry.roster-mode .close {top:3px;right:4px;width:44px;height:44px}
+#entry.roster-mode .dialog-head::after {display:none}
+#entry.roster-mode .body {padding:4px clamp(5px,1.1vw,14px) 8px}
+#entry.roster-mode .intro {margin:0 0 7px;font-size:14px;line-height:1.25}
+#entry.roster-mode .students {
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:5px;
+ padding:2px;
+}
+#entry.roster-mode .student {
+ min-height:44px;
+ padding:4px 6px;
+ gap:6px;
+ font-size:clamp(12px,1.8vw,16px);
+ line-height:1.15;
+}
+#entry.roster-mode .student::after,
+#entry.roster-mode .footnote {display:none}
+#entry.roster-mode .avatar {width:25px;height:25px;font-size:14px}
+@media (max-width:460px) {
+ #entry.roster-mode .avatar {display:none}
+ #entry.roster-mode .student {justify-content:center;text-align:center}
+}
+@media (min-width:620px) and (orientation:landscape) {
+ #entry.roster-mode .students {grid-template-columns:repeat(5,minmax(0,1fr))}
+}
+@media (min-width:720px) and (orientation:landscape) and (max-height:440px) {
+ #entry.roster-mode .students {grid-template-columns:repeat(7,minmax(0,1fr))}
+ #entry.roster-mode .avatar {display:none}
+ #entry.roster-mode .student {justify-content:center;text-align:center}
+}
