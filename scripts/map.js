@@ -41,11 +41,12 @@ function openValley(){
  $('subtraction-page').hidden=true;
  $('carry-page').hidden=true;
  $('borrow-page').hidden=true;
+ $('proof-page').hidden=true;
  $('map-page').hidden=true;$('forest-page').hidden=true;$('valley-page').hidden=false;
  $('valley-student').textContent=mapProfile.displayName;$('valley-stars').textContent=String(chapterStars(mapProfile,2));
  $('valley-lessons').replaceChildren();$('valley-progress').replaceChildren();
  const boxes=[[21.5,41,15,17],[43.5,43,15,17],[61.5,44,15,17],[19.5,59,15,18],[38,61,15,18],[56,63,13,18],[72,62,14,18]];
- valleyLessons.forEach((title,i)=>{const id=i+1,b=document.createElement('button');b.type='button';b.className='valley-lesson';b.setAttribute('aria-label',id+'. '+title+(id>4?' — exerciții în pregătire':''));const [left,top,width,height]=boxes[i];Object.assign(b.style,{left:left+'%',top:top+'%',width:width+'%',height:height+'%'});const show=()=>{if(id===1){openAddition();return;}if(id===2){openSubtraction();return;}if(id===3){openCarryLesson();return;}if(id===4){openBorrowLesson();return;}$('chapter-title').textContent=id+'. '+title;$('chapter-description').textContent='Valea adunării și scăderii';$('chapter-access').textContent='Exercițiile acestei lecții sunt în pregătire.';$('chapter-dialog').showModal();};b.addEventListener('click',show);$('valley-lessons').append(b);const tile=document.createElement('button');tile.type='button';tile.className='valley-tile';tile.textContent=String(id);tile.setAttribute('aria-label','Lecția '+id+' — '+title);Object.assign(tile.style,{left:(i<4?[79.5,83,86.5,90][i]:[81,84.6,88.2][i-4])+'%',top:(i<4?9.8:16)+'%',width:'3%',height:'5%'});tile.addEventListener('click',show);$('valley-progress').append(tile);});
+ valleyLessons.forEach((title,i)=>{const id=i+1,b=document.createElement('button');b.type='button';b.className='valley-lesson';b.setAttribute('aria-label',id+'. '+title+(id>5?' — exerciții în pregătire':''));const [left,top,width,height]=boxes[i];Object.assign(b.style,{left:left+'%',top:top+'%',width:width+'%',height:height+'%'});const show=()=>{if(id===1){openAddition();return;}if(id===2){openSubtraction();return;}if(id===3){openCarryLesson();return;}if(id===4){openBorrowLesson();return;}if(id===5){openProofLesson();return;}$('chapter-title').textContent=id+'. '+title;$('chapter-description').textContent='Valea adunării și scăderii';$('chapter-access').textContent='Exercițiile acestei lecții sunt în pregătire.';$('chapter-dialog').showModal();};b.addEventListener('click',show);$('valley-lessons').append(b);const tile=document.createElement('button');tile.type='button';tile.className='valley-tile';tile.textContent=String(id);tile.setAttribute('aria-label','Lecția '+id+' — '+title);Object.assign(tile.style,{left:(i<4?[79.5,83,86.5,90][i]:[81,84.6,88.2][i-4])+'%',top:(i<4?9.8:16)+'%',width:'3%',height:'5%'});tile.addEventListener('click',show);$('valley-progress').append(tile);});
  // The original illustration has older lettering on signs 5–7.
  for (const id of [5,6,7]) {
   const label=document.createElement('span');
@@ -56,6 +57,41 @@ function openValley(){
  }
  $('valley-summary').textContent='0 din 7 lecții parcurse. '+chapterStars(mapProfile,2)+' steluțe în acest capitol. Exercițiile vor fi adăugate pe rând.';
  $('valley-back').focus();window.scrollTo(0,0);
+}
+function openProofLesson() {
+ const chests = $('proof-chests');
+ chests.replaceChildren();
+ for (let number = 1; number <= 12; number++) {
+  const chest = document.createElement('button');
+  chest.type = 'button';
+  chest.className = 'addition-chest';
+  chest.setAttribute('aria-label', 'Lădița ' + number);
+  Object.assign(chest.style, {
+   left: [23, 36.3, 49.2, 61.5][(number - 1) % 4] + '%',
+   top: [40.5, 57.2, 75][Math.floor((number - 1) / 4)] + '%',
+   width: '12.7%',
+   height: '18.5%'
+  });
+  chest.addEventListener('click', () => {
+   $('chapter-title').textContent = 'Lădița ' + number;
+   $('chapter-description').textContent = valleyLessons[4];
+   $('chapter-access').textContent = 'Exercițiul acestei lădițe este în pregătire.';
+   $('chapter-dialog').showModal();
+   $('chapter-close').focus();
+  });
+  chests.append(chest);
+ }
+ $('valley-page').hidden = true;
+ $('proof-page').hidden = false;
+ $('proof-student').textContent = mapProfile.displayName;
+ $('proof-back').focus();
+ window.scrollTo(0, 0);
+}
+for (const id of ['proof-back', 'proof-back-sign']) {
+ $(id).addEventListener('click', () => {
+  openValley();
+  $('valley-lessons').children[4]?.focus();
+ });
 }
 const carryExercises = [[116, 224], [254, 390], [701, 754], [299, 398], [1979, 701], [2484, 762], [7382, 678], [5668, 438], [9179, 5441], [8686, 9652], [6322, 3929], [7503, 4497]];
 function openCarryLesson() {
@@ -246,6 +282,7 @@ function openStudentMap(profile){
  $('subtraction-page').hidden=true;
  $('carry-page').hidden=true;
  $('borrow-page').hidden=true;
+ $('proof-page').hidden=true;
  $('addition-exercise-page').hidden=true;$('addition-page').hidden=true;$('valley-page').hidden=true;teacherMapReturn=null;teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('teacher-workspace').hidden=true;$('roman-match-page').hidden=true;$('roman-exercise-page').hidden=true;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;$('lesson-content-page').hidden=true;$('forest-mode').textContent='Elev';$('map-home').textContent='Ieșire';$('map-mode').textContent='Elev';renderMap(profile);$('map-page').hidden=false;$('forest-page').hidden=true;document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
 }
 $('map-home').addEventListener('click',async()=>{if(teacherMapReturn){const back=teacherMapReturn;teacherMapReturn=null;mapProfile=null;forestState=null;$('map-page').hidden=true;$('forest-page').hidden=true;$('valley-page').hidden=true;$('subtraction-page').hidden=true;back();return;}const button=$('map-home');button.disabled=true;try{await studentAuth.logout();}catch{studentAuth.clear();}finally{button.disabled=false;$('map-page').hidden=true;$('forest-page').hidden=true;document.body.classList.remove('viewing-map');mapProfile=null;forestState=null;$('class-entry').focus();}});
