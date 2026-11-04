@@ -208,3 +208,5 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
 .subtraction-exercise .subtraction-exercise-title,.subtraction-exercise .subtraction-exercise-hint{display:grid;position:absolute;place-items:center;text-align:center}
 .subtraction-exercise-title{left:27.5%;top:5.5%;width:55.5%;height:8%;border-radius:1cqw;background:linear-gradient(#80401a,#50250f);color:#fff3ce;font:bold 2.55cqw/1 sans-serif;text-shadow:0 .15cqw .15cqw #321504}
 .subtraction-exercise-hint{left:30.9%;top:81.2%;width:38.2%;height:4.7%;border-radius:.6cqw;background:#ffe3a0;color:#211708;font:bold 1.8cqw/1 sans-serif}
+
+.subtraction-exercise #arithmetic-sign{top:-1em;left:auto;right:-.8em}
