@@ -13,7 +13,7 @@ begin
   when 1 then btrim(p_answer) in ('42,42,-,15,42,-,27','42,42,-,27,42,-,15')
   when 2 then btrim(p_answer) in ('432,432,-,158,432,-,274','432,432,-,274,432,-,158')
   when 3 then btrim(p_answer) in ('276,276,302,578','276,302,276,578')
-  when 4 then btrim(p_answer) in ('276,578,276,302','276,578,302,276')
+  when 4 then btrim(p_answer) = '276,578,276,302'
  end;
  if good then
   lp=jsonb_set(lp,'{2}',coalesce(lp->'2','{}'::jsonb),true);
