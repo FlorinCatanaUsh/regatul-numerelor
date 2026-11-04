@@ -406,3 +406,9 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
  #proof-check {background:#286135}
  #proof-close span,#proof-check span {position:static;width:auto;height:auto;clip-path:none}
 }
+
+#proof-subtraction-row {
+ grid-template-columns:auto var(--proof-box) auto var(--proof-box) auto var(--proof-box);
+ column-gap:0;
+}
+#proof-subtraction-row > span:first-child {margin-inline-end:.35em}
