@@ -81,7 +81,8 @@ let proofRevision=0,proofBusy=false,activeProofChest=1;
 function openProofExercise(number){
  activeProofChest=number;
  const [left,right]=proofExercises[number];
- $('proof-chest-title').textContent='Lecția 5 · Lădița '+number;
+ $('proof-chest-title').textContent=number;
+ $('proof-chest-title').setAttribute('aria-label','Lădița '+number);
  const subtraction=number===3;
  $('proof-operation').textContent=left+(subtraction?' − ':' + ')+right+' =';
  $('proof-sum').setAttribute('aria-label',subtraction?'Diferența':'Suma');
