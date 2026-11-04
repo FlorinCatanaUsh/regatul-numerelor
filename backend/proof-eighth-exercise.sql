@@ -8,7 +8,7 @@ begin
  if not found then return jsonb_build_object('ok',false,'error','unauthorized');end if;
  if not exists(select 1 from regat_private.students where id=sid and 1=any(completed_chapters)) then return jsonb_build_object('ok',false,'error','chapter_locked');end if;
  if p_action='state' then return jsonb_build_object('ok',true,'profile',public.regat_student_profile(sid));end if;
- if p_action<>'answer' or (p_chest is null or p_chest not in (1,2,3,4,5,6,7,8)) or p_answer is null or btrim(p_answer)!~(case when p_chest=8 then '^[0-9]{1,3}(,[0-9]{1,3}){3},[AF]$' when p_chest in (5,6) then '^[0-9]{1,3},[0-9]{1,3},[+-],[0-9]{1,3},[0-9]{1,3},[AF]$' when p_chest in (3,4,7) then '^[0-9]{1,3}(,[0-9]{1,3}){3}$' else '^[0-9]{1,3},[0-9]{1,3},[+-],[0-9]{1,3},[0-9]{1,3},[+-],[0-9]{1,3}$' end) then return jsonb_build_object('ok',false,'error','invalid_answer');end if;
+ if p_action<>'answer' or (p_chest is null or p_chest not in (1,2,3,4,5,6,7,8)) or p_answer is null or btrim(p_answer)!~(case when p_chest in (7,8) then '^[0-9]{1,3}(,[0-9]{1,3}){3},[AF]$' when p_chest in (5,6) then '^[0-9]{1,3},[0-9]{1,3},[+-],[0-9]{1,3},[0-9]{1,3},[AF]$' when p_chest in (3,4) then '^[0-9]{1,3}(,[0-9]{1,3}){3}$' else '^[0-9]{1,3},[0-9]{1,3},[+-],[0-9]{1,3},[0-9]{1,3},[+-],[0-9]{1,3}$' end) then return jsonb_build_object('ok',false,'error','invalid_answer');end if;
  good=case p_chest
   when 1 then btrim(p_answer) in ('42,42,-,15,42,-,27','42,42,-,27,42,-,15')
   when 2 then btrim(p_answer) in ('432,432,-,158,432,-,274','432,432,-,274,432,-,158')
@@ -16,7 +16,7 @@ begin
   when 4 then btrim(p_answer) = '276,578,276,302'
   when 5 then btrim(p_answer) in ('910,910,-,453,457,F','910,910,-,467,443,F')
   when 6 then btrim(p_answer) in ('920,920,-,453,467,A','920,920,-,467,453,A')
-  when 7 then btrim(p_answer) in ('319,426,319,745','319,319,426,745')
+  when 7 then btrim(p_answer) in ('319,426,319,745,A','319,319,426,745,A')
   when 8 then btrim(p_answer) = '161,587,161,426,F'
  end;
  if good then

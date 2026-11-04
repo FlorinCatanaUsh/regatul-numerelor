@@ -98,7 +98,7 @@ function openProofExercise(number){
  $('proof-result-1').hidden=verifyGivenSum;
  for(const id of ['proof-verdict','proof-written-result']){
   const field=$(id);
-  const visible=verifyGivenSum||(number===8&&id==='proof-verdict');
+  const visible=verifyGivenSum||(number>=7&&id==='proof-verdict');
   field.hidden=!visible;
   field.disabled=!visible||!!teacherMapReturn;
   field.value='';
@@ -134,7 +134,7 @@ $('proof-form').addEventListener('submit',async event=>{
  const probes=subtraction?subtractionProofInputs.map(field=>/^\d{1,3}$/.test(field.value)?+field.value:null):proofRows.slice(0,verifyGivenSum?1:2).map(proofNumbers);
  const writtenResult=$('proof-written-result').value;
  const verdict=$('proof-verdict').value;
- const needsVerdict=verifyGivenSum||activeProofChest===8;
+ const needsVerdict=verifyGivenSum||activeProofChest>=7;
  const incompleteProof=(verifyGivenSum&&!/^\d{1,3}$/.test(writtenResult))||(needsVerdict&&!['A','F'].includes(verdict));
  if(incompleteProof||!/^\d{1,3}$/.test(sum)||probes.some(p=>p===null)){
   $('proof-status').textContent=needsVerdict?'Completează proba și alege A sau F.':activeProofChest===7?'Completează proba.':subtraction?'Completează diferența și proba.':'Completează suma și cele două probe.';return;
