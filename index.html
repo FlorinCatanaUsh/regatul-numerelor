@@ -116,8 +116,8 @@
    <form id="proof-form">
     <div class="proof-board">
      <h2 id="proof-title">Rezolvă și verifică prin cele două probe ale adunării</h2>
-  <div class="proof-row proof-sum"><label id="proof-operation" for="proof-sum">27 + 15 =</label><input id="proof-sum" inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" required></div>
-  <div class="proof-row" id="proof-row-1"><span>Proba 1:</span>
+  <div class="proof-row proof-sum"><label id="proof-operation" for="proof-sum">27 + 15 =</label><input id="proof-sum" inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" required><span id="proof-given-result" hidden>910</span></div>
+  <div class="proof-row" id="proof-row-1"><span id="proof-row-1-label">Proba 1:</span>
    <input id="proof-left-1" aria-label="Proba 1, primul număr" inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" required>
    <select id="proof-sign-1" aria-label="Proba 1, semnul operației" required><option value="" selected disabled hidden></option><option value="+">+</option><option value="-">−</option></select>
    <input id="proof-right-1" aria-label="Proba 1, al doilea număr" inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" required>
@@ -500,6 +500,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=proof-four"></script>
+<script type="module" src="./scripts/app.js?v=proof-five"></script>
 </body>
 </html>
