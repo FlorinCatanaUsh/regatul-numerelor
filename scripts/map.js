@@ -40,11 +40,12 @@ function openValley(){
  $('addition-page').hidden=true;
  $('subtraction-page').hidden=true;
  $('carry-page').hidden=true;
+ $('borrow-page').hidden=true;
  $('map-page').hidden=true;$('forest-page').hidden=true;$('valley-page').hidden=false;
  $('valley-student').textContent=mapProfile.displayName;$('valley-stars').textContent=String(chapterStars(mapProfile,2));
  $('valley-lessons').replaceChildren();$('valley-progress').replaceChildren();
  const boxes=[[21.5,41,15,17],[43.5,43,15,17],[61.5,44,15,17],[19.5,59,15,18],[38,61,15,18],[56,63,13,18],[72,62,14,18]];
- valleyLessons.forEach((title,i)=>{const id=i+1,b=document.createElement('button');b.type='button';b.className='valley-lesson';b.setAttribute('aria-label',id+'. '+title+(id>3?' — exerciții în pregătire':''));const [left,top,width,height]=boxes[i];Object.assign(b.style,{left:left+'%',top:top+'%',width:width+'%',height:height+'%'});const show=()=>{if(id===1){openAddition();return;}if(id===2){openSubtraction();return;}if(id===3){openCarryLesson();return;}$('chapter-title').textContent=id+'. '+title;$('chapter-description').textContent='Valea adunării și scăderii';$('chapter-access').textContent='Exercițiile acestei lecții sunt în pregătire.';$('chapter-dialog').showModal();};b.addEventListener('click',show);$('valley-lessons').append(b);const tile=document.createElement('button');tile.type='button';tile.className='valley-tile';tile.textContent=String(id);tile.setAttribute('aria-label','Lecția '+id+' — '+title);Object.assign(tile.style,{left:(i<4?[79.5,83,86.5,90][i]:[81,84.6,88.2][i-4])+'%',top:(i<4?9.8:16)+'%',width:'3%',height:'5%'});tile.addEventListener('click',show);$('valley-progress').append(tile);});
+ valleyLessons.forEach((title,i)=>{const id=i+1,b=document.createElement('button');b.type='button';b.className='valley-lesson';b.setAttribute('aria-label',id+'. '+title+(id>4?' — exerciții în pregătire':''));const [left,top,width,height]=boxes[i];Object.assign(b.style,{left:left+'%',top:top+'%',width:width+'%',height:height+'%'});const show=()=>{if(id===1){openAddition();return;}if(id===2){openSubtraction();return;}if(id===3){openCarryLesson();return;}if(id===4){openBorrowLesson();return;}$('chapter-title').textContent=id+'. '+title;$('chapter-description').textContent='Valea adunării și scăderii';$('chapter-access').textContent='Exercițiile acestei lecții sunt în pregătire.';$('chapter-dialog').showModal();};b.addEventListener('click',show);$('valley-lessons').append(b);const tile=document.createElement('button');tile.type='button';tile.className='valley-tile';tile.textContent=String(id);tile.setAttribute('aria-label','Lecția '+id+' — '+title);Object.assign(tile.style,{left:(i<4?[79.5,83,86.5,90][i]:[81,84.6,88.2][i-4])+'%',top:(i<4?9.8:16)+'%',width:'3%',height:'5%'});tile.addEventListener('click',show);$('valley-progress').append(tile);});
  $('valley-summary').textContent='0 din 7 lecții parcurse. '+chapterStars(mapProfile,2)+' steluțe în acest capitol. Exercițiile vor fi adăugate pe rând.';
  $('valley-back').focus();window.scrollTo(0,0);
 }
@@ -85,6 +86,45 @@ for (const id of ['carry-back', 'carry-back-sign']) {
  $(id).addEventListener('click', () => {
   openValley();
   $('valley-lessons').children[2]?.focus();
+ });
+}
+const borrowExercises = [[742, 318], [725, 361], [1345, 612], [732, 458], [5342, 617], [5318, 472], [5321, 674], [6412, 785], [15332, 6247], [15428, 6893], [15362, 6847], [15321, 6874]];
+function openBorrowLesson() {
+ const solved = mapProfile.lessonProgress?.[2]?.solvedByLesson?.[4] || [];
+ $('borrow-count').textContent = starCount(solved) + '/12';
+ const chests = $('borrow-chests');
+ chests.replaceChildren();
+ for (let number = 1; number <= 12; number++) {
+  const chest = document.createElement('button');
+  chest.type = 'button';
+  chest.className = 'addition-chest';
+  Object.assign(chest.style, {
+   left: [23, 36.3, 49.2, 61.5][(number - 1) % 4] + '%',
+   top: [40.5, 57.2, 75][Math.floor((number - 1) / 4)] + '%',
+   width: '12.7%',
+   height: '18.5%'
+  });
+  if (solved.includes(number)) {
+   chest.className += ' complete';
+   const star = document.createElement('span');
+   star.textContent = '★';
+   chest.append(star);
+  }
+  const [top, bottom] = borrowExercises[number - 1];
+  chest.setAttribute('aria-label', 'Lădița ' + number + ' — ' + top + ' minus ' + bottom);
+  chest.addEventListener('click', () => openAdditionExercise(number, 'borrow'));
+  chests.append(chest);
+ }
+ $('valley-page').hidden = true;
+ $('borrow-page').hidden = false;
+ $('borrow-student').textContent = mapProfile.displayName;
+ $('borrow-back').focus();
+ window.scrollTo(0, 0);
+}
+for (const id of ['borrow-back', 'borrow-back-sign']) {
+ $(id).addEventListener('click', () => {
+  openValley();
+  $('valley-lessons').children[3]?.focus();
  });
 }
 const subtractionExercises = [[786, 243], [958, 427], [697, 352], [864, 521], [4786, 352], [7958, 423], [8697, 542], [5864, 321], [7865, 2431], [9587, 4275], [6978, 3526], [8649, 5217]];
@@ -143,14 +183,14 @@ function additionControls(){const disabled=!additionReady||additionBusy||!!teach
 async function openAdditionExercise(id=1, lesson='addition'){
  activeArithmeticLesson=lesson;
  activeAdditionChest=id;
- const isSubtraction=lesson==='subtraction';
- const exercises={addition:additionExercises,subtraction:subtractionExercises,carry:carryExercises};
+ const isSubtraction=lesson==='subtraction'||lesson==='borrow';
+ const exercises={addition:additionExercises,subtraction:subtractionExercises,carry:carryExercises,borrow:borrowExercises};
  const [top,bottom]=exercises[lesson][id-1];
  $('addition-top').textContent=String(top);
  $('addition-bottom').textContent=String(bottom);
  $('addition-number').textContent=String(id);
  $('arithmetic-sign').textContent=isSubtraction?'−':'+';
- $('arithmetic-art').className='addition-exercise-art'+(isSubtraction?' subtraction-exercise':lesson==='carry'?' carry-exercise':'');
+ $('arithmetic-art').className='addition-exercise-art'+(lesson==='addition'?'':' '+lesson+'-exercise');
  $('addition-exercise-page').setAttribute('aria-label',(isSubtraction?'Scădere':'Adunare')+' — lădița '+id);
  $('addition-answer').setAttribute('aria-label','Rezultatul operației '+top+(isSubtraction?' minus ':' plus ')+bottom);
  const revision=++additionRevision,sid=mapProfile.studentId;additionReady=false;additionBusy=false;$('addition-answer').value='';$('addition-answer').className='';$('addition-answer').setAttribute('aria-invalid','false');$(lesson+'-page').hidden=true;$('addition-exercise-page').hidden=false;additionControls();$('addition-exercise-back').focus();window.scrollTo(0,0);
@@ -163,7 +203,7 @@ async function checkAddition(){
  try{const r=await studentAuth[activeArithmeticLesson]('answer',{chest:activeAdditionChest,answer});if(revision!==additionRevision||mapProfile?.studentId!==sid||teacherMapReturn||$('addition-exercise-page').hidden)return;renderMap(r.profile);$('addition-answer').className=r.correct?'correct':'incorrect';$('addition-answer').setAttribute('aria-invalid',String(!r.correct));$('addition-exercise-status').textContent=r.correct?'Corect! Ai câștigat o steluță.':'Mai încearcă!';}catch(e){if(revision===additionRevision)$('addition-exercise-status').textContent=e.message;}finally{if(revision===additionRevision){additionBusy=false;additionControls();}}
 }
 $('addition-check').addEventListener('click',checkAddition);$('addition-answer').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();checkAddition();}});
-$('addition-exercise-back').addEventListener('click',()=>{additionRevision++;additionReady=false;additionBusy=false;$('addition-exercise-page').hidden=true;const reopen={addition:openAddition,subtraction:openSubtraction,carry:openCarryLesson};reopen[activeArithmeticLesson]();$(activeArithmeticLesson+'-chests').children[activeAdditionChest-1]?.focus();});
+$('addition-exercise-back').addEventListener('click',()=>{additionRevision++;additionReady=false;additionBusy=false;$('addition-exercise-page').hidden=true;const reopen={addition:openAddition,subtraction:openSubtraction,carry:openCarryLesson,borrow:openBorrowLesson};reopen[activeArithmeticLesson]();$(activeArithmeticLesson+'-chests').children[activeAdditionChest-1]?.focus();});
 for(const id of ['addition-back','addition-back-sign'])$(id).addEventListener('click',()=>{openValley();$('valley-lessons').children[0]?.focus();});
 for(const id of ['valley-back','valley-back-sign'])$(id).addEventListener('click',()=>{$('valley-page').hidden=true;$('map-page').hidden=false;renderMap(mapProfile);$('map-chapters').children[1]?.focus();window.scrollTo(0,0);});
 function chapterRevealed(id){return id===1||mapProfile.completedChapters.includes(id)||mapProfile.completedChapters.includes(id-1);}
@@ -197,6 +237,7 @@ function renderMap(profile) {
 function openStudentMap(profile){
  $('subtraction-page').hidden=true;
  $('carry-page').hidden=true;
+ $('borrow-page').hidden=true;
  $('addition-exercise-page').hidden=true;$('addition-page').hidden=true;$('valley-page').hidden=true;teacherMapReturn=null;teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('teacher-workspace').hidden=true;$('roman-match-page').hidden=true;$('roman-exercise-page').hidden=true;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;$('lesson-content-page').hidden=true;$('forest-mode').textContent='Elev';$('map-home').textContent='Ieșire';$('map-mode').textContent='Elev';renderMap(profile);$('map-page').hidden=false;$('forest-page').hidden=true;document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
 }
 $('map-home').addEventListener('click',async()=>{if(teacherMapReturn){const back=teacherMapReturn;teacherMapReturn=null;mapProfile=null;forestState=null;$('map-page').hidden=true;$('forest-page').hidden=true;$('valley-page').hidden=true;$('subtraction-page').hidden=true;back();return;}const button=$('map-home');button.disabled=true;try{await studentAuth.logout();}catch{studentAuth.clear();}finally{button.disabled=false;$('map-page').hidden=true;$('forest-page').hidden=true;document.body.classList.remove('viewing-map');mapProfile=null;forestState=null;$('class-entry').focus();}});
