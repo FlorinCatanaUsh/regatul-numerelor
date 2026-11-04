@@ -130,10 +130,10 @@
    <span>=</span><output id="proof-result-2" aria-label="Proba 2, rezultat calculat automat">—</output>
   </div>
   <div class="proof-row" id="proof-subtraction-row" hidden><span>Probă:</span>
-   <input id="proof-add-left" aria-label="Primul termen al probei" inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" required disabled>
-   <span class="proof-fixed-sign" aria-label="plus">+</span>
-   <input id="proof-add-right" aria-label="Al doilea termen al probei" inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" required disabled>
-   <span>=</span><input id="proof-add-result" aria-label="Suma din probă" inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" required disabled>
+   <input id="proof-add-left" aria-label="Primul număr din probă" inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" required disabled>
+   <span class="proof-fixed-sign" id="proof-fixed-sign">+</span>
+   <input id="proof-add-right" aria-label="Al doilea număr din probă" inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" required disabled>
+   <span>=</span><input id="proof-add-result" aria-label="Rezultatul probei" inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" required disabled>
   </div>
     </div>
     <p id="proof-hint">Indiciu: Proba adunării se realizează prin scădere.</p>
@@ -500,6 +500,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=proof-pergament"></script>
+<script type="module" src="./scripts/app.js?v=proof-four"></script>
 </body>
 </html>
