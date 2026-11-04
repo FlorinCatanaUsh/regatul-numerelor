@@ -9,7 +9,7 @@ const chapterLabels=['I','II','III','IV','V','VI','VII','VIII'];
 const learningPages=['subtraction-page','carry-page','borrow-page','addition-exercise-page','addition-page','valley-page','rounding-exercise-page','ordering-exercise-page','comparison-exercise-page','lesson-content-page','map-page','forest-page','formation-page','reading-page','reading-exercise-page','chest1-page','missing-page'];
 function hideLearningPages(){for(const id of learningPages)$(id).hidden=true;}
 function updateClassControls(message){
- for(const id of ['teacher-tab-individual','teacher-tab-class','teacher-reload','teacher-logout','teacher-own-password'])$(id).disabled=groupBusy;
+ for(const id of ['teacher-tab-individual','teacher-tab-class','teacher-logout','teacher-own-password'])$(id).disabled=groupBusy;
 }
 function lessonAllowed(row,id){
  if(id===2)return !!row.formation?.lesson2Allowed;
@@ -138,7 +138,6 @@ $('password-dialog').addEventListener('cancel',event=>{if(passwordBusy)event.pre
 $('password-dialog').addEventListener('close',()=>{passwordRevision++;passwordTarget=null;for(const field of ['new-password','confirm-password','current-password'])$(field).value='';});
 $('editor-reveal').addEventListener('click',()=>{const show=$('new-password').type==='password';for(const field of ['new-password','confirm-password','current-password'])$(field).type=show?'text':'password';$('editor-reveal').textContent=show?'Ascunde parolele':'Arată parolele';});
 $('teacher-own-password').addEventListener('click',()=>{selectTab('individual');openPasswordEditor('teacher','Profesor');});
-$('teacher-reload').addEventListener('click',loadTeacherStudents);
 $('teacher-logout').addEventListener('click',async()=>{
  if(groupBusy)return;$('teacher-logout').disabled=true;try{await studentAuth.logout();}catch{studentAuth.clear();}finally{$('teacher-logout').disabled=false;loadRevision++;clearInterval(rankingTimer);loadingStudents=false;teacherRows=[];rowsReady=false;hideLearningPages();$('teacher-workspace').hidden=true;$('teacher-page').hidden=true;$('teacher-students').replaceChildren();document.body.classList.remove('viewing-map','teacher-class-mode');$('teacher-entry').focus();}
 });

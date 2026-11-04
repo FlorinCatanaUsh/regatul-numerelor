@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=ranking-actions">
+<link rel="stylesheet" href="./styles/main.css?v=teacher-toolbar">
 </head>
 <body>
 <main>
@@ -18,16 +18,16 @@
 </figure>
 </main>
 <section id="teacher-workspace" hidden aria-label="Panoul profesorului">
- <header class="map-toolbar"><button id="teacher-logout" type="button">Ieșire</button><div><h2>Panoul profesorului</h2><p>Alege lucrul individual sau comenzile pentru toată clasa.</p></div></header>
- <div class="teacher-workspace-content">
+ <header class="map-toolbar teacher-toolbar">
+  <button id="teacher-logout" type="button">Ieșire</button>
   <div class="teacher-tabs" role="tablist" aria-label="Mod de lucru">
    <button id="teacher-tab-individual" type="button" role="tab" aria-selected="true" aria-controls="teacher-page">Individual</button>
    <button id="teacher-tab-class" type="button" role="tab" aria-selected="false" aria-controls="map-page" tabindex="-1">Toată clasa</button>
   </div>
-  <div class="teacher-tools"><button id="teacher-own-password" type="button">Schimbă parola mea</button><button id="teacher-reload" type="button">Reîncarcă</button></div>
-  <div id="teacher-class-controls" hidden>
-  </div>
- </div>
+  <button id="teacher-own-password" type="button">Schimbă parola mea</button>
+  <div class="teacher-toolbar-title"><h2>Panoul profesorului</h2><p>Alege lucrul individual sau comenzile pentru toată clasa.</p></div>
+ </header>
+ <div id="teacher-class-controls" hidden></div>
 </section>
 <section id="map-page" hidden aria-labelledby="map-title">
  <header class="map-toolbar"><button id="map-home" type="button">Ieșire</button><div><h2 id="map-title">Harta magică</h2><p id="map-student"></p></div><span id="map-mode" class="preview-label">Elev</span></header>
@@ -421,7 +421,6 @@
 <section id="teacher-page" hidden aria-labelledby="teacher-title">
  <div class="teacher-content">
   <h2 id="teacher-title">Clasamentul clasei</h2>
-  <p>Apasă pe numele unui elev pentru a-i vedea harta și progresul. Clasamentul se actualizează automat.</p>
   <p id="teacher-status" role="status" aria-live="polite"></p>
   <div class="teacher-ranking-scroll" tabindex="0" role="region" aria-label="Clasamentul elevilor, cu derulare laterală">
    <div id="teacher-students" class="teacher-students"></div>
@@ -458,6 +457,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=ranking-actions"></script>
+<script type="module" src="./scripts/app.js?v=teacher-toolbar"></script>
 </body>
 </html>

@@ -294,3 +294,13 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
 #entry.door-mode:has(.teacher-mark) .notice {margin:8px 0 0;padding:5px 8px}
 #entry.door-mode:has(.teacher-mark) .status {margin:6px 0 0}
 #entry.door-mode:has(.teacher-mark) .status:empty {display:none}
+
+.teacher-toolbar{justify-content:flex-start;gap:8px;padding:9px clamp(10px,2vw,24px)}
+.teacher-toolbar .teacher-tabs{margin:0;padding:0;border:0;gap:6px}
+.teacher-toolbar button{min-height:44px;padding:6px 12px;white-space:nowrap;font-size:14px}
+.teacher-toolbar .teacher-tabs button[aria-selected="true"]{background:#315d52;border-color:#f0d38d;color:#fff}
+.teacher-toolbar-title{margin-inline-start:auto}
+.teacher-toolbar-title h2{font-size:clamp(20px,2.6vw,27px)}
+.teacher-toolbar-title p{display:none}
+@media(min-width:1000px){.teacher-toolbar-title p{display:block}}
+@media(max-width:720px){.teacher-toolbar{flex-wrap:wrap}.teacher-toolbar-title{order:-1;flex-basis:100%;margin:0}}
