@@ -48,27 +48,31 @@ function openValley(){
  $('valley-summary').textContent='0 din 7 lecții parcurse. '+chapterStars(mapProfile,2)+' steluțe în acest capitol. Exercițiile vor fi adăugate pe rând.';
  $('valley-back').focus();window.scrollTo(0,0);
 }
+const carryExercises = [[116, 224], [254, 390], [701, 754], [299, 398], [1979, 701], [2484, 762], [7382, 678], [5668, 438], [9179, 5441], [8686, 9652], [6322, 3929], [7503, 4497]];
 function openCarryLesson() {
+ const solved = mapProfile.lessonProgress?.[2]?.solvedByLesson?.[3] || [];
+ $('carry-count').textContent = starCount(solved) + '/12';
  const chests = $('carry-chests');
  chests.replaceChildren();
  for (let number = 1; number <= 12; number++) {
   const chest = document.createElement('button');
   chest.type = 'button';
   chest.className = 'addition-chest';
-  chest.setAttribute('aria-label', 'Lădița ' + number);
   Object.assign(chest.style, {
    left: [23, 36.3, 49.2, 61.5][(number - 1) % 4] + '%',
    top: [40.5, 57.2, 75][Math.floor((number - 1) / 4)] + '%',
    width: '12.7%',
    height: '18.5%'
   });
-  chest.addEventListener('click', () => {
-   $('chapter-title').textContent = 'Lădița ' + number;
-   $('chapter-description').textContent = valleyLessons[2];
-   $('chapter-access').textContent = 'Exercițiul acestei lădițe este în pregătire.';
-   $('chapter-dialog').showModal();
-   $('chapter-close').focus();
-  });
+  if (solved.includes(number)) {
+   chest.className += ' complete';
+   const star = document.createElement('span');
+   star.textContent = '★';
+   chest.append(star);
+  }
+  const [top, bottom] = carryExercises[number - 1];
+  chest.setAttribute('aria-label', 'Lădița ' + number + ' — ' + top + ' plus ' + bottom);
+  chest.addEventListener('click', () => openAdditionExercise(number, 'carry'));
   chests.append(chest);
  }
  $('valley-page').hidden = true;
@@ -140,12 +144,13 @@ async function openAdditionExercise(id=1, lesson='addition'){
  activeArithmeticLesson=lesson;
  activeAdditionChest=id;
  const isSubtraction=lesson==='subtraction';
- const [top,bottom]=(isSubtraction?subtractionExercises:additionExercises)[id-1];
+ const exercises={addition:additionExercises,subtraction:subtractionExercises,carry:carryExercises};
+ const [top,bottom]=exercises[lesson][id-1];
  $('addition-top').textContent=String(top);
  $('addition-bottom').textContent=String(bottom);
  $('addition-number').textContent=String(id);
  $('arithmetic-sign').textContent=isSubtraction?'−':'+';
- $('arithmetic-art').className='addition-exercise-art'+(isSubtraction?' subtraction-exercise':'');
+ $('arithmetic-art').className='addition-exercise-art'+(isSubtraction?' subtraction-exercise':lesson==='carry'?' carry-exercise':'');
  $('addition-exercise-page').setAttribute('aria-label',(isSubtraction?'Scădere':'Adunare')+' — lădița '+id);
  $('addition-answer').setAttribute('aria-label','Rezultatul operației '+top+(isSubtraction?' minus ':' plus ')+bottom);
  const revision=++additionRevision,sid=mapProfile.studentId;additionReady=false;additionBusy=false;$('addition-answer').value='';$('addition-answer').className='';$('addition-answer').setAttribute('aria-invalid','false');$(lesson+'-page').hidden=true;$('addition-exercise-page').hidden=false;additionControls();$('addition-exercise-back').focus();window.scrollTo(0,0);
@@ -158,7 +163,7 @@ async function checkAddition(){
  try{const r=await studentAuth[activeArithmeticLesson]('answer',{chest:activeAdditionChest,answer});if(revision!==additionRevision||mapProfile?.studentId!==sid||teacherMapReturn||$('addition-exercise-page').hidden)return;renderMap(r.profile);$('addition-answer').className=r.correct?'correct':'incorrect';$('addition-answer').setAttribute('aria-invalid',String(!r.correct));$('addition-exercise-status').textContent=r.correct?'Corect! Ai câștigat o steluță.':'Mai încearcă!';}catch(e){if(revision===additionRevision)$('addition-exercise-status').textContent=e.message;}finally{if(revision===additionRevision){additionBusy=false;additionControls();}}
 }
 $('addition-check').addEventListener('click',checkAddition);$('addition-answer').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();checkAddition();}});
-$('addition-exercise-back').addEventListener('click',()=>{additionRevision++;additionReady=false;additionBusy=false;$('addition-exercise-page').hidden=true;if(activeArithmeticLesson==='subtraction')openSubtraction();else openAddition();$(activeArithmeticLesson+'-chests').children[activeAdditionChest-1]?.focus();});
+$('addition-exercise-back').addEventListener('click',()=>{additionRevision++;additionReady=false;additionBusy=false;$('addition-exercise-page').hidden=true;const reopen={addition:openAddition,subtraction:openSubtraction,carry:openCarryLesson};reopen[activeArithmeticLesson]();$(activeArithmeticLesson+'-chests').children[activeAdditionChest-1]?.focus();});
 for(const id of ['addition-back','addition-back-sign'])$(id).addEventListener('click',()=>{openValley();$('valley-lessons').children[0]?.focus();});
 for(const id of ['valley-back','valley-back-sign'])$(id).addEventListener('click',()=>{$('valley-page').hidden=true;$('map-page').hidden=false;renderMap(mapProfile);$('map-chapters').children[1]?.focus();window.scrollTo(0,0);});
 function chapterRevealed(id){return id===1||mapProfile.completedChapters.includes(id)||mapProfile.completedChapters.includes(id-1);}
