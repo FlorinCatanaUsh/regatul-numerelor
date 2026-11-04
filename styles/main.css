@@ -272,3 +272,25 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
 .valley-updated-title-5{left:42.75%;top:63.95%;width:7.55%;height:7.2%}
 .valley-updated-title-6{left:60.65%;top:65.3%;width:6.65%;height:7.4%}
 .valley-updated-title-7{left:76.65%;top:63.9%;width:7.75%;height:8.2%}
+
+
+/* Keep the teacher's password and submit button together on short screens. */
+#entry.door-mode:has(.teacher-mark) {
+ border-width:clamp(12px,2vw,22px);
+ border-radius:36px 36px 18px 18px;
+ clip-path:inset(0 round 36px 36px 18px 18px);
+ max-height:calc(100dvh - 16px);
+}
+#entry.door-mode:has(.teacher-mark) .dialog-head {padding:10px 48px 8px}
+#entry.door-mode:has(.teacher-mark) .close {top:4px;right:4px;width:44px;height:44px}
+#entry.door-mode:has(.teacher-mark) .body {padding:4px 12px 10px}
+#entry.door-mode:has(.teacher-mark) .login {padding-bottom:0}
+#entry.door-mode:has(.teacher-mark) .selected-avatar,
+#entry.door-mode:has(.teacher-mark) .selected-name,
+#entry.door-mode:has(.teacher-mark) .welcome {display:none}
+#entry.door-mode:has(.teacher-mark) form {padding:10px 14px 12px}
+#entry.door-mode:has(.teacher-mark) label {margin-bottom:6px}
+#entry.door-mode:has(.teacher-mark) .submit {margin-top:10px;min-height:46px}
+#entry.door-mode:has(.teacher-mark) .notice {margin:8px 0 0;padding:5px 8px}
+#entry.door-mode:has(.teacher-mark) .status {margin:6px 0 0}
+#entry.door-mode:has(.teacher-mark) .status:empty {display:none}
