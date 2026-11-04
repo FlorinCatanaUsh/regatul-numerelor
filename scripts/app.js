@@ -1,7 +1,7 @@
 import { pupils } from '../data/students.js';
 import { studentAuth } from './auth.js?v=borrow-exercises';
 import { setupMap } from './map.js?v=valley-titles';
-import { setupTeacher } from './teacher.js?v=teacher-ranking';
+import { setupTeacher } from './teacher.js?v=ranking-actions';
 'use strict';
 
 const $ = id => document.getElementById(id);

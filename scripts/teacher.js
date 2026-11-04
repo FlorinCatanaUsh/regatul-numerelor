@@ -4,7 +4,7 @@ let passwordTarget=null;
 let passwordBusy=false;
 let passwordRevision=0;
 let teacherRows=[],rowsReady=false,activeTab='individual',groupBusy=false,loadRevision=0;
-let rankingTimer, loadingStudents=false, permissionUpdates=0, permissionRevision=0;
+let rankingTimer, loadingStudents=false;
 const chapterLabels=['I','II','III','IV','V','VI','VII','VIII'];
 const learningPages=['subtraction-page','carry-page','borrow-page','addition-exercise-page','addition-page','valley-page','rounding-exercise-page','ordering-exercise-page','comparison-exercise-page','lesson-content-page','map-page','forest-page','formation-page','reading-page','reading-exercise-page','chest1-page','missing-page'];
 function hideLearningPages(){for(const id of learningPages)$(id).hidden=true;}
@@ -57,29 +57,11 @@ function renderTeacherStudents(){
   password.type='button';
   password.textContent='Schimbă parola';
   password.addEventListener('click',()=>openPasswordEditor(row.studentId,row.displayName));
-  const permission=document.createElement('button');
-  permission.type='button';
-  const setPermissionLabel=()=>{permission.textContent=row.formation?.lesson2Allowed?'Blochează lecția 2':'Permite lecția 2';};
-  setPermissionLabel();
-  permission.addEventListener('click',async()=>{
-   if(groupBusy)return;
-   permission.disabled=true;
-   permissionUpdates++;
-   permissionRevision++;
-   try{
-    const r=await studentAuth.allowLesson2(row.studentId,!row.formation?.lesson2Allowed);
-    Object.assign(row,r.profile);
-    setPermissionLabel();
-    $('teacher-status').textContent=(row.formation?.lesson2Allowed?'Acces permis':'Acces blocat')+' la lecția 2 — '+row.displayName;
-    updateClassControls();
-   }catch(error){$('teacher-status').textContent=error.message;}
-   finally{permissionUpdates--;permission.disabled=false;}
-  });
-  for(const [action,button] of [['map',name],['password',password],['permission',permission]]){
+  for(const [action,button] of [['map',name],['password',password]]){
    button.setAttribute('data-student-id',row.studentId);
    button.setAttribute('data-student-action',action);
   }
-  card.append(rank,name,summary,totalLabel,password,permission);
+  card.append(rank,name,summary,totalLabel,password);
   return card;
  });
  list.replaceChildren(...cards);
@@ -89,13 +71,13 @@ function renderTeacherStudents(){
  }
 }
 async function loadTeacherStudents({quiet=false}={}){
- if(loadingStudents||permissionUpdates||groupBusy)return false;
- const revision=++loadRevision, permissionsAtStart=permissionRevision;
+ if(loadingStudents||groupBusy)return false;
+ const revision=++loadRevision;
  loadingStudents=true;
  if(!quiet)$('teacher-status').textContent='Se încarcă elevii…';
  try{
   const rows=await studentAuth.students();
-  if(revision!==loadRevision||permissionsAtStart!==permissionRevision||groupBusy||(quiet&&$('teacher-page').hidden))return false;
+  if(revision!==loadRevision||groupBusy||(quiet&&$('teacher-page').hidden))return false;
   const changed=!rowsReady||JSON.stringify(rows)!==JSON.stringify(teacherRows);
   if(changed){
    teacherRows=rows;
