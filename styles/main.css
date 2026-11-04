@@ -261,3 +261,14 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
  #entry.roster-mode .avatar {display:none}
  #entry.roster-mode .student {justify-content:center;text-align:center}
 }
+
+.valley-art{container-type:inline-size}
+.valley-updated-title{
+ position:absolute;display:grid;place-items:center;padding:0 .15cqw;
+ background:linear-gradient(110deg,#ffd987,#ffe3a0 55%,#ffda8c);
+ color:#28134a;font:bold 1.08cqw/1.15 system-ui,sans-serif;text-align:center;
+ border-radius:.35cqw;pointer-events:none;
+}
+.valley-updated-title-5{left:42.75%;top:63.95%;width:7.55%;height:7.2%}
+.valley-updated-title-6{left:60.65%;top:65.3%;width:6.65%;height:7.4%}
+.valley-updated-title-7{left:76.65%;top:63.9%;width:7.75%;height:8.2%}

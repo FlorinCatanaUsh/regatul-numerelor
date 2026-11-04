@@ -35,7 +35,7 @@ function renderStars(){
  $('map-stars').textContent='STELUȚELE MELE · ★ '+total;
  $('forest-stars').textContent='STELUȚELE MELE · ★ '+chapterStars(mapProfile,1);
 }
-const valleyLessons=['Adunarea fără trecere peste ordin','Scăderea fără trecere peste ordin','Adunarea cu trecere peste ordin','Scăderea cu trecere peste ordin','Proba adunării','Proba scăderii','Ordinea efectuării operațiilor'];
+const valleyLessons=['Adunarea fără trecere peste ordin','Scăderea fără trecere peste ordin','Adunarea cu trecere peste ordin','Scăderea cu trecere peste ordin','Proba adunării și a scăderii','Ordinea efectuării operațiilor','Aflarea numărului necunoscut'];
 function openValley(){
  $('addition-page').hidden=true;
  $('subtraction-page').hidden=true;
@@ -46,6 +46,14 @@ function openValley(){
  $('valley-lessons').replaceChildren();$('valley-progress').replaceChildren();
  const boxes=[[21.5,41,15,17],[43.5,43,15,17],[61.5,44,15,17],[19.5,59,15,18],[38,61,15,18],[56,63,13,18],[72,62,14,18]];
  valleyLessons.forEach((title,i)=>{const id=i+1,b=document.createElement('button');b.type='button';b.className='valley-lesson';b.setAttribute('aria-label',id+'. '+title+(id>4?' — exerciții în pregătire':''));const [left,top,width,height]=boxes[i];Object.assign(b.style,{left:left+'%',top:top+'%',width:width+'%',height:height+'%'});const show=()=>{if(id===1){openAddition();return;}if(id===2){openSubtraction();return;}if(id===3){openCarryLesson();return;}if(id===4){openBorrowLesson();return;}$('chapter-title').textContent=id+'. '+title;$('chapter-description').textContent='Valea adunării și scăderii';$('chapter-access').textContent='Exercițiile acestei lecții sunt în pregătire.';$('chapter-dialog').showModal();};b.addEventListener('click',show);$('valley-lessons').append(b);const tile=document.createElement('button');tile.type='button';tile.className='valley-tile';tile.textContent=String(id);tile.setAttribute('aria-label','Lecția '+id+' — '+title);Object.assign(tile.style,{left:(i<4?[79.5,83,86.5,90][i]:[81,84.6,88.2][i-4])+'%',top:(i<4?9.8:16)+'%',width:'3%',height:'5%'});tile.addEventListener('click',show);$('valley-progress').append(tile);});
+ // The original illustration has older lettering on signs 5–7.
+ for (const id of [5,6,7]) {
+  const label=document.createElement('span');
+  label.className='valley-updated-title valley-updated-title-'+id;
+  label.setAttribute('aria-hidden','true');
+  label.textContent=valleyLessons[id-1];
+  $('valley-lessons').append(label);
+ }
  $('valley-summary').textContent='0 din 7 lecții parcurse. '+chapterStars(mapProfile,2)+' steluțe în acest capitol. Exercițiile vor fi adăugate pe rând.';
  $('valley-back').focus();window.scrollTo(0,0);
 }
