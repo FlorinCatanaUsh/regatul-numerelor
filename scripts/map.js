@@ -75,20 +75,28 @@ for(const row of proofRows){
  row.right.addEventListener('input',calculate);
  row.sign.addEventListener('change',calculate);
 }
-const proofExercises={1:[27,15],2:[274,158]};
+const proofExercises={1:[27,15],2:[274,158],3:[578,302]};
+const subtractionProofInputs=['proof-add-left','proof-add-right','proof-add-result'].map($);
 let proofRevision=0,proofBusy=false,activeProofChest=1;
 function openProofExercise(number){
  activeProofChest=number;
  const [left,right]=proofExercises[number];
  $('proof-chest-title').textContent='Lecția 5 · Lădița '+number;
- $('proof-operation').textContent=left+' + '+right+' =';
+ const subtraction=number===3;
+ $('proof-operation').textContent=left+(subtraction?' − ':' + ')+right+' =';
+ $('proof-sum').setAttribute('aria-label',subtraction?'Diferența':'Suma');
+ $('proof-title').textContent=subtraction?'Rezolvă scăderea și verifică prin adunare:':'Rezolvă și verifică prin cele două probe ale adunării';
+ $('proof-hint').textContent=subtraction?'Indiciu: La proba prin adunare caută întotdeauna numerele cele mai mici.':'Indiciu: Proba adunării se realizează prin scădere.';
+ for(const id of ['proof-row-1','proof-row-2'])$(id).hidden=subtraction;
+ $('proof-subtraction-row').hidden=!subtraction;
+ for(const field of subtractionProofInputs){field.value='';field.disabled=!subtraction||!!teacherMapReturn;}
  proofRevision++;
  proofBusy=false;
  $('proof-sum').value='';
  for(const row of proofRows){
   row.left.value=row.right.value=row.sign.value='';
   row.result.textContent='—';
-  row.left.disabled=row.right.disabled=row.sign.disabled=!!teacherMapReturn;
+  row.left.disabled=row.right.disabled=row.sign.disabled=subtraction||!!teacherMapReturn;
  }
  $('proof-sum').disabled=$('proof-check').disabled=!!teacherMapReturn;
  $('proof-status').textContent=teacherMapReturn?'Previzualizare profesor.':'';
@@ -99,9 +107,11 @@ $('proof-dialog').addEventListener('close',()=>{proofRevision++;proofBusy=false;
 $('proof-form').addEventListener('submit',async event=>{
  event.preventDefault();
  if(teacherMapReturn||proofBusy)return;
- const probes=proofRows.map(proofNumbers),sum=$('proof-sum').value;
- if(!/^\d{1,3}$/.test(sum)||probes.some(p=>!p)){
-  $('proof-status').textContent='Completează suma și cele două probe.';return;
+ const sum=$('proof-sum').value;
+ const subtraction=activeProofChest===3;
+ const probes=subtraction?subtractionProofInputs.map(field=>/^\d{1,3}$/.test(field.value)?+field.value:null):proofRows.map(proofNumbers);
+ if(!/^\d{1,3}$/.test(sum)||probes.some(p=>p===null)){
+  $('proof-status').textContent=subtraction?'Completează diferența și proba.':'Completează suma și cele două probe.';return;
  }
  const revision=proofRevision;
  proofBusy=$('proof-check').disabled=true;

@@ -316,3 +316,5 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
 .proof-sum input{width:var(--proof-box);flex:0 0 var(--proof-box)}
 #proof-check{min-height:44px;padding:6px 18px;background:#315d52;color:white;border:0;border-radius:8px;font-weight:700}
 #proof-status:empty{display:none}
+
+.proof-fixed-sign{text-align:center}
