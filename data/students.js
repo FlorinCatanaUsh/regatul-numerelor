@@ -6,5 +6,5 @@ export const pupils = [
 ['student-10','Ana M.'],['student-11','Alex N.'],['student-12','Nicolas O.'],
 ['student-13','Raul O.'],['student-14','Natalia P.'],['student-15','Sofia P.'],
 ['student-16','Cristiano P.'],['student-17','Adelin R.'],['student-18','Alis R.'],
-['student-19','David S.'],['student-20','Mihai S.'],['student-21','Andreea V.']
+['student-19','David S.'],['student-21','Andreea V.']
 ];

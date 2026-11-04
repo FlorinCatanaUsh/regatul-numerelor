@@ -1,4 +1,4 @@
-import { pupils } from '../data/students.js';
+import { pupils } from '../data/students.js?v=roster-20';
 import { studentAuth } from './auth.js?v=borrow-exercises';
 import { setupMap } from './map.js?v=valley-titles';
 import { setupTeacher } from './teacher.js?v=teacher-toolbar';
