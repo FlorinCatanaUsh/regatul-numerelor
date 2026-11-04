@@ -1,6 +1,6 @@
 import { pupils } from '../data/students.js?v=roster-20';
-import { studentAuth } from './auth.js?v=borrow-exercises';
-import { setupMap } from './map.js?v=proof-chests';
+import { studentAuth } from './auth.js?v=proof-one';
+import { setupMap } from './map.js?v=proof-one';
 import { setupTeacher } from './teacher.js?v=proof-chests';
 'use strict';
 

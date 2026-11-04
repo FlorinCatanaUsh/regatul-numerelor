@@ -58,6 +58,69 @@ function openValley(){
  $('valley-summary').textContent='0 din 7 lecții parcurse. '+chapterStars(mapProfile,2)+' steluțe în acest capitol. Exercițiile vor fi adăugate pe rând.';
  $('valley-back').focus();window.scrollTo(0,0);
 }
+const proofRows=[1,2].map(i=>({
+ left:$('proof-left-'+i),sign:$('proof-sign-'+i),
+ right:$('proof-right-'+i),result:$('proof-result-'+i)
+}));
+function proofNumbers({left,right,sign}){
+ if(!/^\d{1,2}$/.test(left.value)||!/^\d{1,2}$/.test(right.value)||!['+','-'].includes(sign.value))return null;
+ return [+left.value,sign.value,+right.value];
+}
+for(const row of proofRows){
+ const calculate=()=>{
+  const values=proofNumbers(row);
+  row.result.textContent=values?String(values[1]==='+'?values[0]+values[2]:values[0]-values[2]):'—';
+ };
+ row.left.addEventListener('input',calculate);
+ row.right.addEventListener('input',calculate);
+ row.sign.addEventListener('change',calculate);
+}
+let proofRevision=0,proofBusy=false;
+function openProofExercise(){
+ proofRevision++;
+ proofBusy=false;
+ $('proof-sum').value='';
+ for(const row of proofRows){
+  row.left.value=row.right.value=row.sign.value='';
+  row.result.textContent='—';
+  row.left.disabled=row.right.disabled=row.sign.disabled=!!teacherMapReturn;
+ }
+ $('proof-sum').disabled=$('proof-check').disabled=!!teacherMapReturn;
+ $('proof-status').textContent=teacherMapReturn?'Previzualizare profesor.':'';
+ $('proof-dialog').showModal();
+}
+$('proof-close').addEventListener('click',()=>$('proof-dialog').close());
+$('proof-dialog').addEventListener('close',()=>{proofRevision++;proofBusy=false;});
+$('proof-form').addEventListener('submit',async event=>{
+ event.preventDefault();
+ if(teacherMapReturn||proofBusy)return;
+ const probes=proofRows.map(proofNumbers),sum=$('proof-sum').value;
+ if(!/^\d{1,2}$/.test(sum)||probes.some(p=>!p)){
+  $('proof-status').textContent='Completează suma și cele două probe.';return;
+ }
+ const revision=proofRevision;
+ proofBusy=$('proof-check').disabled=true;
+ try{
+  const r=await studentAuth.proof('answer',{chest:1,answer:[+sum,...probes.flat()].join(',')});
+  if(revision!==proofRevision)return;
+  renderMap(r.profile);
+  updateProofProgress();
+  $('proof-status').textContent=r.correct?'✓ Corect!':'✗ Mai încearcă.';
+ }catch(error){
+  if(revision===proofRevision)$('proof-status').textContent=error.message;
+ }finally{
+  if(revision===proofRevision)proofBusy=$('proof-check').disabled=false;
+ }
+});
+function updateProofProgress(){
+ const solved=mapProfile.lessonProgress?.[2]?.solvedByLesson?.[5]||[];
+ $('proof-count').textContent=starCount(solved)+'/12';
+ const chest=$('proof-chests').children[0];
+ if(chest&&solved.includes(1)&&chest.className==='addition-chest'){
+  chest.className+=' complete';
+  const star=document.createElement('span');star.textContent='★';chest.append(star);
+ }
+}
 function openProofLesson() {
  const chests = $('proof-chests');
  chests.replaceChildren();
@@ -73,6 +136,7 @@ function openProofLesson() {
    height: '18.5%'
   });
   chest.addEventListener('click', () => {
+   if(number===1){openProofExercise();return;}
    $('chapter-title').textContent = 'Lădița ' + number;
    $('chapter-description').textContent = valleyLessons[4];
    $('chapter-access').textContent = 'Exercițiul acestei lădițe este în pregătire.';
@@ -81,6 +145,7 @@ function openProofLesson() {
   });
   chests.append(chest);
  }
+ updateProofProgress();
  $('valley-page').hidden = true;
  $('proof-page').hidden = false;
  $('proof-student').textContent = mapProfile.displayName;
