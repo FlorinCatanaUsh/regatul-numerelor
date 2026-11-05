@@ -206,11 +206,12 @@ for (const id of ['proof-back', 'proof-back-sign']) {
   $('valley-lessons').children[4]?.focus();
  });
 }
+const operationOrderExercises={1:'575 − 311 + 211',2:'342 + 217 − 132'};
 const operationOrderDialog=$('operation-order-dialog');
 const operationOrderFields=['answer','left','sign','right','result'].map(id=>$('operation-order-'+id));
 const operationOrderCheck=$('operation-order-check');
 const operationOrderStatus=$('operation-order-status');
-let operationOrderRevision=0;
+let operationOrderRevision=0,activeOperationOrderChest=1;
 function updateOperationOrderProgress(){
  const solved=mapProfile.lessonProgress?.[2]?.solvedByLesson?.[6]||[];
  $('operation-order-count').textContent=starCount(solved)+'/12';
@@ -233,7 +234,7 @@ $('operation-order-form').addEventListener('submit',async event=>{
  const revision=operationOrderRevision;
  operationOrderCheck.disabled=true;
  try{
-  const result=await studentAuth.operationOrder('answer',{chest:1,answer});
+  const result=await studentAuth.operationOrder('answer',{chest:activeOperationOrderChest,answer});
   if(revision!==operationOrderRevision)return;
   renderMap(result.profile);
   updateOperationOrderProgress();
@@ -259,8 +260,12 @@ function openOperationOrderLesson() {
    height:'18.5%'
   });
   chest.addEventListener('click',()=>{
-   if(number===1){
+   if(operationOrderExercises[number]){
     operationOrderRevision++;
+    activeOperationOrderChest=number;
+    $('operation-order-expression').textContent=operationOrderExercises[number]+' =';
+    $('operation-order-number').textContent=number;
+    $('operation-order-number').setAttribute('aria-label','Lădița '+number);
     for(const field of operationOrderFields){
      field.value='';
      field.disabled=!!teacherMapReturn;
