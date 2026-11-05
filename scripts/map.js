@@ -206,7 +206,7 @@ for (const id of ['proof-back', 'proof-back-sign']) {
   $('valley-lessons').children[4]?.focus();
  });
 }
-const operationOrderExercises={1:'575 − 311 + 211',2:'342 + 217 − 132',3:'583 − (232 + 141)'};
+const operationOrderExercises={1:'575 − 311 + 211',2:'342 + 217 − 132',3:'583 − (232 + 141)',4:'687 − (499 − 312)'};
 const operationOrderDialog=$('operation-order-dialog');
 const operationOrderFields=['answer','left','sign','right','result'].map(id=>$('operation-order-'+id));
 const operationOrderCheck=$('operation-order-check');
