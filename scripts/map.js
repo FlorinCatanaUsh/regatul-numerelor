@@ -267,7 +267,10 @@ const unknownNumberExercises={
  2:['528 + a = 758','Scade termenul cunoscut din sumă.'],
  3:['a − 463 = 578','Adună scăzătorul și diferența.'],
  4:['752 − a = 436','Scade diferența din descăzut.'],
- 5:['a + 430 − 264 = 3652','Aplică mersul invers. Începe cu ultima operație.']
+ 5:['a + 430 − 264 = 3652','Aplică mersul invers. Începe cu ultima operație.','a + 430',3652],
+ 6:['a + 437 + 210 = 879','Aplică mersul invers. Începe cu ultima operație.','a + 437',879],
+ 7:['a − 557 − 352 = 4726','Aplică mersul invers. Începe cu ultima operație.','a − 557',4726],
+ 8:['a − 745 + 254 = 6458','Aplică mersul invers. Începe cu ultima operație.','a − 745',6458]
 };
 const unknownNumberDialog=$('unknown-number-dialog');
 const unknownNumberFields=['left','sign','right','answer'].map(id=>$('unknown-number-'+id));
@@ -290,7 +293,7 @@ function updateUnknownNumberProgress(){
 }
 function openUnknownNumberExercise(number){
  activeUnknownNumberChest=number;
- const [expression,hint]=unknownNumberExercises[number];
+ const [expression,hint,inverseLeft,inverseRight]=unknownNumberExercises[number];
  $('unknown-number-expression').textContent=expression;
  $('unknown-number-hint').textContent=hint;
  $('unknown-number-badge').textContent=number;
@@ -300,7 +303,11 @@ function openUnknownNumberExercise(number){
   field.value='';
   field.disabled=!!teacherMapReturn;
  }
- unknownNumberInverse.hidden=number!==5;
+ unknownNumberInverse.hidden=inverseLeft===undefined;
+ if(!unknownNumberInverse.hidden){
+  $('unknown-number-inverse-equation').textContent=inverseLeft+' = '+inverseRight;
+  $('unknown-number-inverse-label').textContent=inverseLeft+' =';
+ }
  for(const field of unknownNumberInverseFields){
   field.value='';
   field.disabled=unknownNumberInverse.hidden||!!teacherMapReturn;
@@ -316,7 +323,7 @@ $('unknown-number-form').addEventListener('submit',async event=>{
  const [left,sign,right,value]=unknownNumberFields.map(field=>field.value);
  if(![left,right,value].every(part=>/^\d{1,5}$/.test(part))||!['+','-'].includes(sign))return;
  const parts=[+left,sign,+right,+value];
- if(activeUnknownNumberChest===5){
+ if(!unknownNumberInverse.hidden){
   const [inverseSign,operand,intermediate]=unknownNumberInverseFields.map(field=>field.value);
   if(!['+','-'].includes(inverseSign)||![operand,intermediate].every(part=>/^\d{1,5}$/.test(part)))return;
   parts.unshift(inverseSign,+operand,+intermediate);
