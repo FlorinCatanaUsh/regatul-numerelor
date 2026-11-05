@@ -262,6 +262,54 @@ $('operation-order-form').addEventListener('submit',async event=>{
   if(revision===operationOrderRevision)operationOrderCheck.disabled=false;
  }
 });
+const unknownNumberDialog=$('unknown-number-dialog');
+const unknownNumberFields=['left','sign','right','answer'].map(id=>$('unknown-number-'+id));
+const unknownNumberCheck=$('unknown-number-check');
+const unknownNumberStatus=$('unknown-number-status');
+let unknownNumberRevision=0;
+function updateUnknownNumberProgress(){
+ const solved=mapProfile.lessonProgress?.[2]?.solvedByLesson?.[7]||[];
+ $('unknown-number-count').textContent=starCount(solved)+'/12';
+ for(const number of solved){
+  const chest=$('unknown-number-chests').children[number-1];
+  if(!chest||chest.className!=='addition-chest')continue;
+  chest.className+=' complete';
+  const star=document.createElement('span');
+  star.textContent='★';
+  chest.append(star);
+ }
+}
+function openUnknownNumberExercise(){
+ unknownNumberRevision++;
+ for(const field of unknownNumberFields){
+  field.value='';
+  field.disabled=!!teacherMapReturn;
+ }
+ unknownNumberCheck.disabled=!!teacherMapReturn;
+ unknownNumberStatus.textContent=teacherMapReturn?'Previzualizare profesor.':'';
+ unknownNumberDialog.showModal();
+}
+$('unknown-number-close').addEventListener('click',()=>unknownNumberDialog.close());
+$('unknown-number-form').addEventListener('submit',async event=>{
+ event.preventDefault();
+ if(teacherMapReturn||unknownNumberCheck.disabled)return;
+ const [left,sign,right,value]=unknownNumberFields.map(field=>field.value);
+ if(![left,right,value].every(part=>/^\d{1,5}$/.test(part))||!['+','-'].includes(sign))return;
+ const revision=unknownNumberRevision;
+ unknownNumberCheck.disabled=true;
+ try{
+  const answer=[+left,sign,+right,+value].join(',');
+  const result=await studentAuth.unknownNumber('answer',{chest:1,answer});
+  if(revision!==unknownNumberRevision)return;
+  renderMap(result.profile);
+  updateUnknownNumberProgress();
+  unknownNumberStatus.textContent=result.correct?'✓ Corect!':'✗ Mai încearcă.';
+ }catch(error){
+  if(revision===unknownNumberRevision)unknownNumberStatus.textContent=error.message;
+ }finally{
+  if(revision===unknownNumberRevision)unknownNumberCheck.disabled=false;
+ }
+});
 function openValleyPracticeLesson(lesson){
  const operationOrder=lesson===6;
  const prefix=operationOrder?'operation-order':'unknown-number';
@@ -279,6 +327,7 @@ function openValleyPracticeLesson(lesson){
    height:'18.5%'
   });
   chest.addEventListener('click',()=>{
+   if(!operationOrder&&number===1){openUnknownNumberExercise();return;}
    if(operationOrder&&operationOrderExercises[number]){
     operationOrderRevision++;
     activeOperationOrderChest=number;
@@ -316,6 +365,7 @@ function openValleyPracticeLesson(lesson){
  $('valley-page').hidden=true;
  $(prefix+'-page').hidden=false;
  if(operationOrder)updateOperationOrderProgress();
+ else updateUnknownNumberProgress();
  $(prefix+'-student').textContent=mapProfile.displayName;
  $(prefix+'-back').focus();
  window.scrollTo(0,0);

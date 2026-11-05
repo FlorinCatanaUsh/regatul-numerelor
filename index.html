@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=unknown-number">
+<link rel="stylesheet" href="./styles/main.css?v=unknown-first">
 </head>
 <body>
 <main>
@@ -196,8 +196,32 @@
   <img src="./assets/valea-numarul-necunoscut.webp" alt="Douăsprezece lădițe numerotate, roboțelul cu un exemplu de calcul și trofeul Comoara văii.">
   <button id="unknown-number-back-sign" type="button" aria-label="Înapoi la Valea adunării și scăderii"></button>
   <div id="unknown-number-chests"></div>
+  <output id="unknown-number-count" aria-label="Steluțe la lecția 7">0/12</output>
  </div></div>
- <p class="map-summary">Exercițiile vor fi adăugate pe rând.</p>
+ <p class="map-summary">Alege o lădiță.</p>
+ <dialog id="unknown-number-dialog" aria-labelledby="unknown-number-title">
+  <div class="proof-art">
+   <img class="proof-backdrop" src="./assets/valea-adunare-template.webp" width="1672" height="941" alt="">
+   <header class="proof-banner"><span id="unknown-number-badge" aria-label="Lădița 1">1</span><strong>7. Aflarea numărului necunoscut</strong></header>
+   <form id="unknown-number-form">
+    <div class="proof-board">
+     <h2 id="unknown-number-title">Află numărul necunoscut:</h2>
+     <div class="proof-row proof-sum">a + 348 = 549</div>
+     <div class="proof-row" id="unknown-number-step">
+      <span>a =</span>
+      <input id="unknown-number-left" aria-label="Primul număr din calcul" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required>
+      <select id="unknown-number-sign" aria-label="Semnul operației" required><option value="" selected disabled hidden></option><option value="+">+</option><option value="-">−</option></select>
+      <input id="unknown-number-right" aria-label="Al doilea număr din calcul" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required>
+     </div>
+     <div class="proof-row proof-sum"><label for="unknown-number-answer">a =</label><input id="unknown-number-answer" aria-label="Valoarea lui a" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required></div>
+    </div>
+    <p id="unknown-number-hint">Scade termenul cunoscut din sumă.</p>
+    <button id="unknown-number-close" type="button"><span>← Înapoi</span></button>
+    <button id="unknown-number-check" type="submit"><span>Verifică</span></button>
+    <p id="unknown-number-status" role="status" aria-live="polite"></p>
+   </form>
+  </div>
+ </dialog>
 </section>
 
 <section id="addition-exercise-page" hidden aria-label="Adunare — lădița 1">
@@ -555,6 +579,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=unknown-number"></script>
+<script type="module" src="./scripts/app.js?v=unknown-first"></script>
 </body>
 </html>

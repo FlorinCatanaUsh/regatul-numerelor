@@ -24,6 +24,7 @@ const studentAuth = (()=>{
   async students(){return (await request('teacher_students')).students;},
   async addition(operation,fields={}){return await request('addition',{operation,...fields});},
   async carry(operation,fields={}){return await request('carry',{operation,...fields});},
+  async unknownNumber(operation,fields={}){return await request('unknown_number',{operation,...fields});},
   async operationOrder(operation,fields={}){return await request('operation_order',{operation,...fields});},
   async proof(operation,fields={}){return await request('proof',{operation,...fields});},
   async borrow(operation,fields={}){return await request('borrow',{operation,...fields});},
