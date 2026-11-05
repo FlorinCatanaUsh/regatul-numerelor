@@ -271,7 +271,10 @@ const unknownNumberExercises={
  6:['a + 437 + 210 = 879','Aplică mersul invers. Începe cu ultima operație.','a + 437',879],
  7:['a − 557 − 352 = 4726','Aplică mersul invers. Începe cu ultima operație.','a − 557',4726],
  8:['a − 745 + 254 = 6458','Aplică mersul invers. Începe cu ultima operație.','a − 745',6458],
- 9:['a + 430 − 264 = 3652','Aplică mersul invers. Începe cu ultima operație.']
+ 9:['a + 430 − 264 = 3652','Aplică mersul invers. Începe cu ultima operație.'],
+ 10:['a + 325 + 146 = 912','Aplică mersul invers. Începe cu ultima operație.'],
+ 11:['a − 286 − 157 = 1398','Aplică mersul invers. Începe cu ultima operație.'],
+ 12:['a − 518 + 236 = 1704','Aplică mersul invers. Începe cu ultima operație.']
 };
 const unknownNumberDialog=$('unknown-number-dialog');
 const unknownNumberFields=['left','sign','right','answer'].map(id=>$('unknown-number-'+id));
