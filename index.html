@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=unknown-five">
+<link rel="stylesheet" href="./styles/main.css?v=unknown-five-layout">
 </head>
 <body>
 <main>
@@ -212,18 +212,26 @@
      <div class="proof-row" id="unknown-number-step">
       <div id="unknown-number-expression">a + 348 = 549</div>
       <div id="unknown-number-inverse" hidden>
-       <span>a + 430 = 3652</span>
-       <select id="unknown-number-inverse-sign" aria-label="Semnul primei operații" required disabled><option value="" selected disabled hidden></option><option value="+">+</option><option value="-">−</option></select>
-       <input id="unknown-number-inverse-operand" aria-label="Numărul din prima operație" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required disabled>
-       <label for="unknown-number-inverse-result">a + 430 =</label>
-       <input id="unknown-number-inverse-result" aria-label="Rezultatul primei operații" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required disabled>
+       <div class="unknown-number-work-row">
+        <span>a + 430 = 3652</span>
+        <select id="unknown-number-inverse-sign" aria-label="Semnul primei operații" required disabled><option value="" selected disabled hidden></option><option value="+">+</option><option value="-">−</option></select>
+        <input id="unknown-number-inverse-operand" aria-label="Numărul din prima operație" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required disabled>
+       </div>
+       <div class="unknown-number-work-row">
+        <label for="unknown-number-inverse-result">a + 430 =</label>
+        <input id="unknown-number-inverse-result" aria-label="Rezultatul primei operații" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required disabled>
+       </div>
       </div>
-      <span>a =</span>
-      <input id="unknown-number-left" aria-label="Primul număr din calcul" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required>
-      <select id="unknown-number-sign" aria-label="Semnul operației" required><option value="" selected disabled hidden></option><option value="+">+</option><option value="-">−</option></select>
-      <input id="unknown-number-right" aria-label="Al doilea număr din calcul" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required>
-      <label for="unknown-number-answer">a =</label>
-      <input id="unknown-number-answer" aria-label="Valoarea lui a" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required>
+      <div class="unknown-number-work-row">
+       <span>a =</span>
+       <input id="unknown-number-left" aria-label="Primul număr din calcul" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required>
+       <select id="unknown-number-sign" aria-label="Semnul operației" required><option value="" selected disabled hidden></option><option value="+">+</option><option value="-">−</option></select>
+       <input id="unknown-number-right" aria-label="Al doilea număr din calcul" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required>
+      </div>
+      <div class="unknown-number-work-row">
+       <label for="unknown-number-answer">a =</label>
+       <input id="unknown-number-answer" aria-label="Valoarea lui a" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required>
+      </div>
      </div>
     </div>
     <p id="unknown-number-hint">Scade termenul cunoscut din sumă.</p>
