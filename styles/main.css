@@ -216,7 +216,9 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
 .teacher-student-card .teacher-rank{text-align:right;padding-right:.35rem}
 .teacher-student-card .teacher-star-total{font-size:.9rem}
 .teacher-student-card button{margin:0;padding:5px 8px;font-size:.82rem}
-.teacher-student-card .teacher-student-name{text-align:left;overflow:hidden;text-overflow:ellipsis}
+.teacher-student-card .teacher-student-name{display:flex;align-items:center;gap:.35rem;min-height:2.55rem;text-align:left}
+.teacher-student-name span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.teacher-student-trophy{display:block;flex:none;width:2.3rem;height:1.85rem;object-fit:contain}
 
 
 /* Keep the name picker compact while leaving the password door full size. */

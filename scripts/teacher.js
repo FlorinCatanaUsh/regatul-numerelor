@@ -36,8 +36,19 @@ function renderTeacherStudents(){
   const name=document.createElement('button');
   name.type='button';
   name.className='teacher-student-name';
-  name.textContent=row.displayName;
-  name.setAttribute('aria-label',row.displayName+' — harta și progresul');
+  const nameLabel=document.createElement('span');
+  nameLabel.textContent=row.displayName;
+  name.append(nameLabel);
+  const hasForestCrystal=row.lessonProgress?.[1]?.forestCrystalTaken===true||row.completedChapters?.includes(1);
+  if(hasForestCrystal){
+   const trophy=document.createElement('img');
+   trophy.src='./assets/cristalul-padurii.webp';
+   trophy.alt='';
+   trophy.title='Cristalul pădurii';
+   trophy.className='teacher-student-trophy';
+   name.append(trophy);
+  }
+  name.setAttribute('aria-label',row.displayName+(hasForestCrystal?' — Cristalul pădurii câștigat':'')+' — harta și progresul');
   name.addEventListener('click',()=>mapUI.teacherView(row,()=>{
    selectTab('individual');
    name.focus();
