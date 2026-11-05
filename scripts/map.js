@@ -206,12 +206,12 @@ for (const id of ['proof-back', 'proof-back-sign']) {
   $('valley-lessons').children[4]?.focus();
  });
 }
-const operationOrderExercises={1:'575 − 311 + 211',2:'342 + 217 − 132',3:'583 − (232 + 141)',4:'687 − (499 − 312)',5:'34 + 56 + 34 − 23',6:'45 − 44 + 56 − 33',7:'44 + 35 − (22 + 10)',8:'87 − (34 + 23) + 27'};
+const operationOrderExercises={1:'575 − 311 + 211',2:'342 + 217 − 132',3:'583 − (232 + 141)',4:'687 − (499 − 312)',5:'34 + 56 + 34 − 23',6:'45 − 44 + 56 − 33',7:'44 + 35 − (22 + 10)',8:'87 − (34 + 23) + 27',9:'125 + 76 − 48 + 32',10:'310 − (84 − 29) − 46',11:'72 + 68 − (35 + 25)',12:'420 − (156 + 84) + 75'};
 const operationOrderDialog=$('operation-order-dialog');
 const operationOrderFields=['answer','left','sign','right','result'].map(id=>$('operation-order-'+id));
 const operationOrderMiddleFields=Array.from({length:6},(_,i)=>$('operation-order-middle-'+i));
 function operationOrderStartsWithFirstSum(){
- return activeOperationOrderChest===7&&operationOrderMiddleFields[1].value==='-'&&operationOrderMiddleFields[3].value==='+';
+ return [7,11].includes(activeOperationOrderChest)&&operationOrderMiddleFields[1].value==='-'&&operationOrderMiddleFields[3].value==='+';
 }
 function showOperationOrderParentheses(){
  const visible=operationOrderStartsWithFirstSum();
@@ -281,7 +281,7 @@ function openOperationOrderLesson() {
     activeOperationOrderChest=number;
     const expression=operationOrderExercises[number];
     $('operation-order-expression').textContent=expression+' =';
-    $('operation-order-hint').textContent=number===7?'Poți începe cu prima adunare sau cu adunarea din paranteză.':expression.includes('(')
+    $('operation-order-hint').textContent=[7,11].includes(number)?'Poți începe cu prima adunare sau cu adunarea din paranteză.':expression.includes('(')
      ?'Calculează mai întâi operația din paranteză.'
      :'Efectuează adunarea și scăderea în ordinea în care apar, de la stânga la dreapta.';
     $('operation-order-number').textContent=number;
