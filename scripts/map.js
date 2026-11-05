@@ -210,16 +210,15 @@ const operationOrderExercises={1:'575 − 311 + 211',2:'342 + 217 − 132',3:'58
 const operationOrderDialog=$('operation-order-dialog');
 const operationOrderFields=['answer','left','sign','right','result'].map(id=>$('operation-order-'+id));
 const operationOrderMiddleFields=Array.from({length:6},(_,i)=>$('operation-order-middle-'+i));
-const operationOrderRoute=$('operation-order-route');
+function operationOrderStartsWithFirstSum(){
+ return activeOperationOrderChest===7&&operationOrderMiddleFields[1].value==='-'&&operationOrderMiddleFields[3].value==='+';
+}
 function showOperationOrderParentheses(){
- const visible=activeOperationOrderChest===7&&operationOrderRoute.value==='1';
+ const visible=operationOrderStartsWithFirstSum();
  $('operation-order-paren-open').hidden=!visible;
  $('operation-order-paren-close').hidden=!visible;
 }
-operationOrderRoute.addEventListener('change',()=>{
- showOperationOrderParentheses();
- for(const field of [...operationOrderMiddleFields,...operationOrderFields.slice(1)])field.value='';
-});
+for(const index of [1,3])operationOrderMiddleFields[index].addEventListener('change',showOperationOrderParentheses);
 const operationOrderCheck=$('operation-order-check');
 const operationOrderStatus=$('operation-order-status');
 let operationOrderRevision=0,activeOperationOrderChest=1;
@@ -245,7 +244,7 @@ $('operation-order-form').addEventListener('submit',async event=>{
  if(activeOperationOrderChest>=5){
   const [a,first,b,second,c,stepResult]=operationOrderMiddleFields.map(field=>field.value);
   if(![a,b,c,stepResult].every(value=>/^\d{1,5}$/.test(value))||![first,second].every(value=>['+','-'].includes(value)))return;
-  parts.push(+a,first,+b,second,+c,+stepResult,operationOrderRoute.value);
+  parts.push(+a,first,+b,second,+c,+stepResult,Number(operationOrderStartsWithFirstSum()));
  }
  const answer=parts.join(',');
  const revision=operationOrderRevision;
@@ -293,14 +292,11 @@ function openOperationOrderLesson() {
     }
     const hasMiddleStep=number>=5;
     $('operation-order-middle').hidden=!hasMiddleStep;
-    operationOrderRoute.hidden=number!==7;
-    operationOrderRoute.disabled=number!==7||!!teacherMapReturn;
-    operationOrderRoute.value='0';
-    showOperationOrderParentheses();
     for(const field of operationOrderMiddleFields){
      field.value='';
      field.disabled=!hasMiddleStep||!!teacherMapReturn;
     }
+    showOperationOrderParentheses();
     operationOrderCheck.disabled=!!teacherMapReturn;
     operationOrderStatus.textContent=teacherMapReturn?'Previzualizare profesor.':'';
     operationOrderDialog.showModal();

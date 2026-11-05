@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=operation-order-next">
+<link rel="stylesheet" href="./styles/main.css?v=operation-order-both">
 </head>
 <body>
 <main>
@@ -162,10 +162,6 @@
     <div class="proof-board">
      <h2 id="operation-order-title">Rezolvă următorul exercițiu:</h2>
      <div class="proof-row proof-sum"><label id="operation-order-expression" for="operation-order-answer">575 − 311 + 211 =</label><input id="operation-order-answer" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required></div>
-     <select id="operation-order-route" aria-label="Prima operație" hidden disabled>
-      <option value="0">Încep cu paranteza</option>
-      <option value="1">Încep cu prima adunare</option>
-     </select>
      <div class="proof-row" id="operation-order-middle" hidden>
       <input id="operation-order-middle-0" aria-label="Primul pas, numărul 1" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required disabled>
       <select id="operation-order-middle-1" aria-label="Primul pas, semnul 1" required disabled><option value="" selected disabled hidden></option><option value="+">+</option><option value="-">−</option></select>
@@ -549,6 +545,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=operation-order-next"></script>
+<script type="module" src="./scripts/app.js?v=operation-order-both"></script>
 </body>
 </html>
