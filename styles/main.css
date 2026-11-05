@@ -412,3 +412,7 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
  column-gap:0;
 }
 #proof-subtraction-row > span:first-child {margin-inline-end:.35em}
+
+#operation-order-step {
+ grid-template-columns:repeat(3,var(--proof-box)) auto var(--proof-box);
+}

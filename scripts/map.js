@@ -207,7 +207,7 @@ for (const id of ['proof-back', 'proof-back-sign']) {
  });
 }
 const operationOrderDialog=$('operation-order-dialog');
-const operationOrderAnswer=$('operation-order-answer');
+const operationOrderFields=['answer','left','sign','right','result'].map(id=>$('operation-order-'+id));
 const operationOrderCheck=$('operation-order-check');
 const operationOrderStatus=$('operation-order-status');
 let operationOrderRevision=0;
@@ -226,11 +226,14 @@ function updateOperationOrderProgress(){
 $('operation-order-close').addEventListener('click',()=>operationOrderDialog.close());
 $('operation-order-form').addEventListener('submit',async event=>{
  event.preventDefault();
- if(teacherMapReturn||operationOrderCheck.disabled||!/^\d{1,5}$/.test(operationOrderAnswer.value))return;
+ if(teacherMapReturn||operationOrderCheck.disabled)return;
+ const [total,left,sign,right,result]=operationOrderFields.map(field=>field.value);
+ if(![total,left,right,result].every(value=>/^\d{1,5}$/.test(value))||!['+','-'].includes(sign))return;
+ const answer=[+total,+left,sign,+right,+result].join(',');
  const revision=operationOrderRevision;
  operationOrderCheck.disabled=true;
  try{
-  const result=await studentAuth.operationOrder('answer',{chest:1,answer:operationOrderAnswer.value});
+  const result=await studentAuth.operationOrder('answer',{chest:1,answer});
   if(revision!==operationOrderRevision)return;
   renderMap(result.profile);
   updateOperationOrderProgress();
@@ -258,8 +261,11 @@ function openOperationOrderLesson() {
   chest.addEventListener('click',()=>{
    if(number===1){
     operationOrderRevision++;
-    operationOrderAnswer.value='';
-    operationOrderAnswer.disabled=operationOrderCheck.disabled=!!teacherMapReturn;
+    for(const field of operationOrderFields){
+     field.value='';
+     field.disabled=!!teacherMapReturn;
+    }
+    operationOrderCheck.disabled=!!teacherMapReturn;
     operationOrderStatus.textContent=teacherMapReturn?'Previzualizare profesor.':'';
     operationOrderDialog.showModal();
     return;

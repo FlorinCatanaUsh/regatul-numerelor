@@ -8,8 +8,8 @@ begin
  if not found then return jsonb_build_object('ok',false,'error','unauthorized');end if;
  if not exists(select 1 from regat_private.students where id=sid and 1=any(completed_chapters)) then return jsonb_build_object('ok',false,'error','chapter_locked');end if;
  if p_action='state' then return jsonb_build_object('ok',true,'profile',public.regat_student_profile(sid));end if;
- if p_action<>'answer' or p_chest is null or p_chest<>1 or p_answer is null or btrim(p_answer)!~'^[0-9]{1,5}$' then return jsonb_build_object('ok',false,'error','invalid_answer');end if;
- good=btrim(p_answer)::integer=266;
+ if p_action<>'answer' or p_chest is null or p_chest<>1 or p_answer is null or btrim(p_answer)!~'^[0-9]{1,5},[0-9]{1,5},[+-],[0-9]{1,5},[0-9]{1,5}$' then return jsonb_build_object('ok',false,'error','invalid_answer');end if;
+ good=btrim(p_answer)='475,264,+,211,475';
  if good then
   lp=jsonb_set(lp,'{2}',coalesce(lp->'2','{}'::jsonb),true);
   lp=jsonb_set(lp,'{2,solvedByLesson}',coalesce(lp#>'{2,solvedByLesson}','{}'::jsonb),true);

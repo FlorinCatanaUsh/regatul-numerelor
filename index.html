@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=operation-order-first">
+<link rel="stylesheet" href="./styles/main.css?v=operation-order-step">
 </head>
 <body>
 <main>
@@ -161,7 +161,14 @@
    <form id="operation-order-form">
     <div class="proof-board">
      <h2 id="operation-order-title">Rezolvă următorul exercițiu:</h2>
-     <div class="proof-row proof-sum"><label for="operation-order-answer">575 − 311 + 2 =</label><input id="operation-order-answer" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required></div>
+     <div class="proof-row proof-sum"><label for="operation-order-answer">575 − 311 + 211 =</label><input id="operation-order-answer" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required></div>
+     <div class="proof-row" id="operation-order-step">
+      <input id="operation-order-left" aria-label="Primul număr din pasul intermediar" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required>
+      <select id="operation-order-sign" aria-label="Semnul din pasul intermediar" required><option value="" selected disabled hidden></option><option value="+">+</option><option value="-">−</option></select>
+      <input id="operation-order-right" aria-label="Al doilea număr din pasul intermediar" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required>
+      <span>=</span>
+      <input id="operation-order-result" aria-label="Rezultatul pasului intermediar" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required>
+     </div>
     </div>
     <p id="operation-order-hint">Efectuează adunarea și scăderea în ordinea în care apar, de la stânga la dreapta.</p>
     <button id="operation-order-close" type="button"><span>← Înapoi</span></button>
@@ -527,6 +534,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=operation-order-first"></script>
+<script type="module" src="./scripts/app.js?v=operation-order-step"></script>
 </body>
 </html>
