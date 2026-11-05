@@ -262,11 +262,17 @@ $('operation-order-form').addEventListener('submit',async event=>{
   if(revision===operationOrderRevision)operationOrderCheck.disabled=false;
  }
 });
+const unknownNumberExercises={
+ 1:['a + 348 = 549','Scade termenul cunoscut din sumă.'],
+ 2:['528 + a = 758','Scade termenul cunoscut din sumă.'],
+ 3:['a − 463 = 578','Adună scăzătorul și diferența.'],
+ 4:['752 − a = 436','Scade diferența din descăzut.']
+};
 const unknownNumberDialog=$('unknown-number-dialog');
 const unknownNumberFields=['left','sign','right','answer'].map(id=>$('unknown-number-'+id));
 const unknownNumberCheck=$('unknown-number-check');
 const unknownNumberStatus=$('unknown-number-status');
-let unknownNumberRevision=0;
+let unknownNumberRevision=0,activeUnknownNumberChest=1;
 function updateUnknownNumberProgress(){
  const solved=mapProfile.lessonProgress?.[2]?.solvedByLesson?.[7]||[];
  $('unknown-number-count').textContent=starCount(solved)+'/12';
@@ -279,7 +285,13 @@ function updateUnknownNumberProgress(){
   chest.append(star);
  }
 }
-function openUnknownNumberExercise(){
+function openUnknownNumberExercise(number){
+ activeUnknownNumberChest=number;
+ const [expression,hint]=unknownNumberExercises[number];
+ $('unknown-number-expression').textContent=expression;
+ $('unknown-number-hint').textContent=hint;
+ $('unknown-number-badge').textContent=number;
+ $('unknown-number-badge').setAttribute('aria-label','Lădița '+number);
  unknownNumberRevision++;
  for(const field of unknownNumberFields){
   field.value='';
@@ -299,7 +311,7 @@ $('unknown-number-form').addEventListener('submit',async event=>{
  unknownNumberCheck.disabled=true;
  try{
   const answer=[+left,sign,+right,+value].join(',');
-  const result=await studentAuth.unknownNumber('answer',{chest:1,answer});
+  const result=await studentAuth.unknownNumber('answer',{chest:activeUnknownNumberChest,answer});
   if(revision!==unknownNumberRevision)return;
   renderMap(result.profile);
   updateUnknownNumberProgress();
@@ -327,7 +339,7 @@ function openValleyPracticeLesson(lesson){
    height:'18.5%'
   });
   chest.addEventListener('click',()=>{
-   if(!operationOrder&&number===1){openUnknownNumberExercise();return;}
+   if(!operationOrder&&unknownNumberExercises[number]){openUnknownNumberExercise(number);return;}
    if(operationOrder&&operationOrderExercises[number]){
     operationOrderRevision++;
     activeOperationOrderChest=number;
