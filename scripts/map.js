@@ -206,7 +206,7 @@ for (const id of ['proof-back', 'proof-back-sign']) {
   $('valley-lessons').children[4]?.focus();
  });
 }
-const operationOrderExercises={1:'575 − 311 + 211',2:'342 + 217 − 132'};
+const operationOrderExercises={1:'575 − 311 + 211',2:'342 + 217 − 132',3:'583 − (232 + 141)'};
 const operationOrderDialog=$('operation-order-dialog');
 const operationOrderFields=['answer','left','sign','right','result'].map(id=>$('operation-order-'+id));
 const operationOrderCheck=$('operation-order-check');
@@ -263,7 +263,11 @@ function openOperationOrderLesson() {
    if(operationOrderExercises[number]){
     operationOrderRevision++;
     activeOperationOrderChest=number;
-    $('operation-order-expression').textContent=operationOrderExercises[number]+' =';
+    const expression=operationOrderExercises[number];
+    $('operation-order-expression').textContent=expression+' =';
+    $('operation-order-hint').textContent=expression.includes('(')
+     ?'Calculează mai întâi operația din paranteză.'
+     :'Efectuează adunarea și scăderea în ordinea în care apar, de la stânga la dreapta.';
     $('operation-order-number').textContent=number;
     $('operation-order-number').setAttribute('aria-label','Lădița '+number);
     for(const field of operationOrderFields){
