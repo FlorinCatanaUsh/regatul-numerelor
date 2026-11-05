@@ -6,7 +6,7 @@ let passwordRevision=0;
 let teacherRows=[],rowsReady=false,activeTab='individual',groupBusy=false,loadRevision=0;
 let rankingTimer, loadingStudents=false;
 const chapterLabels=['I','II','III','IV','V','VI','VII','VIII'];
-const learningPages=['proof-page','subtraction-page','carry-page','borrow-page','addition-exercise-page','addition-page','valley-page','rounding-exercise-page','ordering-exercise-page','comparison-exercise-page','lesson-content-page','map-page','forest-page','formation-page','reading-page','reading-exercise-page','chest1-page','missing-page'];
+const learningPages=['proof-page','subtraction-page','carry-page','borrow-page','addition-exercise-page','addition-page','valley-page','mountains-page','rounding-exercise-page','ordering-exercise-page','comparison-exercise-page','lesson-content-page','map-page','forest-page','formation-page','reading-page','reading-exercise-page','chest1-page','missing-page'];
 function hideLearningPages(){for(const id of learningPages)$(id).hidden=true;}
 function updateClassControls(message){
  for(const id of ['teacher-tab-individual','teacher-tab-class','teacher-logout','teacher-own-password'])$(id).disabled=groupBusy;

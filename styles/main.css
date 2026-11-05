@@ -482,3 +482,12 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
 }
 
 #unknown-number-free .unknown-number-work-row {--proof-box:8cqw}
+
+#mountains-page{min-height:100svh;background:#123c43;color:#fff1c5}
+.mountains-art{container-type:inline-size}
+#mountains-back-sign{position:absolute;left:5.7%;top:1%;width:9.7%;height:10%;background:transparent;border:0;border-radius:10px;cursor:pointer}
+#mountains-back-sign:hover,#mountains-back-sign:focus-visible{outline:3px solid #ffe7a3;background:#fff2a41c}
+#mountains-progress .valley-tile{width:3.2%;height:5.55%;min-height:0;font-size:2.2cqw;background:linear-gradient(#d7d5cc,#aaa69b)}
+#mountains-progress .complete{background:linear-gradient(#d3e7ac,#83a55d);color:#234028}
+#mountains-stars{position:absolute;left:89.35%;top:88.25%;width:5.45%;height:6.9%;display:grid;place-items:center;background:#69411c;color:#ffefb2;font:bold 3.25cqw Georgia}
+.mountains-guide{position:absolute;left:16.9%;top:83.7%;width:13.2%;height:9.9%;margin:0;padding:.2em;display:grid;place-items:center;background:#edbc73;color:#27170e;text-align:center;font:bold 1.27cqw/1.18 system-ui;pointer-events:none}

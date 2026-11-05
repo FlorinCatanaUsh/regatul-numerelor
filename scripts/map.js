@@ -18,6 +18,8 @@ let activeLesson=null,lessonAccessBusy=false,onLessonAccessChanged=null;
 function showChapter(chapter) {
  if(chapter.id===1){openForest();return;}
  if(chapter.id===2&&(chapterRevealed(2)||teacherMapReturn)){openValley();return;}
+ if(chapter.id===3&&(chapterRevealed(3)||teacherMapReturn)){openMountains();return;}
+ $('chapter-back').textContent='Înapoi la hartă';
  const complete = mapProfile.completedChapters.includes(chapter.id);
  $('chapter-title').textContent=chapter.id+'. '+chapter.title;
  $('chapter-description').textContent=chapter.description;
@@ -60,6 +62,63 @@ function openValley(){
  $('valley-summary').textContent='0 din 7 lecții parcurse. '+chapterStars(mapProfile,2)+' steluțe în acest capitol. Exercițiile vor fi adăugate pe rând.';
  $('valley-back').focus();window.scrollTo(0,0);
 }
+const mountainLessons=[
+ ['Proprietățile înmulțirii',[16.7,37.5,17.5,17]],
+ ['Proba înmulțirii',[40,37.5,16,17]],
+ ['Înmulțirea cu 10, 100 sau 1 000',[64,37.5,17,17]],
+ ['Înmulțirea a două numere de o cifră',[17.8,54.5,17,17]],
+ ['Înmulțirea unui număr de două cifre cu un număr de o cifră',[40.3,54.5,16,17]],
+ ['Înmulțirea unui număr de trei cifre cu un număr de o cifră',[62.8,54.5,17.5,17]],
+ ['Înmulțirea a două numere de două cifre',[31.5,71.6,17.5,18]],
+ ['Înmulțirea unui număr de trei cifre cu un număr de două cifre',[54.7,71.6,17,18]]
+];
+function openMountains(){
+ $('map-page').hidden=true;
+ $('mountains-page').hidden=false;
+ const stars=chapterStars(mapProfile,3);
+ const completed=mapProfile.lessonProgress?.[3]?.completed||[];
+ $('mountains-student').textContent=mapProfile.displayName;
+ $('mountains-stars').textContent=String(stars);
+ $('mountains-summary').textContent=mountainLessons.filter((_,i)=>completed.includes(i+1)).length+' din 8 lecții parcurse. '+stars+' steluțe în acest capitol.';
+ $('mountains-lessons').replaceChildren();
+ $('mountains-progress').replaceChildren();
+ mountainLessons.forEach(([title,box],i)=>{
+  const id=i+1;
+  const showLesson=()=>{
+   $('chapter-title').textContent=id+'. '+title;
+   $('chapter-description').textContent='Capitolul III · Munții Înmulțirii';
+   $('chapter-access').textContent='Exercițiile acestei lecții sunt în pregătire.';
+   $('chapter-back').textContent='Înapoi la lecții';
+   $('chapter-dialog').showModal();
+   $('chapter-close').focus();
+  };
+  const sign=document.createElement('button');
+  sign.type='button';
+  sign.className='valley-lesson';
+  sign.setAttribute('aria-label',id+'. '+title);
+  const [left,top,width,height]=box;
+  Object.assign(sign.style,{left:left+'%',top:top+'%',width:width+'%',height:height+'%'});
+  sign.addEventListener('click',showLesson);
+  $('mountains-lessons').append(sign);
+  const tile=document.createElement('button');
+  tile.type='button';
+  tile.className='valley-tile'+(completed.includes(id)?' complete':'');
+  tile.textContent=String(id);
+  tile.setAttribute('aria-label','Lecția '+id+' — '+title+(completed.includes(id)?' — parcursă':''));
+  Object.assign(tile.style,{left:(81.65+(i%4)*3.43)+'%',top:(i<4?8.97:15.08)+'%'});
+  tile.addEventListener('click',showLesson);
+  $('mountains-progress').append(tile);
+ });
+ $('mountains-back').focus();
+ window.scrollTo(0,0);
+}
+for(const id of ['mountains-back','mountains-back-sign'])$(id).addEventListener('click',()=>{
+ $('mountains-page').hidden=true;
+ $('map-page').hidden=false;
+ renderMap(mapProfile);
+ $('map-chapters').children[2]?.focus();
+ window.scrollTo(0,0);
+});
 const proofRows=[1,2].map(i=>({
  left:$('proof-left-'+i),sign:$('proof-sign-'+i),
  right:$('proof-right-'+i),result:$('proof-result-'+i)
@@ -613,6 +672,7 @@ function renderMap(profile) {
  $('map-summary').textContent=teacherClassMode?'Harta clasei. Comenzile de sus se aplică tuturor elevilor.':mapProfile.completedChapters.length+' din 8 capitole parcurse.';
 }
 function openStudentMap(profile){
+ $('mountains-page').hidden=true;
  $('subtraction-page').hidden=true;
  $('carry-page').hidden=true;
  $('borrow-page').hidden=true;
@@ -623,7 +683,7 @@ function openStudentMap(profile){
 }
 $('map-home').addEventListener('click',async()=>{if(teacherMapReturn){const back=teacherMapReturn;teacherMapReturn=null;mapProfile=null;forestState=null;$('map-page').hidden=true;$('forest-page').hidden=true;$('valley-page').hidden=true;$('subtraction-page').hidden=true;back();return;}const button=$('map-home');button.disabled=true;try{await studentAuth.logout();}catch{studentAuth.clear();}finally{button.disabled=false;$('map-page').hidden=true;$('forest-page').hidden=true;document.body.classList.remove('viewing-map');mapProfile=null;forestState=null;$('class-entry').focus();}});
 for(const id of ['chapter-close','chapter-back'])$(id).addEventListener('click',()=>$('chapter-dialog').close());
-$('map-castle').addEventListener('click',()=>{$('chapter-title').textContent='Castelul Marelui Cristal';$('chapter-description').textContent='Marea provocare finală a Regatului numerelor.';$('chapter-access').textContent='Castelul rămâne închis până la parcurgerea celor opt capitole și deblocarea de către profesor. Provocarea finală nu este încă configurată.';$('chapter-dialog').showModal();});
+$('map-castle').addEventListener('click',()=>{$('chapter-back').textContent='Înapoi la hartă';$('chapter-title').textContent='Castelul Marelui Cristal';$('chapter-description').textContent='Marea provocare finală a Regatului numerelor.';$('chapter-access').textContent='Castelul rămâne închis până la parcurgerea celor opt capitole și deblocarea de către profesor. Provocarea finală nu este încă configurată.';$('chapter-dialog').showModal();});
 const mapUI={chapterStars,open:openStudentMap,teacherView(profile,onBack){
  teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('forest-mode').textContent='Vizualizare profesor';teacherMapReturn=onBack;renderMap(profile);$('teacher-page').hidden=true;$('map-page').hidden=false;$('forest-page').hidden=true;
  $('map-home').textContent='← Panoul profesorului';$('map-mode').textContent='Vizualizare profesor';
