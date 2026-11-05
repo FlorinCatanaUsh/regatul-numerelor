@@ -206,9 +206,20 @@ for (const id of ['proof-back', 'proof-back-sign']) {
   $('valley-lessons').children[4]?.focus();
  });
 }
-const operationOrderExercises={1:'575 − 311 + 211',2:'342 + 217 − 132',3:'583 − (232 + 141)',4:'687 − (499 − 312)'};
+const operationOrderExercises={1:'575 − 311 + 211',2:'342 + 217 − 132',3:'583 − (232 + 141)',4:'687 − (499 − 312)',5:'34 + 56 + 34 − 23',6:'45 − 44 + 56 − 33',7:'44 + 35 − (22 + 10)',8:'87 − (34 + 23) + 27'};
 const operationOrderDialog=$('operation-order-dialog');
 const operationOrderFields=['answer','left','sign','right','result'].map(id=>$('operation-order-'+id));
+const operationOrderMiddleFields=Array.from({length:6},(_,i)=>$('operation-order-middle-'+i));
+const operationOrderRoute=$('operation-order-route');
+function showOperationOrderParentheses(){
+ const visible=activeOperationOrderChest===7&&operationOrderRoute.value==='1';
+ $('operation-order-paren-open').hidden=!visible;
+ $('operation-order-paren-close').hidden=!visible;
+}
+operationOrderRoute.addEventListener('change',()=>{
+ showOperationOrderParentheses();
+ for(const field of [...operationOrderMiddleFields,...operationOrderFields.slice(1)])field.value='';
+});
 const operationOrderCheck=$('operation-order-check');
 const operationOrderStatus=$('operation-order-status');
 let operationOrderRevision=0,activeOperationOrderChest=1;
@@ -230,7 +241,13 @@ $('operation-order-form').addEventListener('submit',async event=>{
  if(teacherMapReturn||operationOrderCheck.disabled)return;
  const [total,left,sign,right,result]=operationOrderFields.map(field=>field.value);
  if(![total,left,right,result].every(value=>/^\d{1,5}$/.test(value))||!['+','-'].includes(sign))return;
- const answer=[+total,+left,sign,+right,+result].join(',');
+ const parts=[+total,+left,sign,+right,+result];
+ if(activeOperationOrderChest>=5){
+  const [a,first,b,second,c,stepResult]=operationOrderMiddleFields.map(field=>field.value);
+  if(![a,b,c,stepResult].every(value=>/^\d{1,5}$/.test(value))||![first,second].every(value=>['+','-'].includes(value)))return;
+  parts.push(+a,first,+b,second,+c,+stepResult,operationOrderRoute.value);
+ }
+ const answer=parts.join(',');
  const revision=operationOrderRevision;
  operationOrderCheck.disabled=true;
  try{
@@ -265,7 +282,7 @@ function openOperationOrderLesson() {
     activeOperationOrderChest=number;
     const expression=operationOrderExercises[number];
     $('operation-order-expression').textContent=expression+' =';
-    $('operation-order-hint').textContent=expression.includes('(')
+    $('operation-order-hint').textContent=number===7?'Poți începe cu prima adunare sau cu adunarea din paranteză.':expression.includes('(')
      ?'Calculează mai întâi operația din paranteză.'
      :'Efectuează adunarea și scăderea în ordinea în care apar, de la stânga la dreapta.';
     $('operation-order-number').textContent=number;
@@ -273,6 +290,16 @@ function openOperationOrderLesson() {
     for(const field of operationOrderFields){
      field.value='';
      field.disabled=!!teacherMapReturn;
+    }
+    const hasMiddleStep=number>=5;
+    $('operation-order-middle').hidden=!hasMiddleStep;
+    operationOrderRoute.hidden=number!==7;
+    operationOrderRoute.disabled=number!==7||!!teacherMapReturn;
+    operationOrderRoute.value='0';
+    showOperationOrderParentheses();
+    for(const field of operationOrderMiddleFields){
+     field.value='';
+     field.disabled=!hasMiddleStep||!!teacherMapReturn;
     }
     operationOrderCheck.disabled=!!teacherMapReturn;
     operationOrderStatus.textContent=teacherMapReturn?'Previzualizare profesor.':'';
