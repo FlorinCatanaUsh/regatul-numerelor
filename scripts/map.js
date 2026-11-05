@@ -270,12 +270,15 @@ const unknownNumberExercises={
  5:['a + 430 − 264 = 3652','Aplică mersul invers. Începe cu ultima operație.','a + 430',3652],
  6:['a + 437 + 210 = 879','Aplică mersul invers. Începe cu ultima operație.','a + 437',879],
  7:['a − 557 − 352 = 4726','Aplică mersul invers. Începe cu ultima operație.','a − 557',4726],
- 8:['a − 745 + 254 = 6458','Aplică mersul invers. Începe cu ultima operație.','a − 745',6458]
+ 8:['a − 745 + 254 = 6458','Aplică mersul invers. Începe cu ultima operație.','a − 745',6458],
+ 9:['a + 430 − 264 = 3652','Aplică mersul invers. Începe cu ultima operație.']
 };
 const unknownNumberDialog=$('unknown-number-dialog');
 const unknownNumberFields=['left','sign','right','answer'].map(id=>$('unknown-number-'+id));
 const unknownNumberInverse=$('unknown-number-inverse');
 const unknownNumberInverseFields=['sign','operand','result'].map(id=>$('unknown-number-inverse-'+id));
+const unknownNumberFree=$('unknown-number-free');
+const unknownNumberFreeFields=Array.from({length:10},(_,index)=>$('unknown-number-free-'+index));
 const unknownNumberCheck=$('unknown-number-check');
 const unknownNumberStatus=$('unknown-number-status');
 let unknownNumberRevision=0,activeUnknownNumberChest=1;
@@ -303,6 +306,11 @@ function openUnknownNumberExercise(number){
   field.value='';
   field.disabled=!!teacherMapReturn;
  }
+ unknownNumberFree.hidden=number<9;
+ for(const field of unknownNumberFreeFields){
+  field.value='';
+  field.disabled=unknownNumberFree.hidden||!!teacherMapReturn;
+ }
  unknownNumberInverse.hidden=inverseLeft===undefined;
  if(!unknownNumberInverse.hidden){
   $('unknown-number-inverse-equation').textContent=inverseLeft+' = '+inverseRight;
@@ -327,6 +335,11 @@ $('unknown-number-form').addEventListener('submit',async event=>{
   const [inverseSign,operand,intermediate]=unknownNumberInverseFields.map(field=>field.value);
   if(!['+','-'].includes(inverseSign)||![operand,intermediate].every(part=>/^\d{1,5}$/.test(part)))return;
   parts.unshift(inverseSign,+operand,+intermediate);
+ }
+ if(!unknownNumberFree.hidden){
+  const freeParts=unknownNumberFreeFields.map(field=>field.value);
+  if(!freeParts.every((part,index)=>index%2===0?['+','-','='].includes(part):/^\d{1,5}$/.test(part)))return;
+  parts.unshift(...freeParts.map((part,index)=>index%2===0?part:+part));
  }
  const revision=unknownNumberRevision;
  unknownNumberCheck.disabled=true;

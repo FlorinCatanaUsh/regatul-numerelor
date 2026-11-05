@@ -462,21 +462,23 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
  font:bold 1.25cqw/1.08 system-ui,sans-serif;
 }
 
-#unknown-number-inverse,.unknown-number-work-row {display:contents}
+#unknown-number-inverse,#unknown-number-free,.unknown-number-work-row {display:contents}
 .unknown-number-work-row > :is(span,label) {grid-column:1;white-space:nowrap}
-#unknown-number-step:has(#unknown-number-inverse:not([hidden])) {
+#unknown-number-step:has(:is(#unknown-number-inverse,#unknown-number-free):not([hidden])) {
  display:flex;
  flex-direction:column;
  align-items:flex-start;
 }
-#unknown-number-step:has(#unknown-number-inverse:not([hidden])) .unknown-number-work-row {
+#unknown-number-step:has(:is(#unknown-number-inverse,#unknown-number-free):not([hidden])) .unknown-number-work-row {
  display:flex;
  align-items:center;
  gap:inherit;
 }
-#unknown-number-step:has(#unknown-number-inverse:not([hidden])) .unknown-number-work-row :is(input,select) {
+#unknown-number-step:has(:is(#unknown-number-inverse,#unknown-number-free):not([hidden])) .unknown-number-work-row :is(input,select) {
  width:var(--proof-box);
 }
 @media (min-width:651px) and (min-height:471px), (orientation:landscape) and (min-height:471px) {
- #unknown-number-step:has(#unknown-number-inverse:not([hidden])) :is(input,select) {height:4cqw}
+ #unknown-number-step:has(:is(#unknown-number-inverse,#unknown-number-free):not([hidden])) :is(input,select) {height:4cqw}
 }
+
+#unknown-number-free .unknown-number-work-row {--proof-box:8cqw}
