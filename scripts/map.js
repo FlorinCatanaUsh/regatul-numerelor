@@ -266,10 +266,13 @@ const unknownNumberExercises={
  1:['a + 348 = 549','Scade termenul cunoscut din sumă.'],
  2:['528 + a = 758','Scade termenul cunoscut din sumă.'],
  3:['a − 463 = 578','Adună scăzătorul și diferența.'],
- 4:['752 − a = 436','Scade diferența din descăzut.']
+ 4:['752 − a = 436','Scade diferența din descăzut.'],
+ 5:['a + 430 − 264 = 3652','Aplică mersul invers. Începe cu ultima operație.']
 };
 const unknownNumberDialog=$('unknown-number-dialog');
 const unknownNumberFields=['left','sign','right','answer'].map(id=>$('unknown-number-'+id));
+const unknownNumberInverse=$('unknown-number-inverse');
+const unknownNumberInverseFields=['sign','operand','result'].map(id=>$('unknown-number-inverse-'+id));
 const unknownNumberCheck=$('unknown-number-check');
 const unknownNumberStatus=$('unknown-number-status');
 let unknownNumberRevision=0,activeUnknownNumberChest=1;
@@ -297,6 +300,11 @@ function openUnknownNumberExercise(number){
   field.value='';
   field.disabled=!!teacherMapReturn;
  }
+ unknownNumberInverse.hidden=number!==5;
+ for(const field of unknownNumberInverseFields){
+  field.value='';
+  field.disabled=unknownNumberInverse.hidden||!!teacherMapReturn;
+ }
  unknownNumberCheck.disabled=!!teacherMapReturn;
  unknownNumberStatus.textContent=teacherMapReturn?'Previzualizare profesor.':'';
  unknownNumberDialog.showModal();
@@ -307,10 +315,16 @@ $('unknown-number-form').addEventListener('submit',async event=>{
  if(teacherMapReturn||unknownNumberCheck.disabled)return;
  const [left,sign,right,value]=unknownNumberFields.map(field=>field.value);
  if(![left,right,value].every(part=>/^\d{1,5}$/.test(part))||!['+','-'].includes(sign))return;
+ const parts=[+left,sign,+right,+value];
+ if(activeUnknownNumberChest===5){
+  const [inverseSign,operand,intermediate]=unknownNumberInverseFields.map(field=>field.value);
+  if(!['+','-'].includes(inverseSign)||![operand,intermediate].every(part=>/^\d{1,5}$/.test(part)))return;
+  parts.unshift(inverseSign,+operand,+intermediate);
+ }
  const revision=unknownNumberRevision;
  unknownNumberCheck.disabled=true;
  try{
-  const answer=[+left,sign,+right,+value].join(',');
+  const answer=parts.join(',');
   const result=await studentAuth.unknownNumber('answer',{chest:activeUnknownNumberChest,answer});
   if(revision!==unknownNumberRevision)return;
   renderMap(result.profile);

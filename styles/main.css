@@ -461,3 +461,9 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
  background:linear-gradient(#ffebac,#f4cb70);
  font:bold 1.25cqw/1.08 system-ui,sans-serif;
 }
+
+#unknown-number-inverse {display:contents}
+#unknown-number-inverse > :is(span,label),#unknown-number-step > :is(span,label) {grid-column:1}
+@media (min-width:651px) and (min-height:471px), (orientation:landscape) and (min-height:471px) {
+ #unknown-number-step:has(#unknown-number-inverse:not([hidden])) :is(input,select) {height:4cqw}
+}
