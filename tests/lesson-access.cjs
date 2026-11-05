@@ -12,32 +12,47 @@ vm.runInContext(fs.readFileSync(require('path').join(__dirname,'../scripts/map.j
 
 
 
-let fail=false,refreshes=0;
-const ui=context.setupMap({pupils:[],entryDialog:$('entry'),studentAuth:{allowLesson:async(target,lesson,allowed)=>{
- calls.push([target,lesson,allowed]);if(fail)throw Error('Offline');if(target==='all')return {affected:2};
- current=structuredClone(current);if(lesson===2)current.formation.lesson2Allowed=allowed;else{const p=current.lessonProgress[1];p.manualAccess??={};p.manualAccess[lesson]=allowed;}return {profile:current};
-}}});
-ui.setLessonAccessChangedHandler(async()=>refreshes++);
-current={studentId:'test',displayName:'Test pupil',completedChapters:[],lessonProgress:{1:{unlocked:[1],completed:[]}},formation:{solved:[],keyTaken:false,lesson2Allowed:false,lesson2Opened:false},reading:{solved:[],keyTaken:false}};
-async function menu(id){await $('forest-progress').children[id-1].fire('click');assert.equal($('lesson-dialog').open,true);assert.equal($('lesson-access-controls').hidden,false);assert.equal($('lesson-preview').hidden,false);}
+
+const profile={
+ studentId:'test',displayName:'Test pupil',completedChapters:[],
+ formation:{solved:[1,2,3,4,5,6],keyTaken:true,lesson2Allowed:false,lesson2Opened:false},
+ reading:{solved:[1],keyTaken:true},
+ lessonProgress:{1:{completed:[1],manualAccess:{1:false,3:false,4:false,5:false,6:false},comparisonKeyTaken:true,orderingKeyTaken:true,roundingKeyTaken:true}}
+};
+const ui=context.setupMap({pupils:[],entryDialog:$('entry'),studentAuth:{
+ formation:async operation=>{
+  if(operation==='open_lesson2')return {profile:{...profile,formation:{...profile.formation,lesson2Opened:true}}};
+  return {profile};
+ },
+ reading:async()=>({profile})
+}});
+async function enterForest(current){
+ ui.open(current);
+ await $('map-chapters').children[0].fire('click');
+}
 (async()=>{
- ui.teacherView(current,()=>{});await $('map-chapters').children[0].fire('click');
- for(let id=1;id<=6;id++){
-  await menu(id);assert.match($('lesson-access-scope').textContent,/Test pupil/);
-  if(id===1){assert.equal($('lesson-allow').disabled,true);await $('lesson-block').fire('click');assert.deepEqual(calls.at(-1),['test',1,false]);assert.equal($('lesson-allow').disabled,false);}
-  await $('lesson-allow').fire('click');assert.deepEqual(calls.at(-1),['test',id,true]);assert.equal($('lesson-allow').disabled,true);assert.equal($('lesson-block').disabled,false);assert.equal(current.formation.keyTaken,false);
-  await $('lesson-block').fire('click');assert.deepEqual(calls.at(-1),['test',id,false]);assert.equal($('lesson-allow').disabled,false);await $('lesson-return').fire('click');
- }
- await menu(3);fail=true;await $('lesson-allow').fire('click');assert.match($('lesson-access-status').textContent,/Offline/);assert.equal($('lesson-allow').disabled,false);fail=false;await $('lesson-return').fire('click');
- ui.open(current);await $('map-chapters').children[0].fire('click');await $('forest-progress').children[0].fire('click');assert.equal($('lesson-access-controls').hidden,true);assert.equal($('formation-page').hidden,true);const n=calls.length;await $('lesson-allow').fire('click');assert.equal(calls.length,n);await $('lesson-return').fire('click');
- ui.classView({lessonAccess:Object.fromEntries([1,2,3,4,5,6].map(id=>[id,{allowed:0,total:2}]))},()=>{});await $('map-chapters').children[0].fire('click');
- for(let id=1;id<=6;id++){await menu(id);assert.match($('lesson-access-scope').textContent,/toată clasa/);await $('lesson-allow').fire('click');assert.deepEqual(calls.at(-1),['all',id,true]);assert.match($('lesson-access-scope').textContent,/2 din 2/);await $('lesson-block').fire('click');assert.deepEqual(calls.at(-1),['all',id,false]);await $('lesson-return').fire('click');}
- for(let id=3;id<=6;id++){
-  await menu(id);const before=calls.length;await $('lesson-preview').fire('click');assert.equal($('lesson-content-page').hidden,false);assert.equal($('lesson-dialog').open,false);assert.match($('lesson-content-title').textContent,new RegExp('^'+id+'\\.'));assert.match($('lesson-content-message').textContent,id===3||id===4?/12 lădițe/:id===5?/12 lădițe/:/12 lădițe/);assert.equal(calls.length,before);assert.equal($('comparison-panel').hidden,id!==3);assert.equal($('ordering-panel').hidden,id!==4);assert.equal($('rounding-panel').hidden,id!==5);if(id===5){await $('rounding-chests').children[0].fire('click');assert.equal($('rounding-exercise-page').hidden,false);assert.equal($('rounding-answer').disabled,true);assert.equal($('rounding-check').disabled,true);await $('rounding-exercise-back').fire('click');assert.equal($('rounding-chests').children.length,12);assert.equal($('rounding-key').disabled,true);for(let chest=3;chest<=12;chest++){await $('rounding-chests').children[chest-1].fire('click');assert.equal($('rounding-exercise-page').hidden,false);assert.equal($('rounding-check').disabled,true);await $('rounding-exercise-back').fire('click');assert.equal($('rounding-chests').children[chest-1].focused,true);}assert.equal(calls.length,before);}if(id===4){assert.match($('ordering-image').src,/ordering-image/);assert.equal($('ordering-chests').children.length,12);assert.equal($('ordering-count').textContent,'0/12');assert.equal($('ordering-key').disabled,true);for(let chest=1;chest<=12;chest++){await $('ordering-chests').children[chest-1].fire('click');assert.equal($('ordering-exercise-page').hidden,false);assert.equal($('ordering-check').disabled,true);assert.match($('ordering-exercise-page').attributes['aria-label'],new RegExp('lădița '+chest+' —'));await $('ordering-exercise-back').fire('click');assert.equal($('ordering-chests').children[chest-1].focused,true);}assert.equal(calls.length,before);}if(id===3){assert.equal($('comparison-chests').children.length,12);await $('comparison-chests').children[0].fire('click');assert.equal($('comparison-exercise-page').hidden,false);assert.equal($('comparison-check').disabled,true);await $('comparison-exercise-back').fire('click');for(let chest=9;chest<=12;chest++){await $('comparison-chests').children[chest-1].fire('click');assert.equal($('comparison-exercise-page').hidden,false);assert.equal($('comparison-check').disabled,true);assert.equal($('comparison-key').disabled,true);assert.match($('comparison-exercise-image').src,new RegExp('source-'+chest));await $('comparison-exercise-back').fire('click');}assert.equal(calls.length,before);await $('comparison-back-sign').fire('click');assert.equal($('forest-page').hidden,false);}await $('lesson-content-back').fire('click');assert.equal($('lesson-content-page').hidden,true);assert.equal($('forest-page').hidden,false);
- }
- current.lessonProgress[1].manualAccess[3]=true;current.lessonProgress[1].unlocked.push(3);ui.open(current);await $('map-chapters').children[0].fire('click');assert.match($('forest-progress').children[2].attributes['aria-label'],/bloquée|blocată/);await $('forest-progress').children[2].fire('click');assert.equal($('lesson-content-page').hidden,true);await $('lesson-return').fire('click');current.reading.keyTaken=true;current.lessonProgress[1].comparisonKeyTaken=true;
- current.lessonProgress[1].manualAccess[3]=true;current.lessonProgress[1].unlocked.push(3);ui.open(current);await $('map-chapters').children[0].fire('click');const before=calls.length;await $('forest-progress').children[2].fire('click');assert.equal($('lesson-content-page').hidden,false);assert.equal($('lesson-content-title').textContent,'3. Compararea numerelor naturale');assert.equal(calls.length,before);
- await $('lesson-content-back').fire('click');current.lessonProgress[1].manualAccess[4]=true;current.lessonProgress[1].unlocked.push(4);ui.open(current);await $('map-chapters').children[0].fire('click');const previous=calls.length;await $('forest-progress').children[3].fire('click');assert.equal($('ordering-panel').hidden,false);assert.equal($('comparison-panel').hidden,true);assert.equal($('ordering-chests').children.length,12);await $('ordering-chests').children[11].fire('click');assert.equal($('ordering-exercise-page').hidden,false);assert.match($('ordering-exercise-page').attributes['aria-label'],/lădița 12 —/);await $('ordering-exercise-back').fire('click');await $('ordering-back-sign').fire('click');assert.equal($('forest-page').hidden,false);assert.equal($('lesson-content-page').hidden,true);assert.equal(calls.length,previous);
- await $('lesson-content-back').fire('click');current.lessonProgress[1].orderingKeyTaken=true;current.lessonProgress[1].manualAccess[5]=true;current.lessonProgress[1].unlocked.push(5);ui.open(current);await $('map-chapters').children[0].fire('click');const beforeRounding=calls.length;await $('forest-progress').children[4].fire('click');assert.equal($('rounding-panel').hidden,false);assert.equal($('ordering-panel').hidden,true);assert.equal($('comparison-panel').hidden,true);assert.equal($('rounding-chests').children.length,12);await $('rounding-chests').children[11].fire('click');assert.equal($('rounding-exercise-page').hidden,false);assert.match($('rounding-exercise-page').attributes['aria-label'],/lădița 12/);await $('rounding-exercise-back').fire('click');await $('rounding-back-sign').fire('click');assert.equal($('forest-page').hidden,false);assert.equal($('lesson-content-page').hidden,true);assert.equal(calls.length,beforeRounding);
- assert(refreshes>20);console.log('PASS: all six lesson menus, individual and whole-class access/block, scope/counts, persistence callbacks, key retained, blocked student access and hidden teacher controls, errors.');
-})().catch(e=>{console.error(e);process.exitCode=1});
+ await enterForest(profile);
+ assert.match($('forest-progress').children[0].attributes['aria-label'],/parcursă/);
+ for(const tile of $('forest-progress').children.slice(2))assert.match(tile.attributes['aria-label'],/deblocată/);
+ assert.match($('forest-progress').children[1].attributes['aria-label'],/blocată/);
+ await $('forest-lessons').children.find(button=>button.className==='lesson-lock').fire('click');
+ assert.match($('forest-progress').children[1].attributes['aria-label'],/deblocată/);
+ assert.equal($('forest-lessons').children.some(button=>button.className==='lesson-lock'),false);
+
+ await enterForest({...profile,formation:{...profile.formation,keyTaken:false},reading:{keyTaken:false},lessonProgress:{1:{manualAccess:{2:true,3:true,4:true,5:true,6:true},unlocked:[1,2,3,4,5,6]}}});
+ for(const tile of $('forest-progress').children.slice(1))assert.match(tile.attributes['aria-label'],/blocată/);
+ await $('forest-progress').children[2].fire('click');
+ assert.match($('lesson-message').textContent,/cheia din lecția precedentă/);
+ assert.equal($('lesson-preview').hidden,true);
+ await $('lesson-close').fire('click');
+
+ ui.teacherView(profile,()=>{});
+ await $('map-chapters').children[0].fire('click');
+ await $('forest-progress').children[1].fire('click');
+ assert.equal($('lesson-preview').hidden,false);
+ assert.equal(elements.has('lesson-access-controls'),false);
+ await $('lesson-preview').fire('click');
+ assert.equal($('reading-page').hidden,false);
+ assert.equal($('reading-count').textContent,'1/12');
+ console.log('PASS: keys gate access, former approvals are ignored, saved stars appear in teacher preview.');
+})().catch(error=>{console.error(error);process.exitCode=1});

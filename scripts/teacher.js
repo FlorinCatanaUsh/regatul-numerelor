@@ -11,18 +11,13 @@ function hideLearningPages(){for(const id of learningPages)$(id).hidden=true;}
 function updateClassControls(message){
  for(const id of ['teacher-tab-individual','teacher-tab-class','teacher-logout','teacher-own-password'])$(id).disabled=groupBusy;
 }
-function lessonAllowed(row,id){
- if(id===2)return !!row.formation?.lesson2Allowed;
- const p=row.lessonProgress?.[1]||{},manual=p.manualAccess?.[id];return typeof manual==='boolean'?manual:id===1||(p.unlocked||[]).includes(id);
-}
-function classPermissions(){return Object.fromEntries([1,2,3,4,5,6].map(id=>[id,{allowed:teacherRows.filter(row=>lessonAllowed(row,id)).length,total:teacherRows.length}]));}
 function selectTab(mode){
  if(groupBusy)return;activeTab=mode;hideLearningPages();document.body.classList.remove('teacher-class-mode');
  for(const name of ['individual','class']){
   const selected=name===mode,button=$('teacher-tab-'+name);button.setAttribute('aria-selected',String(selected));button.tabIndex=selected?0:-1;
  }
  $('teacher-class-controls').hidden=mode!=='class';$('teacher-page').hidden=mode!=='individual';
- if(mode==='class')mapUI.classView({lessonAccess:classPermissions(),lesson2Allowed:rowsReady&&teacherRows.length>0&&teacherRows.every(row=>row.formation?.lesson2Allowed)},()=>selectTab('individual'));
+ if(mode==='class')mapUI.classView({},()=>selectTab('individual'));
  updateClassControls();
 }
 function renderTeacherStudents(){
@@ -86,7 +81,6 @@ async function loadTeacherStudents({quiet=false}={}){
   rowsReady=true;
   if(!quiet||changed)$('teacher-status').textContent=rows.length+' de elevi';
   updateClassControls();
-  if(activeTab==='class')mapUI.updateClassPermissions(classPermissions());
   return true;
  }catch(error){
   if(revision===loadRevision&&!quiet)$('teacher-status').textContent=error.message;
@@ -141,7 +135,6 @@ $('teacher-own-password').addEventListener('click',()=>{selectTab('individual');
 $('teacher-logout').addEventListener('click',async()=>{
  if(groupBusy)return;$('teacher-logout').disabled=true;try{await studentAuth.logout();}catch{studentAuth.clear();}finally{$('teacher-logout').disabled=false;loadRevision++;clearInterval(rankingTimer);loadingStudents=false;teacherRows=[];rowsReady=false;hideLearningPages();$('teacher-workspace').hidden=true;$('teacher-page').hidden=true;$('teacher-students').replaceChildren();document.body.classList.remove('viewing-map','teacher-class-mode');$('teacher-entry').focus();}
 });
-mapUI.setLessonAccessChangedHandler(loadTeacherStudents);
 const teacherUI={open:openTeacher};
 
 return teacherUI;
