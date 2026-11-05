@@ -206,6 +206,41 @@ for (const id of ['proof-back', 'proof-back-sign']) {
   $('valley-lessons').children[4]?.focus();
  });
 }
+const operationOrderDialog=$('operation-order-dialog');
+const operationOrderAnswer=$('operation-order-answer');
+const operationOrderCheck=$('operation-order-check');
+const operationOrderStatus=$('operation-order-status');
+let operationOrderRevision=0;
+function updateOperationOrderProgress(){
+ const solved=mapProfile.lessonProgress?.[2]?.solvedByLesson?.[6]||[];
+ $('operation-order-count').textContent=starCount(solved)+'/12';
+ for(const number of solved){
+  const chest=$('operation-order-chests').children[number-1];
+  if(!chest||chest.className!=='addition-chest')continue;
+  chest.className+=' complete';
+  const star=document.createElement('span');
+  star.textContent='★';
+  chest.append(star);
+ }
+}
+$('operation-order-close').addEventListener('click',()=>operationOrderDialog.close());
+$('operation-order-form').addEventListener('submit',async event=>{
+ event.preventDefault();
+ if(teacherMapReturn||operationOrderCheck.disabled||!/^\d{1,5}$/.test(operationOrderAnswer.value))return;
+ const revision=operationOrderRevision;
+ operationOrderCheck.disabled=true;
+ try{
+  const result=await studentAuth.operationOrder('answer',{chest:1,answer:operationOrderAnswer.value});
+  if(revision!==operationOrderRevision)return;
+  renderMap(result.profile);
+  updateOperationOrderProgress();
+  operationOrderStatus.textContent=result.correct?'✓ Corect!':'✗ Mai încearcă.';
+ }catch(error){
+  if(revision===operationOrderRevision)operationOrderStatus.textContent=error.message;
+ }finally{
+  if(revision===operationOrderRevision)operationOrderCheck.disabled=false;
+ }
+});
 function openOperationOrderLesson() {
  const chests=$('operation-order-chests');
  chests.replaceChildren();
@@ -221,6 +256,14 @@ function openOperationOrderLesson() {
    height:'18.5%'
   });
   chest.addEventListener('click',()=>{
+   if(number===1){
+    operationOrderRevision++;
+    operationOrderAnswer.value='';
+    operationOrderAnswer.disabled=operationOrderCheck.disabled=!!teacherMapReturn;
+    operationOrderStatus.textContent=teacherMapReturn?'Previzualizare profesor.':'';
+    operationOrderDialog.showModal();
+    return;
+   }
    $('chapter-title').textContent='Lădița '+number;
    $('chapter-description').textContent=valleyLessons[5];
    $('chapter-access').textContent='Exercițiul acestei lădițe este în pregătire.';
@@ -231,6 +274,7 @@ function openOperationOrderLesson() {
  }
  $('valley-page').hidden=true;
  $('operation-order-page').hidden=false;
+ updateOperationOrderProgress();
  $('operation-order-student').textContent=mapProfile.displayName;
  $('operation-order-back').focus();
  window.scrollTo(0,0);

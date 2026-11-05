@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=operation-order">
+<link rel="stylesheet" href="./styles/main.css?v=operation-order-first">
 </head>
 <body>
 <main>
@@ -151,8 +151,25 @@
   <img src="./assets/valea-ordinea-operatiilor.webp" alt="Douăsprezece lădițe numerotate, roboțelul cu un exemplu de calcul și cheia lecției 7 sub cupolă.">
   <button id="operation-order-back-sign" type="button" aria-label="Înapoi la Valea adunării și scăderii"></button>
   <div id="operation-order-chests"></div>
+  <output id="operation-order-count" aria-label="Steluțe la lecția 6">0/12</output>
  </div></div>
- <p class="map-summary">Exercițiile vor fi adăugate pe rând.</p>
+ <p class="map-summary">Alege o lădiță.</p>
+ <dialog id="operation-order-dialog" aria-labelledby="operation-order-title">
+  <div class="proof-art">
+   <img class="proof-backdrop" src="./assets/valea-adunare-template.webp" width="1672" height="941" alt="">
+   <header class="proof-banner"><span id="operation-order-number" aria-label="Lădița 1">1</span><strong>6. Ordinea efectuării operațiilor</strong></header>
+   <form id="operation-order-form">
+    <div class="proof-board">
+     <h2 id="operation-order-title">Rezolvă următorul exercițiu:</h2>
+     <div class="proof-row proof-sum"><label for="operation-order-answer">575 − 311 + 2 =</label><input id="operation-order-answer" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required></div>
+    </div>
+    <p id="operation-order-hint">Efectuează adunarea și scăderea în ordinea în care apar, de la stânga la dreapta.</p>
+    <button id="operation-order-close" type="button"><span>← Înapoi</span></button>
+    <button id="operation-order-check" type="submit"><span>Verifică</span></button>
+    <p id="operation-order-status" role="status" aria-live="polite"></p>
+   </form>
+  </div>
+ </dialog>
 </section>
 
 <section id="addition-exercise-page" hidden aria-label="Adunare — lădița 1">
@@ -510,6 +527,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=operation-order"></script>
+<script type="module" src="./scripts/app.js?v=operation-order-first"></script>
 </body>
 </html>
