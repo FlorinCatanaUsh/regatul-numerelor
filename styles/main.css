@@ -427,3 +427,32 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
 }
 
 #unknown-number-step {grid-template-columns:auto repeat(3,var(--proof-box))}
+
+:is(#operation-order-page,#unknown-number-page) .addition-art {container-type:inline-size}
+.valley-reward-sign,.valley-amber-plaque {
+ position:absolute;
+ display:grid;
+ place-items:center;
+ margin:0;
+ text-align:center;
+ color:#302310;
+}
+.valley-reward-sign {
+ top:31.4%;
+ left:85.35%;
+ width:12.65%;
+ height:25%;
+ padding:.55cqw;
+ background:linear-gradient(130deg,#fff0c2,#ffefc7 50%,#f5ce80);
+ font:bold 1.12cqw/1.16 system-ui,sans-serif;
+}
+.valley-amber-plaque {
+ top:83.1%;
+ left:84.65%;
+ width:12.8%;
+ height:5.45%;
+ padding:0 .25cqw;
+ border-radius:.25cqw;
+ background:linear-gradient(#ffebac,#f4cb70);
+ font:bold 1.25cqw/1.08 system-ui,sans-serif;
+}
