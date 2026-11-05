@@ -43,11 +43,12 @@ function openValley(){
  $('borrow-page').hidden=true;
  $('proof-page').hidden=true;
  $('operation-order-page').hidden=true;
+ $('unknown-number-page').hidden=true;
  $('map-page').hidden=true;$('forest-page').hidden=true;$('valley-page').hidden=false;
  $('valley-student').textContent=mapProfile.displayName;$('valley-stars').textContent=String(chapterStars(mapProfile,2));
  $('valley-lessons').replaceChildren();$('valley-progress').replaceChildren();
  const boxes=[[21.5,41,15,17],[43.5,43,15,17],[61.5,44,15,17],[19.5,59,15,18],[38,61,15,18],[56,63,13,18],[72,62,14,18]];
- valleyLessons.forEach((title,i)=>{const id=i+1,b=document.createElement('button');b.type='button';b.className='valley-lesson';b.setAttribute('aria-label',id+'. '+title+(id>6?' — exerciții în pregătire':''));const [left,top,width,height]=boxes[i];Object.assign(b.style,{left:left+'%',top:top+'%',width:width+'%',height:height+'%'});const show=()=>{if(id===1){openAddition();return;}if(id===2){openSubtraction();return;}if(id===3){openCarryLesson();return;}if(id===4){openBorrowLesson();return;}if(id===5){openProofLesson();return;}if(id===6){openOperationOrderLesson();return;}$('chapter-title').textContent=id+'. '+title;$('chapter-description').textContent='Valea adunării și scăderii';$('chapter-access').textContent='Exercițiile acestei lecții sunt în pregătire.';$('chapter-dialog').showModal();};b.addEventListener('click',show);$('valley-lessons').append(b);const tile=document.createElement('button');tile.type='button';tile.className='valley-tile';tile.textContent=String(id);tile.setAttribute('aria-label','Lecția '+id+' — '+title);Object.assign(tile.style,{left:(i<4?[79.5,83,86.5,90][i]:[81,84.6,88.2][i-4])+'%',top:(i<4?9.8:16)+'%',width:'3%',height:'5%'});tile.addEventListener('click',show);$('valley-progress').append(tile);});
+ valleyLessons.forEach((title,i)=>{const id=i+1,b=document.createElement('button');b.type='button';b.className='valley-lesson';b.setAttribute('aria-label',id+'. '+title);const [left,top,width,height]=boxes[i];Object.assign(b.style,{left:left+'%',top:top+'%',width:width+'%',height:height+'%'});const show=()=>{if(id===1){openAddition();return;}if(id===2){openSubtraction();return;}if(id===3){openCarryLesson();return;}if(id===4){openBorrowLesson();return;}if(id===5){openProofLesson();return;}openValleyPracticeLesson(id);};b.addEventListener('click',show);$('valley-lessons').append(b);const tile=document.createElement('button');tile.type='button';tile.className='valley-tile';tile.textContent=String(id);tile.setAttribute('aria-label','Lecția '+id+' — '+title);Object.assign(tile.style,{left:(i<4?[79.5,83,86.5,90][i]:[81,84.6,88.2][i-4])+'%',top:(i<4?9.8:16)+'%',width:'3%',height:'5%'});tile.addEventListener('click',show);$('valley-progress').append(tile);});
  // The original illustration has older lettering on signs 5–7.
  for (const id of [5,6,7]) {
   const label=document.createElement('span');
@@ -261,8 +262,10 @@ $('operation-order-form').addEventListener('submit',async event=>{
   if(revision===operationOrderRevision)operationOrderCheck.disabled=false;
  }
 });
-function openOperationOrderLesson() {
- const chests=$('operation-order-chests');
+function openValleyPracticeLesson(lesson){
+ const operationOrder=lesson===6;
+ const prefix=operationOrder?'operation-order':'unknown-number';
+ const chests=$(prefix+'-chests');
  chests.replaceChildren();
  for(let number=1;number<=12;number++){
   const chest=document.createElement('button');
@@ -276,7 +279,7 @@ function openOperationOrderLesson() {
    height:'18.5%'
   });
   chest.addEventListener('click',()=>{
-   if(operationOrderExercises[number]){
+   if(operationOrder&&operationOrderExercises[number]){
     operationOrderRevision++;
     activeOperationOrderChest=number;
     const expression=operationOrderExercises[number];
@@ -303,7 +306,7 @@ function openOperationOrderLesson() {
     return;
    }
    $('chapter-title').textContent='Lădița '+number;
-   $('chapter-description').textContent=valleyLessons[5];
+   $('chapter-description').textContent=valleyLessons[lesson-1];
    $('chapter-access').textContent='Exercițiul acestei lădițe este în pregătire.';
    $('chapter-dialog').showModal();
    $('chapter-close').focus();
@@ -311,17 +314,19 @@ function openOperationOrderLesson() {
   chests.append(chest);
  }
  $('valley-page').hidden=true;
- $('operation-order-page').hidden=false;
- updateOperationOrderProgress();
- $('operation-order-student').textContent=mapProfile.displayName;
- $('operation-order-back').focus();
+ $(prefix+'-page').hidden=false;
+ if(operationOrder)updateOperationOrderProgress();
+ $(prefix+'-student').textContent=mapProfile.displayName;
+ $(prefix+'-back').focus();
  window.scrollTo(0,0);
 }
-for(const id of ['operation-order-back','operation-order-back-sign']){
- $(id).addEventListener('click',()=>{
-  openValley();
-  $('valley-lessons').children[5]?.focus();
- });
+for(const [prefix,index] of [['operation-order',5],['unknown-number',6]]){
+ for(const suffix of ['-back','-back-sign']){
+  $(prefix+suffix).addEventListener('click',()=>{
+   openValley();
+   $('valley-lessons').children[index]?.focus();
+  });
+ }
 }
 const carryExercises = [[116, 224], [254, 390], [701, 754], [299, 398], [1979, 701], [2484, 762], [7382, 678], [5668, 438], [9179, 5441], [8686, 9652], [6322, 3929], [7503, 4497]];
 function openCarryLesson() {
@@ -514,6 +519,7 @@ function openStudentMap(profile){
  $('borrow-page').hidden=true;
  $('proof-page').hidden=true;
  $('operation-order-page').hidden=true;
+ $('unknown-number-page').hidden=true;
  $('addition-exercise-page').hidden=true;$('addition-page').hidden=true;$('valley-page').hidden=true;teacherMapReturn=null;teacherClassMode=false;document.body.classList.remove('teacher-class-mode');$('teacher-workspace').hidden=true;$('roman-match-page').hidden=true;$('roman-exercise-page').hidden=true;$('rounding-exercise-page').hidden=true;$('ordering-exercise-page').hidden=true;$('comparison-exercise-page').hidden=true;comparisonRevision++;$('lesson-content-page').hidden=true;$('forest-mode').textContent='Elev';$('map-home').textContent='Ieșire';$('map-mode').textContent='Elev';renderMap(profile);$('map-page').hidden=false;$('forest-page').hidden=true;document.body.classList.add('viewing-map');$('map-home').focus();window.scrollTo(0,0);
 }
 $('map-home').addEventListener('click',async()=>{if(teacherMapReturn){const back=teacherMapReturn;teacherMapReturn=null;mapProfile=null;forestState=null;$('map-page').hidden=true;$('forest-page').hidden=true;$('valley-page').hidden=true;$('subtraction-page').hidden=true;back();return;}const button=$('map-home');button.disabled=true;try{await studentAuth.logout();}catch{studentAuth.clear();}finally{button.disabled=false;$('map-page').hidden=true;$('forest-page').hidden=true;document.body.classList.remove('viewing-map');mapProfile=null;forestState=null;$('class-entry').focus();}});
