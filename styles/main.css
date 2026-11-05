@@ -426,7 +426,12 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
  #operation-order-middle {--proof-box:11cqw}
 }
 
-#unknown-number-step {grid-template-columns:auto repeat(3,var(--proof-box))}
+#unknown-number-step {
+ align-self:center;
+ grid-template-columns:auto repeat(3,var(--proof-box));
+}
+#unknown-number-expression {grid-column:1 / -1}
+#unknown-number-step label {margin:0;font:inherit}
 
 :is(#operation-order-page,#unknown-number-page) .addition-art {container-type:inline-size}
 .valley-reward-sign,.valley-amber-plaque {

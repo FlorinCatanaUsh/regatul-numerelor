@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=valley-reward-signs">
+<link rel="stylesheet" href="./styles/main.css?v=unknown-aligned">
 </head>
 <body>
 <main>
@@ -209,14 +209,15 @@
    <form id="unknown-number-form">
     <div class="proof-board">
      <h2 id="unknown-number-title">Află numărul necunoscut:</h2>
-     <div class="proof-row proof-sum" id="unknown-number-expression">a + 348 = 549</div>
      <div class="proof-row" id="unknown-number-step">
+      <div id="unknown-number-expression">a + 348 = 549</div>
       <span>a =</span>
       <input id="unknown-number-left" aria-label="Primul număr din calcul" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required>
       <select id="unknown-number-sign" aria-label="Semnul operației" required><option value="" selected disabled hidden></option><option value="+">+</option><option value="-">−</option></select>
       <input id="unknown-number-right" aria-label="Al doilea număr din calcul" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required>
+      <label for="unknown-number-answer">a =</label>
+      <input id="unknown-number-answer" aria-label="Valoarea lui a" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required>
      </div>
-     <div class="proof-row proof-sum"><label for="unknown-number-answer">a =</label><input id="unknown-number-answer" aria-label="Valoarea lui a" inputmode="numeric" pattern="[0-9]{1,5}" maxlength="5" required></div>
     </div>
     <p id="unknown-number-hint">Scade termenul cunoscut din sumă.</p>
     <button id="unknown-number-close" type="button"><span>← Înapoi</span></button>
