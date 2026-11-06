@@ -1,6 +1,6 @@
 import { pupils } from '../data/students.js?v=roster-20';
 import { studentAuth } from './auth.js?v=valley-keys';
-import { setupMap } from './map.js?v=valley-keys';
+import { setupMap } from './map.js?v=valley-key-art';
 import { setupTeacher } from './teacher.js?v=forest-trophy';
 'use strict';
 

@@ -61,8 +61,11 @@ function renderValleyKey(lesson){
  const taken=progress?.keysTaken?.[lesson]===true;
  button.hidden=!taken&&starCount(progress?.solvedByLesson?.[lesson])<6;
  button.disabled=!!teacherMapReturn;
- button.textContent=taken?'✓ Cheie colectată':'🔑 Ia cheia';
- if(taken&&!teacherMapReturn)button.textContent+=' · Mergi la lecția '+(lesson+1);
+ button.className=taken?'valley-key collected':'valley-key';
+ const label=taken?'Cheie colectată. Mergi la lecția '+(lesson+1):'Ia cheia lecției '+(lesson+1);
+ button.setAttribute('aria-label',label);
+ button.title=label;
+ button.textContent=taken?'✓':'';
  $(page+'-key-status').textContent='';
 }
 valleyKeyPages.forEach((page,index)=>{

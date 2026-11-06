@@ -497,6 +497,11 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
 #mountains-stars{position:absolute;left:89.35%;top:88.25%;width:5.45%;height:6.9%;display:grid;place-items:center;background:#69411c;color:#ffefb2;font:bold 3.25cqw Georgia}
 .mountains-guide{position:absolute;left:16.9%;top:83.7%;width:13.2%;height:9.9%;margin:0;padding:.2em;display:grid;place-items:center;background:#edbc73;color:#27170e;text-align:center;font:bold 1.27cqw/1.18 system-ui;pointer-events:none}
 
-.valley-key{position:absolute;z-index:2;left:83%;top:59%;width:16.5%;height:29%;padding:.5em;border:3px ridge #d0a65b;border-radius:10px;background:linear-gradient(#704624,#31201a);color:#fff2b4;font:bold clamp(15px,1.75vw,28px)/1.2 Georgia,serif;box-shadow:0 0 16px #ffe49588}
-.valley-key:focus-visible{outline:3px solid #fff1b0;outline-offset:2px}
+.valley-key{position:absolute;z-index:2;left:81.64%;top:56.55%;width:18.24%;height:24%;padding:0;border:0;background:transparent;color:#174e30;font:bold clamp(17px,2.15vw,33px)/1 Georgia,serif}
+.valley-key::before{content:'';position:absolute;inset:0;background:url(../assets/valea-soclu-liber.webp) center/100% 100% no-repeat}
+.valley-key::after{content:'';position:absolute;left:26%;top:21%;width:51%;height:69%;background:url(../assets/valea-cheie.svg) center/contain no-repeat;filter:drop-shadow(0 0 7px #ffcd58)}
+.valley-key:hover::after,.valley-key:focus-visible::after{filter:drop-shadow(0 0 11px #fff184)}
+.valley-key:focus-visible{outline:3px solid #fff1b0;outline-offset:2px;border-radius:12px}
+.valley-key.collected{font-size:0}
+.valley-key.collected::after{content:'✓';display:grid;place-items:center;left:44%;top:68%;width:16%;height:22%;border:2px solid #f0cf7e;border-radius:50%;background:#21633e;color:#fff5c3;font:bold clamp(14px,1.8vw,25px)/1 Georgia,serif;filter:none}
 .valley-key-status:empty{display:none}
