@@ -1130,7 +1130,9 @@ $('comparison-exercise-back').addEventListener('click',()=>{
 function renderForest(profile){
  const p=profile.lessonProgress?.[1]||{unlocked:[1],completed:[]};
  const valid=items=>[...new Set((Array.isArray(items)?items:[]).filter(n=>Number.isInteger(n)&&n>=1&&n<=6))];
- forestState={studentId:profile.studentId,unlocked:valid(p.unlocked),completed:valid(p.completed)};
+ const completed=valid(p.completed);
+ if(p.roundingKeyTaken===true&&!completed.includes(5))completed.push(5);
+ forestState={studentId:profile.studentId,unlocked:valid(p.unlocked),completed};
  $('forest-student').textContent=profile.displayName;
  $('forest-lessons').replaceChildren();$('forest-progress').replaceChildren();
  for(const lesson of forestLessons){
