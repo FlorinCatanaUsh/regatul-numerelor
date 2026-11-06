@@ -11,6 +11,16 @@ const chapters = [
  {id:7,title:'Templul formelor magice',description:'Elemente de geometrie.',box:[28,62,20,11]},
  {id:8,title:'Orașul măsurătorilor',description:'Unități de măsură.',box:[9,70,18,10]}
 ];
+const chapterTrophies=[
+ ['Cristalul pădurii','cristalul-padurii.webp'],
+ ['Comoara văii','trofeu-capitol-2.webp'],
+ ['Cristalul muntelui','trofeu-capitol-3.webp'],
+ ['Perla râului','trofeu-capitol-4.webp'],
+ ['Sigiliul cetății','trofeu-capitol-5.webp'],
+ ['Medalionul fracțiilor','trofeu-capitol-6.webp'],
+ ['Totemul formelor','trofeu-capitol-7.webp'],
+ ['Clepsidra timpului','trofeu-capitol-8.webp']
+];
 let mapProfile = null;
 let teacherMapReturn=null;
 let teacherClassMode=false;
@@ -667,7 +677,20 @@ function renderMap(profile) {
   const hotspot=document.createElement('button');hotspot.type='button';hotspot.className='chapter-hotspot'+(done?' complete':'')+(chapterRevealed(chapter.id)?'':' fogged');hotspot.setAttribute('aria-label',chapter.id+'. '+chapter.title+' — '+state);
   const [left,top,width,height]=chapter.box;Object.assign(hotspot.style,{left:left+'%',top:top+'%',width:width+'%',height:height+'%'});
   const badge=document.createElement('span');badge.className='chapter-state';badge.setAttribute('aria-hidden','true');badge.textContent=done?'✓':chapterRevealed(chapter.id)?'↪':'🔒';hotspot.append(badge);hotspot.addEventListener('click',()=>showChapter(chapter));$('map-chapters').append(hotspot);
-  const tile=document.createElement('button');tile.type='button';tile.className='progress-tile'+(done?' complete':'');tile.textContent=String(chapter.id);tile.setAttribute('aria-label','Capitolul '+chapter.id+' — '+state);tile.addEventListener('click',()=>showChapter(chapter));$('chapter-progress').append(tile);
+  const [trophyName,trophyFile]=chapterTrophies[chapter.id-1];
+  const earned=done||(chapter.id===1&&mapProfile.lessonProgress?.[1]?.forestCrystalTaken===true);
+  const tile=document.createElement('button');
+  tile.type='button';
+  tile.className='progress-tile'+(earned?' complete':'');
+  tile.setAttribute('aria-label','Capitolul '+chapter.id+' — '+trophyName+(earned?' — trofeu câștigat':' — trofeu necâștigat'));
+  tile.title=trophyName+(earned?' — câștigat':' — încă necâștigat');
+  const trophy=document.createElement('img');
+  trophy.src='./assets/'+trophyFile;
+  trophy.alt='';
+  trophy.draggable=false;
+  tile.append(trophy);
+  tile.addEventListener('click',()=>showChapter(chapter));
+  $('chapter-progress').append(tile);
  }
  $('map-summary').textContent=teacherClassMode?'Harta clasei. Comenzile de sus se aplică tuturor elevilor.':mapProfile.completedChapters.length+' din 8 capitole parcurse.';
 }

@@ -1,6 +1,6 @@
 import { pupils } from '../data/students.js?v=roster-20';
 import { studentAuth } from './auth.js?v=unknown-four';
-import { setupMap } from './map.js?v=key-access';
+import { setupMap } from './map.js?v=map-trophies';
 import { setupTeacher } from './teacher.js?v=forest-trophy';
 'use strict';
 
