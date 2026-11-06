@@ -918,7 +918,7 @@ let roundingReturnFocus=null,roundingBusy=false,roundingReady=false,activeRoundi
 function renderRounding(){
  const keyReady=(mapProfile?.lessonProgress?.[1]?.roundingSolved||[]).length>=6,taken=!!mapProfile?.lessonProgress?.[1]?.roundingKeyTaken;
  $('rounding-key').disabled=!keyReady||taken||!!teacherMapReturn||roundingBusy;
- $('rounding-key').textContent=taken?'✓':keyReady?'🔑':'';
+ $('rounding-key').className=taken?'rounding-key-collected':keyReady?'rounding-key-ready':'';
  $('rounding-key').setAttribute('aria-label',taken?'Cheia lecției 6 a fost luată':keyReady?'Ia cheia lecției 6':'Obține 6 steluțe pentru cheia lecției 6');
  $('rounding-key').title=taken?'Cheie luată':keyReady?'Ia cheia lecției 6':'Obține 6 steluțe';
  const solved=[...new Set((mapProfile?.lessonProgress?.[1]?.roundingSolved||[]).filter(id=>roundingExercises[id]))];
