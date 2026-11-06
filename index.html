@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=map-trophies">
+<link rel="stylesheet" href="./styles/main.css?v=valley-keys">
 </head>
 <body>
 <main>
@@ -82,8 +82,8 @@
   <img src="./assets/valea-adunare-cupola.webp" width="1672" height="941" alt="Adunarea fără trecere peste ordin: 12 lădițe, roboțelul cu 23 + 14 = 37, bufnița și cheia lecției 2 sub cupolă.">
   <button id="addition-back-sign" type="button" aria-label="Înapoi la Valea adunării și scăderii"></button>
   <div id="addition-chests"></div><output id="addition-count" aria-label="Steluțe la adunarea fără trecere peste ordin">0/12</output>
-  <button id="addition-key" type="button" disabled aria-label="Cheia lecției 2 — obține 6 steluțe"></button>
- </div></div><p id="addition-status" class="map-summary" role="status">Exercițiile vor fi adăugate pe rând.</p>
+  <button id="addition-key" class="valley-key" type="button" hidden></button>
+ </div></div><p id="addition-key-status" class="map-summary valley-key-status" role="status"></p><p id="addition-status" class="map-summary" role="status">Exercițiile vor fi adăugate pe rând.</p>
 </section>
 
 <section id="subtraction-page" hidden aria-label="Capitolul II, lecția 2 — Scăderea fără trecere peste ordin">
@@ -92,7 +92,8 @@
   <img src="./assets/valea-scadere-cupola.webp" width="1672" height="941" alt="Douăsprezece lădițe colorate, roboțelul cu 37 minus 14 egal 23, progres 0 din 12 steluțe și cheia lecției 3 sub cupolă.">
   <button id="subtraction-back-sign" type="button" aria-label="Înapoi la Valea adunării și scăderii"></button>
   <div id="subtraction-chests"></div><output id="subtraction-count" aria-label="Steluțe la scăderea fără trecere peste ordin">0/12</output>
- </div></div><p class="map-summary">Alege una dintre cele 12 lădițe.</p>
+  <button id="subtraction-key" class="valley-key" type="button" hidden></button>
+ </div></div><p id="subtraction-key-status" class="map-summary valley-key-status" role="status"></p><p class="map-summary">Alege una dintre cele 12 lădițe.</p>
 </section>
 
 <section id="carry-page" hidden aria-label="Capitolul II, lecția 3 — Adunarea cu trecere peste ordin">
@@ -101,7 +102,8 @@
   <img src="./assets/valea-adunare-trecere-cupola.webp" width="1672" height="941" alt="Douăsprezece lădițe colorate, roboțelul cu 27 plus 15 egal 42, progres 0 din 12 steluțe și cheia lecției 4 sub cupolă.">
   <button id="carry-back-sign" type="button" aria-label="Înapoi la Valea adunării și scăderii"></button>
   <div id="carry-chests"></div><output id="carry-count" aria-label="Steluțe la adunarea cu trecere peste ordin">0/12</output>
- </div></div><p class="map-summary">Alege una dintre cele 12 lădițe.</p>
+  <button id="carry-key" class="valley-key" type="button" hidden></button>
+ </div></div><p id="carry-key-status" class="map-summary valley-key-status" role="status"></p><p class="map-summary">Alege una dintre cele 12 lădițe.</p>
 </section>
 
 <section id="borrow-page" hidden aria-label="Capitolul II, lecția 4 — Scăderea cu trecere peste ordin">
@@ -110,7 +112,8 @@
   <img src="./assets/valea-scadere-trecere-cupola.webp" width="1672" height="941" alt="Douăsprezece lădițe colorate, roboțelul cu 42 minus 15 egal 27, progres 0 din 12 steluțe și cheia lecției 5 sub cupolă.">
   <button id="borrow-back-sign" type="button" aria-label="Înapoi la Valea adunării și scăderii"></button>
   <div id="borrow-chests"></div><output id="borrow-count" aria-label="Steluțe la scăderea cu trecere peste ordin">0/12</output>
- </div></div><p class="map-summary">Alege una dintre cele 12 lădițe.</p>
+  <button id="borrow-key" class="valley-key" type="button" hidden></button>
+ </div></div><p id="borrow-key-status" class="map-summary valley-key-status" role="status"></p><p class="map-summary">Alege una dintre cele 12 lădițe.</p>
 </section>
 
 <section id="proof-page" hidden aria-label="Capitolul II, lecția 5 — Proba adunării și a scăderii">
@@ -119,7 +122,8 @@
   <img src="./assets/valea-proba-cupola.webp" width="1672" height="941" alt="Douăsprezece lădițe colorate, roboțelul cu 27 plus 15 egal 42 și 42 minus 15 egal 27, progres 0 din 12 steluțe și cheia lecției 6 sub cupolă.">
   <button id="proof-back-sign" type="button" aria-label="Înapoi la Valea adunării și scăderii"></button>
   <div id="proof-chests"></div><output id="proof-count" aria-label="Steluțe la proba adunării și a scăderii">0/12</output>
- </div></div><p class="map-summary">Exercițiile vor fi adăugate pe rând.</p>
+  <button id="proof-key" class="valley-key" type="button" hidden></button>
+ </div></div><p id="proof-key-status" class="map-summary valley-key-status" role="status"></p><p class="map-summary">Exercițiile vor fi adăugate pe rând.</p>
  <dialog id="proof-dialog" aria-labelledby="proof-title">
   <div class="proof-art">
    <img class="proof-backdrop" src="./assets/valea-adunare-template.webp" width="1672" height="941" alt="">
@@ -164,7 +168,8 @@
   <button id="operation-order-back-sign" type="button" aria-label="Înapoi la Valea adunării și scăderii"></button>
   <div id="operation-order-chests"></div>
   <output id="operation-order-count" aria-label="Steluțe la lecția 6">0/12</output>
- </div></div>
+  <button id="operation-order-key" class="valley-key" type="button" hidden></button>
+ </div></div><p id="operation-order-key-status" class="map-summary valley-key-status" role="status"></p>
  <p class="map-summary">Alege o lădiță.</p>
  <dialog id="operation-order-dialog" aria-labelledby="operation-order-title">
   <div class="proof-art">
@@ -627,6 +632,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=map-trophies"></script>
+<script type="module" src="./scripts/app.js?v=valley-keys"></script>
 </body>
 </html>

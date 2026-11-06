@@ -50,6 +50,12 @@ Deno.serve(async req=>{
    const r=await rpc('regat_'+body.action,{p_token:token,p_action:body.operation,p_chest:body.chest??null,p_answer:body.answer??null});
    return r?.ok?response(r,200,origin):response({error:r?.error==='unauthorized'?'Sesiunea a expirat. Autentifică-te din nou.':'Capitolul 2 nu este încă deblocat.'},r?.error==='unauthorized'?401:403,origin);
   }
+  if(body.action==='take_valley_key'){
+   if(!Number.isInteger(body.lesson)||body.lesson<1||body.lesson>6)return response({error:'Lecție invalidă.'},400,origin);
+   const r=await rpc('regat_take_valley_key',{p_token:token,p_lesson:body.lesson});
+   const errors={unauthorized:'Sesiunea a expirat. Autentifică-te din nou.',chapter_locked:'Capitolul II nu este încă deblocat.',six_stars:'Obține 6 steluțe pentru a lua cheia.'};
+   return r?.ok?response(r,200,origin):response({error:errors[r?.error]||'Cheia nu a putut fi luată.'},r?.error==='unauthorized'?401:403,origin);
+  }
   if(body.action==='roman'){
    if(!['state','answer','match','take_crystal'].includes(body.operation))return response({error:'Cerere invalidă.'},400,origin);
    if(body.operation==='answer'&&(!Number.isInteger(body.chest)||typeof body.answer!=='string'||body.answer.length>32||!/^([0-9]{1,5}|[IVXLCDMivxlcdm\s]{1,32})$/.test(body.answer.trim())))return response({error:'Scrie răspunsul în căsuță.'},400,origin);

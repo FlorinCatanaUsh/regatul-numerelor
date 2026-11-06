@@ -48,6 +48,47 @@ function renderStars(){
  $('forest-stars').textContent='STELUȚELE MELE · ★ '+chapterStars(mapProfile,1);
 }
 const valleyLessons=['Adunarea fără trecere peste ordin','Scăderea fără trecere peste ordin','Adunarea cu trecere peste ordin','Scăderea cu trecere peste ordin','Proba adunării și a scăderii','Ordinea efectuării operațiilor','Aflarea numărului necunoscut'];
+const valleyKeyPages=['addition','subtraction','carry','borrow','proof','operation-order'];
+function openValleyLesson(id){
+ const open=[openAddition,openSubtraction,openCarryLesson,openBorrowLesson,openProofLesson];
+ if(id<=open.length)open[id-1]();
+ else openValleyPracticeLesson(id);
+}
+function renderValleyKey(lesson){
+ const page=valleyKeyPages[lesson-1];
+ const button=$(page+'-key');
+ const progress=mapProfile.lessonProgress?.[2];
+ const taken=progress?.keysTaken?.[lesson]===true;
+ button.hidden=!taken&&starCount(progress?.solvedByLesson?.[lesson])<6;
+ button.disabled=!!teacherMapReturn;
+ button.textContent=taken?'✓ Cheie colectată':'🔑 Ia cheia';
+ if(taken&&!teacherMapReturn)button.textContent+=' · Mergi la lecția '+(lesson+1);
+ $(page+'-key-status').textContent='';
+}
+valleyKeyPages.forEach((page,index)=>{
+ const lesson=index+1;
+ const button=$(page+'-key');
+ button.addEventListener('click',async()=>{
+  if(button.hidden||button.disabled||teacherMapReturn)return;
+  const profile=mapProfile;
+  const progress=profile.lessonProgress[2];
+  if(progress.keysTaken?.[lesson]){openValley();openValleyLesson(lesson+1);return;}
+  const status=$(page+'-key-status');
+  button.disabled=true;
+  try{
+   await studentAuth.takeValleyKey(lesson);
+   if(mapProfile?.studentId!==profile.studentId||teacherMapReturn)return;
+   mapProfile.lessonProgress[2].keysTaken??={};
+   mapProfile.lessonProgress[2].keysTaken[lesson]=true;
+   renderValleyKey(lesson);
+   status.textContent='Cheia lecției '+(lesson+1)+' a fost salvată.';
+  }catch(error){
+   if(mapProfile?.studentId!==profile.studentId||teacherMapReturn)return;
+   status.textContent=error.message;
+   button.disabled=false;
+  }
+ });
+});
 function openValley(){
  $('addition-page').hidden=true;
  $('subtraction-page').hidden=true;
@@ -60,7 +101,7 @@ function openValley(){
  $('valley-student').textContent=mapProfile.displayName;$('valley-stars').textContent=String(chapterStars(mapProfile,2));
  $('valley-lessons').replaceChildren();$('valley-progress').replaceChildren();
  const boxes=[[21.5,41,15,17],[43.5,43,15,17],[61.5,44,15,17],[19.5,59,15,18],[38,61,15,18],[56,63,13,18],[72,62,14,18]];
- valleyLessons.forEach((title,i)=>{const id=i+1,b=document.createElement('button');b.type='button';b.className='valley-lesson';b.setAttribute('aria-label',id+'. '+title);const [left,top,width,height]=boxes[i];Object.assign(b.style,{left:left+'%',top:top+'%',width:width+'%',height:height+'%'});const show=()=>{if(id===1){openAddition();return;}if(id===2){openSubtraction();return;}if(id===3){openCarryLesson();return;}if(id===4){openBorrowLesson();return;}if(id===5){openProofLesson();return;}openValleyPracticeLesson(id);};b.addEventListener('click',show);$('valley-lessons').append(b);const tile=document.createElement('button');tile.type='button';tile.className='valley-tile';tile.textContent=String(id);tile.setAttribute('aria-label','Lecția '+id+' — '+title);Object.assign(tile.style,{left:(i<4?[79.5,83,86.5,90][i]:[81,84.6,88.2][i-4])+'%',top:(i<4?9.8:16)+'%',width:'3%',height:'5%'});tile.addEventListener('click',show);$('valley-progress').append(tile);});
+ valleyLessons.forEach((title,i)=>{const id=i+1,b=document.createElement('button');b.type='button';b.className='valley-lesson';b.setAttribute('aria-label',id+'. '+title);const [left,top,width,height]=boxes[i];Object.assign(b.style,{left:left+'%',top:top+'%',width:width+'%',height:height+'%'});const show=()=>openValleyLesson(id);b.addEventListener('click',show);$('valley-lessons').append(b);const tile=document.createElement('button');tile.type='button';tile.className='valley-tile';tile.textContent=String(id);tile.setAttribute('aria-label','Lecția '+id+' — '+title);Object.assign(tile.style,{left:(i<4?[79.5,83,86.5,90][i]:[81,84.6,88.2][i-4])+'%',top:(i<4?9.8:16)+'%',width:'3%',height:'5%'});tile.addEventListener('click',show);$('valley-progress').append(tile);});
  // The original illustration has older lettering on signs 5–7.
  for (const id of [5,6,7]) {
   const label=document.createElement('span');
@@ -230,6 +271,7 @@ $('proof-form').addEventListener('submit',async event=>{
  }
 });
 function updateProofProgress(){
+ renderValleyKey(5);
  const solved=mapProfile.lessonProgress?.[2]?.solvedByLesson?.[5]||[];
  $('proof-count').textContent=starCount(solved)+'/12';
  for(const number of solved){
@@ -293,6 +335,7 @@ const operationOrderCheck=$('operation-order-check');
 const operationOrderStatus=$('operation-order-status');
 let operationOrderRevision=0,activeOperationOrderChest=1;
 function updateOperationOrderProgress(){
+ renderValleyKey(6);
  const solved=mapProfile.lessonProgress?.[2]?.solvedByLesson?.[6]||[];
  $('operation-order-count').textContent=starCount(solved)+'/12';
  for(const number of solved){
@@ -498,6 +541,7 @@ for(const [prefix,index] of [['operation-order',5],['unknown-number',6]]){
 }
 const carryExercises = [[116, 224], [254, 390], [701, 754], [299, 398], [1979, 701], [2484, 762], [7382, 678], [5668, 438], [9179, 5441], [8686, 9652], [6322, 3929], [7503, 4497]];
 function openCarryLesson() {
+ renderValleyKey(3);
  const solved = mapProfile.lessonProgress?.[2]?.solvedByLesson?.[3] || [];
  $('carry-count').textContent = starCount(solved) + '/12';
  const chests = $('carry-chests');
@@ -537,6 +581,7 @@ for (const id of ['carry-back', 'carry-back-sign']) {
 }
 const borrowExercises = [[742, 318], [725, 361], [1345, 612], [732, 458], [5342, 617], [5318, 472], [5321, 674], [6412, 785], [15332, 6247], [15428, 6893], [15362, 6847], [15321, 6874]];
 function openBorrowLesson() {
+ renderValleyKey(4);
  const solved = mapProfile.lessonProgress?.[2]?.solvedByLesson?.[4] || [];
  $('borrow-count').textContent = starCount(solved) + '/12';
  const chests = $('borrow-chests');
@@ -576,6 +621,7 @@ for (const id of ['borrow-back', 'borrow-back-sign']) {
 }
 const subtractionExercises = [[786, 243], [958, 427], [697, 352], [864, 521], [4786, 352], [7958, 423], [8697, 542], [5864, 321], [7865, 2431], [9587, 4275], [6978, 3526], [8649, 5217]];
 function openSubtraction() {
+ renderValleyKey(2);
  const solved = mapProfile.lessonProgress?.[2]?.solvedByLesson?.[2] || [];
  $('subtraction-count').textContent = starCount(solved) + '/12';
  const chests = $('subtraction-chests');
@@ -620,6 +666,7 @@ let activeAdditionChest=1;
 let activeArithmeticLesson='addition';
 function openAddition(){
  if(!teacherMapReturn&&!chapterRevealed(2))return;
+ renderValleyKey(1);
  $('valley-page').hidden=true;$('addition-page').hidden=false;$('addition-student').textContent=mapProfile.displayName;
  const solved=mapProfile.lessonProgress?.[2]?.solvedByLesson?.[1]||[];$('addition-count').textContent=starCount(solved)+'/12';$('addition-chests').replaceChildren();
  for(let id=1;id<=12;id++){const b=document.createElement('button');b.type='button';b.className='addition-chest';const col=(id-1)%4,row=Math.floor((id-1)/4);Object.assign(b.style,{left:[23,36.3,49.2,61.5][col]+'%',top:[40.5,57.2,75][row]+'%',width:'12.7%',height:'18.5%'});if(solved.includes(id)){b.className+=' complete';const star=document.createElement('span');star.textContent='★';b.append(star);}b.setAttribute('aria-label','Lădița '+id+' — '+additionExercises[id-1].join(' plus '));b.addEventListener('click',()=>openAdditionExercise(id));$('addition-chests').append(b);}
