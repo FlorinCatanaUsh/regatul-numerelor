@@ -587,3 +587,27 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
 #mountain-property-check:disabled {opacity:.6;cursor:not-allowed}
 #mountain-property-feedback {min-height:1.5em;font-weight:800}
 .mountain-exercise-note {font-size:clamp(12px,1.5vw,15px);line-height:1.45;color:#634b30}
+
+/* Teacher ranking earned trophies: show forest crystal and valley amber together. */
+#teacher-page .teacher-student-card {
+ grid-template-columns:2.2rem 12.5rem 1fr 7.5rem 8.5rem;
+}
+#teacher-page .teacher-student-name {
+ display:flex;
+ align-items:center;
+ gap:.25rem;
+ overflow:hidden;
+}
+#teacher-page .teacher-student-name > span {
+ flex:1 1 auto;
+ min-width:0;
+ overflow:hidden;
+ text-overflow:ellipsis;
+}
+#teacher-page .teacher-student-name .teacher-student-trophy {
+ width:1.9rem;
+ height:1.9rem;
+ flex:0 0 1.9rem;
+ object-fit:contain;
+ filter:drop-shadow(0 0 2px #ffd66c66);
+}
