@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=teacher-amber-20261117">
+<link rel="stylesheet" href="./styles/main.css?v=mountain-exercise-dynamic-20261117">
 </head>
 <body>
 <main>
@@ -89,7 +89,19 @@
  </div>
  <p id="mountain-property-status" class="map-summary" role="status" aria-live="polite">Alege o lădiță.</p>
  <dialog id="mountain-property-dialog" aria-labelledby="mountain-property-question">
-  <div class="mountain-exercise-card">
+  <div id="mountain-exercise-scene" class="mountain-exercise-scene" hidden>
+   <img id="mountain-exercise-template" src="./assets/capitolul-3-lectia-1-exercitiu-sablon-dinamic.webp" width="1672" height="941" alt="Șablonul ilustrat al exercițiului despre proprietățile înmulțirii.">
+   <p class="mountain-exercise-instruction">Completează și scrie numărul lipsă!</p>
+   <label id="mountain-exercise-question" for="mountain-exercise-answer"></label>
+   <form id="mountain-exercise-dynamic-form" autocomplete="off">
+    <input id="mountain-exercise-answer" inputmode="numeric" pattern="[0-9]{1,4}" maxlength="4" aria-label="Numărul lipsă" required>
+    <button id="mountain-exercise-verify" type="submit" aria-label="Verifică răspunsul"></button>
+   </form>
+   <p id="mountain-exercise-hint"></p>
+   <p id="mountain-exercise-feedback" role="status" aria-live="polite"></p>
+   <button id="mountain-exercise-back" type="button" aria-label="Înapoi la lădițe"></button>
+  </div>
+  <div id="mountain-exercise-fallback" class="mountain-exercise-card">
    <div class="mountain-exercise-top"><span id="mountain-property-chest-label">Lădița 1</span><button id="mountain-property-close" type="button" aria-label="Închide exercițiul">✕</button></div>
    <h2>Proprietățile înmulțirii</h2>
    <p id="mountain-property-hint"></p>
@@ -662,6 +674,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=teacher-amber-20261117"></script>
+<script type="module" src="./scripts/app.js?v=mountain-exercise-dynamic-20261117"></script>
 </body>
 </html>
