@@ -1,6 +1,6 @@
 import { pupils } from '../data/students.js?v=roster-20';
-import { studentAuth } from './auth.js?v=amber-collection-20261117';
-import { setupMap } from './map.js?v=amber-collection-20261117';
+import { studentAuth } from './auth.js?v=mountain-property-20261117';
+import { setupMap } from './map.js?v=mountain-property-20261117';
 import { setupTeacher } from './teacher.js?v=forest-trophy';
 'use strict';
 
