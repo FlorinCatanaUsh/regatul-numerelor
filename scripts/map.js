@@ -192,6 +192,15 @@ const mountainQuestions=[
  ['3 × (7 + 2) = 21 + □','Înmulțește fiecare termen al sumei cu 3.']
 ];
 let mountainChest=1,mountainRevision=0,mountainBusy=false,mountainKeyBusy=false;
+const mountainScene=$('mountain-exercise-scene');
+const mountainTemplate=$('mountain-exercise-template');
+function updateMountainTemplate(loaded){
+ mountainScene.hidden=!loaded;
+ $('mountain-exercise-fallback').hidden=loaded;
+}
+mountainTemplate.addEventListener('load',()=>updateMountainTemplate(mountainTemplate.naturalWidth>0));
+mountainTemplate.addEventListener('error',()=>updateMountainTemplate(false));
+if(mountainTemplate.complete)updateMountainTemplate(mountainTemplate.naturalWidth>0);
 function refreshMountainProperty(){
  if(!mapProfile)return;
  const progress=mapProfile.lessonProgress?.[3]||{};
@@ -227,33 +236,62 @@ function openMountainProperty(){
 }
 function showMountainChest(number){
  if(mountainBusy)return;mountainChest=number;mountainRevision++;
+ const [question,hint]=mountainQuestions[number-1];
  $('mountain-property-chest-label').textContent='Lădița '+number;
- $('mountain-property-question').textContent=mountainQuestions[number-1][0];
- $('mountain-property-hint').textContent=mountainQuestions[number-1][1];
- $('mountain-property-answer').value='';
- $('mountain-property-answer').disabled=!!teacherMapReturn;
- $('mountain-property-check').disabled=!!teacherMapReturn;
- $('mountain-property-feedback').textContent=teacherMapReturn?'Previzualizare fără punctaj.':'';
+ $('mountain-property-question').textContent=question;
+ $('mountain-exercise-question').textContent=question;
+ $('mountain-property-hint').textContent=hint;
+ $('mountain-exercise-hint').textContent=hint;
+ mountainScene.classList.toggle('long-question',question.length>20&&question.length<=29);
+ mountainScene.classList.toggle('very-long-question',question.length>29);
+ for(const id of ['mountain-property-answer','mountain-exercise-answer']){
+  $(id).value='';
+  $(id).disabled=!!teacherMapReturn;
+ }
+ for(const id of ['mountain-property-check','mountain-exercise-verify'])$(id).disabled=!!teacherMapReturn;
+ for(const id of ['mountain-property-feedback','mountain-exercise-feedback'])
+  $(id).textContent=teacherMapReturn?'Previzualizare fără punctaj.':'';
  $('mountain-property-dialog').showModal();
- if(!teacherMapReturn)$('mountain-property-answer').focus();
+ if(!teacherMapReturn)(mountainScene.hidden?$('mountain-property-answer'):$('mountain-exercise-answer')).focus();
 }
-$('mountain-property-close').addEventListener('click',()=>{if(mountainBusy)return;mountainRevision++;$('mountain-property-dialog').close();});
-$('mountain-property-dialog').addEventListener('cancel',event=>{if(mountainBusy)event.preventDefault();else mountainRevision++;});
-$('mountain-property-form').addEventListener('submit',async event=>{
- event.preventDefault();if(teacherMapReturn||mountainBusy||!mapProfile)return;
- const answer=$('mountain-property-answer').value.trim();
- if(!/^[0-9]{1,4}$/.test(answer)){$('mountain-property-feedback').textContent='Scrie numărul care lipsește.';return;}
+function closeMountainExercise(){
+ if(mountainBusy)return;
+ mountainRevision++;
+ $('mountain-property-dialog').close();
+}
+for(const id of ['mountain-property-close','mountain-exercise-back'])
+ $(id).addEventListener('click',closeMountainExercise);
+$('mountain-property-dialog').addEventListener('cancel',event=>{
+ if(mountainBusy)event.preventDefault();else mountainRevision++;
+});
+async function checkMountainExercise(event){
+ event.preventDefault();
+ if(teacherMapReturn||mountainBusy||!mapProfile)return;
+ const answer=(mountainScene.hidden?$('mountain-property-answer'):$('mountain-exercise-answer')).value.trim();
+ const feedback=message=>{
+  $('mountain-property-feedback').textContent=message;
+  $('mountain-exercise-feedback').textContent=message;
+ };
+ if(!/^[0-9]{1,4}$/.test(answer)){feedback('Scrie numărul care lipsește.');return;}
  const sid=mapProfile.studentId,rev=mountainRevision,chest=mountainChest;
- mountainBusy=true;$('mountain-property-check').disabled=true;
- $('mountain-property-feedback').textContent='Se verifică…';
+ mountainBusy=true;
+ for(const id of ['mountain-property-check','mountain-exercise-verify'])$(id).disabled=true;
+ feedback('Se verifică…');
  try{
   const result=await studentAuth.multiplicationProperty('answer',{chest,answer});
   if(mapProfile?.studentId!==sid||rev!==mountainRevision||teacherMapReturn)return;
-  renderMap(result.profile);refreshMountainProperty();
-  $('mountain-property-feedback').textContent=result.correct?'✓ Corect! Steluța a fost salvată.':'✗ Mai încearcă!';
- }catch(error){if(rev===mountainRevision)$('mountain-property-feedback').textContent=error.message;}
- finally{mountainBusy=false;if(rev===mountainRevision)$('mountain-property-check').disabled=!!teacherMapReturn;}
-});
+  renderMap(result.profile);
+  refreshMountainProperty();
+  feedback(result.correct?'✓ Corect! Steluța a fost salvată.':'✗ Mai încearcă!');
+ }catch(error){if(rev===mountainRevision)feedback(error.message);}
+ finally{
+  mountainBusy=false;
+  if(rev===mountainRevision)
+   for(const id of ['mountain-property-check','mountain-exercise-verify'])$(id).disabled=!!teacherMapReturn;
+ }
+}
+for(const id of ['mountain-property-form','mountain-exercise-dynamic-form'])
+ $(id).addEventListener('submit',checkMountainExercise);
 $('mountain-property-key').addEventListener('click',async()=>{
  if(teacherMapReturn||mountainKeyBusy||!mapProfile||mapProfile.lessonProgress?.[3]?.keysTaken?.[1])return;
  const sid=mapProfile.studentId;mountainKeyBusy=true;refreshMountainProperty();
