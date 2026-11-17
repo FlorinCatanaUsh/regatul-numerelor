@@ -689,3 +689,54 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
  #mountain-property-dialog:has(.mountain-exercise-scene:not([hidden])) {width:calc(100vw - 8px)}
  .mountain-exercise-scene {min-width:850px}
 }
+
+/* Chapter III row-sensitive multiplication fields: 1 / 3 / 4 factors */
+#mountain-exercise-instruction {
+ left:24.5%;top:25.4%;width:59.5%;height:10%;
+ font-size:2.65cqw;line-height:1.14;
+}
+#mountain-exercise-dynamic-form {display:contents}
+#mountain-exercise-equation {
+ position:absolute;left:21%;top:42%;width:70%;height:18%;
+ display:flex;align-items:center;justify-content:center;gap:.7cqw;
+ white-space:nowrap;color:#161009;text-align:center;
+ font-family:Georgia,'Times New Roman',serif;
+}
+#mountain-exercise-question {
+ position:static;display:inline;width:auto;height:auto;
+ color:#161009;text-align:center;white-space:nowrap;
+ font:700 4.2cqw/1.08 Georgia,'Times New Roman',serif;
+ letter-spacing:0;text-shadow:0 1px 0 #ffedb3;
+}
+#mountain-exercise-equation.single #mountain-exercise-question {font-size:5.4cqw}
+#mountain-exercise-equation.triple #mountain-exercise-question {font-size:4.4cqw}
+#mountain-exercise-equation.four #mountain-exercise-question {font-size:3.55cqw}
+#mountain-exercise-equation input {
+ position:static;flex:0 0 auto;display:block;
+ width:6.5cqw;height:7.2cqw;min-width:0;
+ padding:0 .2cqw;border:.33cqw solid #a66c16;border-radius:.95cqw;
+ box-shadow:inset 0 .13cqw .45cqw #ab720e88,0 .18cqw .45cqw #6e411855;
+ background:#fff1be;color:#15110c;
+ text-align:center;font:700 4.4cqw/1 Georgia,serif;
+ outline-offset:.12cqw;
+}
+#mountain-exercise-equation input:focus-visible {outline:.26cqw solid #2370c7;background:#fffbe0}
+#mountain-exercise-equation input:disabled {opacity:.55}
+#mountain-exercise-equation.single input {width:8.5cqw}
+#mountain-exercise-product {width:7.7cqw!important}
+#mountain-exercise-equation .mountain-exercise-operator {
+ position:static;font:700 4.25cqw/1 Georgia,serif;color:#161009;
+}
+#mountain-exercise-equation [hidden] {display:none!important}
+#mountain-exercise-equation.four {gap:.45cqw}
+#mountain-exercise-equation.four input {width:6.1cqw;font-size:3.85cqw}
+#mountain-exercise-equation.four #mountain-exercise-product {width:7.2cqw!important}
+#mountain-exercise-equation.four .mountain-exercise-operator {font-size:3.75cqw}
+#mountain-exercise-hint {left:30%;top:80.4%;width:40%;height:7%;font-size:1.8cqw}
+#mountain-exercise-feedback {top:65%;left:39%;width:50%;font-size:1.6cqw}
+.mountain-property-fallback-inputs {display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.mountain-property-fallback-inputs [hidden] {display:none!important}
+.mountain-property-fallback-inputs :is(input) {
+ width:115px!important;max-width:26vw;font-size:28px!important;
+}
+.mountain-property-fallback-inputs :is(span) {font:bold 30px Georgia,serif}
