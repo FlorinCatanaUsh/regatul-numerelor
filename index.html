@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=mountain-exercise-dynamic-20261117">
+<link rel="stylesheet" href="./styles/main.css?v=mountain-association-20261117">
 </head>
 <body>
 <main>
@@ -90,11 +90,17 @@
  <p id="mountain-property-status" class="map-summary" role="status" aria-live="polite">Alege o lădiță.</p>
  <dialog id="mountain-property-dialog" aria-labelledby="mountain-property-question">
   <div id="mountain-exercise-scene" class="mountain-exercise-scene" hidden>
-   <img id="mountain-exercise-template" src="./assets/capitolul-3-lectia-1-exercitiu-sablon-dinamic.webp" width="1672" height="941" alt="Șablonul ilustrat al exercițiului despre proprietățile înmulțirii.">
-   <p class="mountain-exercise-instruction">Completează și scrie numărul lipsă!</p>
-   <label id="mountain-exercise-question" for="mountain-exercise-answer"></label>
+   <img id="mountain-exercise-template" src="./assets/capitolul-3-lectia-1-sablon-asociativitate.webp" width="1672" height="941" alt="Șablonul ilustrat al exercițiului despre proprietățile înmulțirii.">
+   <p id="mountain-exercise-instruction" class="mountain-exercise-instruction">Completează căsuța cu numărul potrivit!</p>
    <form id="mountain-exercise-dynamic-form" autocomplete="off">
-    <input id="mountain-exercise-answer" inputmode="numeric" pattern="[0-9]{1,4}" maxlength="4" aria-label="Numărul lipsă" required>
+    <div id="mountain-exercise-equation" class="mountain-exercise-equation single">
+     <span id="mountain-exercise-question">4 × 3 = 3 ×</span>
+     <input id="mountain-exercise-answer" inputmode="numeric" pattern="[0-9]{1,2}" maxlength="2" aria-label="Primul număr" required>
+     <span id="mountain-exercise-times" class="mountain-exercise-operator" hidden>×</span>
+     <input id="mountain-exercise-factor2" inputmode="numeric" pattern="[0-9]{1,2}" maxlength="2" aria-label="Al doilea număr" hidden disabled>
+     <span id="mountain-exercise-equals" class="mountain-exercise-operator" hidden>=</span>
+     <input id="mountain-exercise-product" inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" aria-label="Produsul" hidden disabled>
+    </div>
     <button id="mountain-exercise-verify" type="submit" aria-label="Verifică răspunsul"></button>
    </form>
    <p id="mountain-exercise-hint"></p>
@@ -107,7 +113,13 @@
    <p id="mountain-property-hint"></p>
    <form id="mountain-property-form" autocomplete="off">
     <label id="mountain-property-question" for="mountain-property-answer"></label>
-    <input id="mountain-property-answer" inputmode="numeric" pattern="[0-9]{1,4}" maxlength="4" aria-label="Scrie numărul care lipsește" required>
+    <div class="mountain-property-fallback-inputs">
+     <input id="mountain-property-answer" inputmode="numeric" pattern="[0-9]{1,2}" maxlength="2" aria-label="Primul număr" required>
+     <span id="mountain-property-times" hidden>×</span>
+     <input id="mountain-property-factor2" inputmode="numeric" pattern="[0-9]{1,2}" maxlength="2" aria-label="Al doilea număr" hidden disabled>
+     <span id="mountain-property-equals" hidden>=</span>
+     <input id="mountain-property-product" inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" aria-label="Produsul" hidden disabled>
+    </div>
     <button id="mountain-property-check" type="submit">Verifică!</button>
    </form>
    <p id="mountain-property-feedback" role="status" aria-live="polite"></p>
@@ -674,6 +686,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=mountain-exercise-dynamic-20261117"></script>
+<script type="module" src="./scripts/app.js?v=mountain-association-20261117"></script>
 </body>
 </html>
