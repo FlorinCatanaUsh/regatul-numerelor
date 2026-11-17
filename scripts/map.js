@@ -141,6 +141,7 @@ function openMountains(){
  mountainLessons.forEach(([title,box],i)=>{
   const id=i+1;
   const showLesson=()=>{
+   if(id===1){openMountainProperty();return;}
    $('chapter-title').textContent=id+'. '+title;
    $('chapter-description').textContent='Capitolul III · Munții Înmulțirii';
    $('chapter-access').textContent='Exercițiile acestei lecții sunt în pregătire.';
@@ -174,6 +175,99 @@ for(const id of ['mountains-back','mountains-back-sign'])$(id).addEventListener(
  renderMap(mapProfile);
  $('map-chapters').children[2]?.focus();
  window.scrollTo(0,0);
+});
+
+const mountainQuestions=[
+ ['3 × 5 = 5 × □','Comutativitate: schimbă ordinea factorilor.'],
+ ['7 × 4 = □ × 7','Comutativitate: produsul rămâne același.'],
+ ['2 × (3 × 4) = (2 × 3) × □','Asociativitate: schimbă gruparea factorilor.'],
+ ['(5 × 2) × 3 = 5 × (2 × □)','Asociativitate: schimbă gruparea factorilor.'],
+ ['8 × 1 = □','Numărul înmulțit cu 1 rămâne neschimbat.'],
+ ['1 × 9 = □','Înmulțirea cu 1 păstrează numărul.'],
+ ['6 × 0 = □','Orice număr înmulțit cu 0 dă 0.'],
+ ['0 × 12 = □','Zero înmulțit cu orice număr dă 0.'],
+ ['4 × (3 + 2) = 4 × 3 + 4 × □','Distributivitatea față de adunare.'],
+ ['6 × (8 − 3) = 6 × 8 − 6 × □','Distributivitatea față de scădere.'],
+ ['5 × (2 + 4) = □ + 20','Înmulțește fiecare termen al sumei cu 5.'],
+ ['3 × (7 + 2) = 21 + □','Înmulțește fiecare termen al sumei cu 3.']
+];
+let mountainChest=1,mountainRevision=0,mountainBusy=false,mountainKeyBusy=false;
+function refreshMountainProperty(){
+ if(!mapProfile)return;
+ const progress=mapProfile.lessonProgress?.[3]||{};
+ const solved=new Set((progress.solvedByLesson?.[1]||[]).filter(n=>Number.isInteger(n)&&n>=1&&n<=12));
+ $('mountain-property-count').textContent=solved.size+'/12';
+ Array.from($('mountain-property-chests').children).forEach((button,index)=>{
+  const done=solved.has(index+1);
+  button.className='mountain-property-chest'+(done?' complete':'');
+  button.setAttribute('aria-label','Lădița '+(index+1)+(done?' — steluță obținută':' — exercițiu de rezolvat'));
+ });
+ const taken=progress.keysTaken?.[1]===true,ready=solved.size>=6;
+ const key=$('mountain-property-key');
+ key.hidden=!taken&&!ready;key.disabled=!!teacherMapReturn||mountainKeyBusy||taken;
+ key.className=taken?'collected':ready?'ready':'';
+ key.title=taken?'Cheia lecției 2 a fost colectată':'Atinge pentru a colecta cheia';
+ key.setAttribute('aria-label',key.title);
+ $('mountain-property-status').textContent=teacherMapReturn?'Previzualizare profesor: nu se salvează răspunsuri.':
+ taken?'✓ Cheia lecției 2 a fost colectată. Lecția este parcursă.':
+ ready?'Ai obținut 6 steluțe! Atinge cheia din dreapta pentru a o colecta.':
+ 'Alege o lădiță. La 6 răspunsuri corecte poți colecta cheia.';
+}
+function openMountainProperty(){
+ $('map-page').hidden=true;$('mountains-page').hidden=true;$('mountain-property-page').hidden=false;
+ $('mountain-property-student').textContent=mapProfile.displayName;
+ const chests=$('mountain-property-chests');chests.replaceChildren();
+ for(let number=1;number<=12;number++){
+  const button=document.createElement('button');button.type='button';
+  const row=Math.floor((number-1)/4),col=(number-1)%4;
+  Object.assign(button.style,{left:[25.3,38.5,51.2,63.9][col]+'%',top:[46,61.7,77.3][row]+'%',width:'10.5%',height:'11.7%'});
+  button.addEventListener('click',()=>showMountainChest(number));chests.append(button);
+ }
+ refreshMountainProperty();$('mountain-property-back').focus();window.scrollTo(0,0);
+}
+function showMountainChest(number){
+ if(mountainBusy)return;mountainChest=number;mountainRevision++;
+ $('mountain-property-chest-label').textContent='Lădița '+number;
+ $('mountain-property-question').textContent=mountainQuestions[number-1][0];
+ $('mountain-property-hint').textContent=mountainQuestions[number-1][1];
+ $('mountain-property-answer').value='';
+ $('mountain-property-answer').disabled=!!teacherMapReturn;
+ $('mountain-property-check').disabled=!!teacherMapReturn;
+ $('mountain-property-feedback').textContent=teacherMapReturn?'Previzualizare fără punctaj.':'';
+ $('mountain-property-dialog').showModal();
+ if(!teacherMapReturn)$('mountain-property-answer').focus();
+}
+$('mountain-property-close').addEventListener('click',()=>{if(mountainBusy)return;mountainRevision++;$('mountain-property-dialog').close();});
+$('mountain-property-dialog').addEventListener('cancel',event=>{if(mountainBusy)event.preventDefault();else mountainRevision++;});
+$('mountain-property-form').addEventListener('submit',async event=>{
+ event.preventDefault();if(teacherMapReturn||mountainBusy||!mapProfile)return;
+ const answer=$('mountain-property-answer').value.trim();
+ if(!/^[0-9]{1,4}$/.test(answer)){$('mountain-property-feedback').textContent='Scrie numărul care lipsește.';return;}
+ const sid=mapProfile.studentId,rev=mountainRevision,chest=mountainChest;
+ mountainBusy=true;$('mountain-property-check').disabled=true;
+ $('mountain-property-feedback').textContent='Se verifică…';
+ try{
+  const result=await studentAuth.multiplicationProperty('answer',{chest,answer});
+  if(mapProfile?.studentId!==sid||rev!==mountainRevision||teacherMapReturn)return;
+  renderMap(result.profile);refreshMountainProperty();
+  $('mountain-property-feedback').textContent=result.correct?'✓ Corect! Steluța a fost salvată.':'✗ Mai încearcă!';
+ }catch(error){if(rev===mountainRevision)$('mountain-property-feedback').textContent=error.message;}
+ finally{mountainBusy=false;if(rev===mountainRevision)$('mountain-property-check').disabled=!!teacherMapReturn;}
+});
+$('mountain-property-key').addEventListener('click',async()=>{
+ if(teacherMapReturn||mountainKeyBusy||!mapProfile||mapProfile.lessonProgress?.[3]?.keysTaken?.[1])return;
+ const sid=mapProfile.studentId;mountainKeyBusy=true;refreshMountainProperty();
+ $('mountain-property-status').textContent='Cheia se salvează…';
+ try{
+  const result=await studentAuth.multiplicationProperty('take_key');
+  if(mapProfile?.studentId!==sid||teacherMapReturn)return;
+  renderMap(result.profile);
+ }catch(error){if(mapProfile?.studentId===sid)$('mountain-property-status').textContent=error.message;}
+ finally{mountainKeyBusy=false;if(mapProfile?.studentId===sid)refreshMountainProperty();}
+});
+for(const id of ['mountain-property-back','mountain-property-back-sign'])$(id).addEventListener('click',()=>{
+ if(mountainBusy)return;
+ $('mountain-property-page').hidden=true;openMountains();$('mountains-lessons').children[0]?.focus();
 });
 const proofRows=[1,2].map(i=>({
  left:$('proof-left-'+i),sign:$('proof-sign-'+i),
@@ -789,6 +883,7 @@ function renderMap(profile) {
  $('map-summary').textContent=teacherClassMode?'Harta clasei. Comenzile de sus se aplică tuturor elevilor.':mapProfile.completedChapters.length+' din 8 capitole parcurse.';
 }
 function openStudentMap(profile){
+ $('mountain-property-page').hidden=true;
  $('mountains-page').hidden=true;
  $('subtraction-page').hidden=true;
  $('carry-page').hidden=true;
