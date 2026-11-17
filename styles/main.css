@@ -552,3 +552,38 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
  50%{box-shadow:0 0 15px 6px #ffd34d88}
 }
 @media (prefers-reduced-motion:reduce){#unknown-number-amber.ready{animation:none}}
+
+
+/* Capitolul III, lecția 1 — lădițe interactive peste ilustrația încărcată. */
+#mountain-property-page {min-height:100svh;background:#123c43;color:#fff1c5}
+.mountain-property-art {container-type:inline-size}
+#mountain-property-back-sign {position:absolute;left:.65%;top:3.4%;width:17%;height:12.4%;border:0;border-radius:10px;background:transparent;cursor:pointer}
+#mountain-property-back-sign:hover,#mountain-property-back-sign:focus-visible {outline:3px solid #ffe588;background:#fff1ac22}
+.mountain-property-chest {position:absolute;z-index:2;border:0;border-radius:15%;background:transparent;cursor:pointer;min-height:44px}
+.mountain-property-chest:hover,.mountain-property-chest:focus-visible {outline:3px solid #fff4b2;background:#fffa8126;box-shadow:0 0 18px #ffe47f99}
+.mountain-property-chest.complete::after {content:'★';position:absolute;top:-.4em;right:-.35em;padding:.1em .24em;background:#fff1ac;border:2px solid #8f5d15;border-radius:50%;font:bold 2.5cqw/1 Georgia,serif;color:#e1a500;text-shadow:0 1px 1px #fff;box-shadow:0 0 10px #f8d44f}
+#mountain-property-count {position:absolute;z-index:3;left:9.2%;top:78.6%;width:10.5%;height:8.6%;display:grid;place-items:center;background:linear-gradient(#603219,#4c2714);color:#fff8d1;font:bold 4.1cqw/1 Georgia,serif;text-shadow:0 1px 2px #21130c;pointer-events:none}
+#mountain-property-key {position:absolute;z-index:4;left:82.3%;top:61%;width:16%;height:22.5%;background:transparent;border:0;border-radius:40%;cursor:pointer}
+#mountain-property-key[hidden] {display:none!important}
+#mountain-property-key.ready {animation:mountain-key-pulse 2s ease-in-out infinite}
+#mountain-property-key.ready:hover,#mountain-property-key.ready:focus-visible {outline:3px solid #ffe78c;box-shadow:0 0 20px 8px #ffdb72a8}
+#mountain-property-key.collected {cursor:default}
+#mountain-property-key.collected::after {content:'✓';position:absolute;top:2%;right:0;border:3px solid #ffe999;border-radius:50%;width:27%;aspect-ratio:1;display:grid;place-items:center;background:#197c45;color:#fff;font:bold 3cqw Georgia,serif;box-shadow:0 0 16px #fff0a0}
+@keyframes mountain-key-pulse {0%,100%{box-shadow:0 0 0 #ffe88900}50%{box-shadow:0 0 25px 8px #ffd66da8}}
+@media(prefers-reduced-motion:reduce){#mountain-property-key.ready{animation:none}}
+#mountain-property-dialog {border:0;border-radius:19px;padding:0;background:transparent;color:#32220f;width:min(94vw,670px);max-height:92dvh;box-shadow:0 16px 70px #0008}
+#mountain-property-dialog::backdrop {background:#071e25bf}
+.mountain-exercise-card {padding:clamp(19px,3vw,40px);background:linear-gradient(145deg,#fff3c9,#fbd68a 72%,#dfae5f);border:9px ridge #966324;border-radius:19px;text-align:center;font-family:system-ui,sans-serif}
+.mountain-exercise-top {display:flex;align-items:center;justify-content:space-between;gap:15px}
+#mountain-property-chest-label {display:inline-block;padding:7px 15px;border-radius:14px;background:#5c2967;color:#fff5d8;font-weight:800}
+#mountain-property-close {border:0;border-radius:8px;background:#7b3624;color:#fff;font-size:1.4em;padding:5px 13px;cursor:pointer}
+.mountain-exercise-card h2 {margin:.35em 0;font:800 clamp(21px,3vw,34px) Georgia,serif;color:#5c2712}
+#mountain-property-hint {font-weight:650;margin:12px auto;color:#6e4c21}
+#mountain-property-form {display:grid;gap:14px;justify-items:center}
+#mountain-property-question {font:bold clamp(22px,4vw,40px)/1.3 Georgia,serif;color:#2f2013;max-width:100%}
+#mountain-property-answer {width:min(100%,210px);padding:10px;border:3px solid #ad772c;border-radius:12px;background:#fffdf5;color:#102b35;font:bold 35px Georgia,serif;text-align:center}
+#mountain-property-answer:disabled {opacity:.72}
+#mountain-property-check {padding:11px 29px;border:2px solid #82551a;border-radius:12px;background:linear-gradient(#f2c456,#b97a22);color:#311b08;font-size:19px;font-weight:800;cursor:pointer}
+#mountain-property-check:disabled {opacity:.6;cursor:not-allowed}
+#mountain-property-feedback {min-height:1.5em;font-weight:800}
+.mountain-exercise-note {font-size:clamp(12px,1.5vw,15px);line-height:1.45;color:#634b30}
