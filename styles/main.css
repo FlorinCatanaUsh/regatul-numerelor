@@ -563,13 +563,31 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
 .mountain-property-chest:hover,.mountain-property-chest:focus-visible {outline:3px solid #fff4b2;background:#fffa8126;box-shadow:0 0 18px #ffe47f99}
 .mountain-property-chest.complete::after {content:'★';position:absolute;top:-.4em;right:-.35em;padding:.1em .24em;background:#fff1ac;border:2px solid #8f5d15;border-radius:50%;font:bold 2.5cqw/1 Georgia,serif;color:#e1a500;text-shadow:0 1px 1px #fff;box-shadow:0 0 10px #f8d44f}
 #mountain-property-count {position:absolute;z-index:3;left:9.2%;top:78.6%;width:10.5%;height:8.6%;display:grid;place-items:center;background:linear-gradient(#603219,#4c2714);color:#fff8d1;font:bold 4.1cqw/1 Georgia,serif;text-shadow:0 1px 2px #21130c;pointer-events:none}
-#mountain-property-key {position:absolute;z-index:4;left:82.3%;top:61%;width:16%;height:22.5%;background:transparent;border:0;border-radius:40%;cursor:pointer}
+/* Mountain key is baked into the background WebP. Cover the dome with the
+   existing empty-plinth artwork when released/collected; never show a tick
+   over the baked-in golden key. The student's saved state drives the art. */
+#mountain-property-key {
+ position:absolute;z-index:4;left:79.7%;top:60.5%;
+ width:19.1%;height:23.7%;background:transparent;border:0;
+ border-radius:0;cursor:pointer;padding:0;opacity:1;
+}
 #mountain-property-key[hidden] {display:none!important}
+#mountain-property-key:is(.ready,.collected)::before {
+ content:'';position:absolute;inset:0;pointer-events:none;
+ background:url('../assets/valea-soclu-liber.webp') center/100% 100% no-repeat;
+}
+#mountain-property-key.ready::after {
+ content:'';position:absolute;left:27%;top:12%;width:49%;height:68%;
+ pointer-events:none;background:url('../assets/valea-cheie.svg') center/contain no-repeat;
+ filter:drop-shadow(0 0 .8cqw #ffe576);
+}
 #mountain-property-key.ready {animation:mountain-key-pulse 2s ease-in-out infinite}
-#mountain-property-key.ready:hover,#mountain-property-key.ready:focus-visible {outline:3px solid #ffe78c;box-shadow:0 0 20px 8px #ffdb72a8}
-#mountain-property-key.collected {cursor:default}
-#mountain-property-key.collected::after {content:'✓';position:absolute;top:2%;right:0;border:3px solid #ffe999;border-radius:50%;width:27%;aspect-ratio:1;display:grid;place-items:center;background:#197c45;color:#fff;font:bold 3cqw Georgia,serif;box-shadow:0 0 16px #fff0a0}
-@keyframes mountain-key-pulse {0%,100%{box-shadow:0 0 0 #ffe88900}50%{box-shadow:0 0 25px 8px #ffd66da8}}
+#mountain-property-key.ready:hover,#mountain-property-key.ready:focus-visible {
+ outline:3px solid #ffe78c;box-shadow:0 0 20px 8px #ffdb72a8;
+}
+#mountain-property-key.collected {cursor:default;animation:none;box-shadow:none!important}
+#mountain-property-key.collected::after {content:none}
+@keyframes mountain-key-pulse {0%,100%{filter:drop-shadow(0 0 0 #ffe88900)}50%{filter:drop-shadow(0 0 1cqw #ffd66da8)}}
 @media(prefers-reduced-motion:reduce){#mountain-property-key.ready{animation:none}}
 #mountain-property-dialog {border:0;border-radius:19px;padding:0;background:transparent;color:#32220f;width:min(94vw,670px);max-height:92dvh;box-shadow:0 16px 70px #0008}
 #mountain-property-dialog::backdrop {background:#071e25bf}
