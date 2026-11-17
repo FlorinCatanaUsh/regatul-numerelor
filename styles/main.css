@@ -509,3 +509,46 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
 .valley-key.collected{font-size:0}
 .valley-key.collected::after{content:'✓';display:grid;place-items:center;left:44%;top:68%;width:16%;height:22%;border:2px solid #f0cf7e;border-radius:50%;background:#21633e;color:#fff5c3;font:bold clamp(14px,1.8vw,25px)/1 Georgia,serif;filter:none}
 .valley-key-status:empty{display:none}
+
+
+/* Chihlimbarul capitolului II: click pe piatra din desen si confirmare persistenta. */
+#unknown-number-amber{
+ position:absolute;left:84.8%;top:59.5%;width:13.2%;height:22.2%;
+ z-index:4;border:0;border-radius:42%;padding:0;background:transparent;
+}
+#unknown-number-amber.ready{
+ cursor:pointer;animation:amber-collect-pulse 2s ease-in-out infinite;
+}
+#unknown-number-amber.ready:hover,
+#unknown-number-amber.ready:focus-visible{
+ outline:3px solid #fff5a8;outline-offset:2px;
+ box-shadow:0 0 18px 8px #ffe16f99;
+}
+#unknown-number-amber.collected{cursor:default;}
+#unknown-number-amber.collected::after{
+ content:'✓';position:absolute;right:-2%;top:-4%;
+ width:30%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
+ border:3px solid #ffed9e;background:#20834c;
+ color:#fff;font:bold clamp(19px,2.1vw,38px) Georgia,serif;
+ box-shadow:0 0 14px 6px #ffe38e9e;
+}
+.valley-amber-plaque.collected{
+ background:linear-gradient(#e5ffcc,#95d99d);color:#14502d;
+ border:2px solid #f9ed9e;z-index:5;
+}
+#unknown-number-amber-status{
+ position:absolute;z-index:5;left:82.8%;top:89.5%;width:16.1%;
+ margin:0;padding:.35cqw .45cqw;border-radius:.35cqw;
+ background:#fff0cde8;color:#315028;text-align:center;
+ font:700 1.05cqw/1.2 system-ui,sans-serif;
+}
+#unknown-number-amber-status:empty{display:none}
+.valley-tile.complete{
+ background:#fff1a4!important;color:#266340!important;
+ border:2px solid #efd66e;box-shadow:0 0 10px #ffe783c9;
+}
+@keyframes amber-collect-pulse{
+ 0%,100%{box-shadow:0 0 0 0 #ffd34d00}
+ 50%{box-shadow:0 0 15px 6px #ffd34d88}
+}
+@media (prefers-reduced-motion:reduce){#unknown-number-amber.ready{animation:none}}
