@@ -40,15 +40,23 @@ function renderTeacherStudents(){
   nameLabel.textContent=row.displayName;
   name.append(nameLabel);
   const hasForestCrystal=row.lessonProgress?.[1]?.forestCrystalTaken===true||row.completedChapters?.includes(1);
-  if(hasForestCrystal){
+  const hasValleyAmber=row.lessonProgress?.[2]?.amberTaken===true||row.completedChapters?.includes(2);
+  for(const trophyData of [
+   {earned:hasForestCrystal,file:'cristalul-padurii.webp',name:'Cristalul pădurii'},
+   {earned:hasValleyAmber,file:'trofeu-capitol-2.webp',name:'Chihlimbarul magic al văii'}
+  ]){
+   if(!trophyData.earned)continue;
    const trophy=document.createElement('img');
-   trophy.src='./assets/cristalul-padurii.webp';
+   trophy.src='./assets/'+trophyData.file;
    trophy.alt='';
-   trophy.title='Cristalul pădurii';
+   trophy.title=trophyData.name+' — câștigat';
    trophy.className='teacher-student-trophy';
    name.append(trophy);
   }
-  name.setAttribute('aria-label',row.displayName+(hasForestCrystal?' — Cristalul pădurii câștigat':'')+' — harta și progresul');
+  name.setAttribute('aria-label',row.displayName+
+   (hasForestCrystal?' — Cristalul pădurii câștigat':'')+
+   (hasValleyAmber?' — Chihlimbarul magic al văii câștigat':'')+
+   ' — harta și progresul');
   name.addEventListener('click',()=>mapUI.teacherView(row,()=>{
    selectTab('individual');
    name.focus();
