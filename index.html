@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#112a35">
 <meta name="robots" content="noindex,nofollow">
 <title>Regatul numerelor · Clasa a III-a</title>
-<link rel="stylesheet" href="./styles/main.css?v=amber-collection-20261117">
+<link rel="stylesheet" href="./styles/main.css?v=mountain-property-20261117">
 </head>
 <body>
 <main>
@@ -74,6 +74,34 @@
   <div id="mountains-lessons"></div><div id="mountains-progress" role="group" aria-label="Lecții parcurse în capitolul 3"></div>
   <output id="mountains-stars" aria-label="Steluțe în capitolul 3">0</output>
  </div></div><p id="mountains-summary" class="map-summary"></p>
+</section>
+
+<section id="mountain-property-page" hidden aria-label="Capitolul III, lecția 1 — Proprietățile înmulțirii">
+ <header class="map-toolbar"><button id="mountain-property-back" type="button">← Înapoi la munți</button><div><h2>Proprietățile înmulțirii</h2><p id="mountain-property-student"></p></div></header>
+ <div class="map-scroll" tabindex="0" role="region" aria-label="Cele 12 lădițe ale lecției Proprietățile înmulțirii">
+  <div class="addition-art mountain-property-art">
+   <img src="./assets/capitolul-3-lectia-1-proprietatile-inmultirii.webp" width="1536" height="961" alt="Munții înmulțirii, 12 lădițe colorate, profesorul bufniță, robotul, progresul cu steluțe și cheia lecției 2 sub cupolă.">
+   <button id="mountain-property-back-sign" type="button" aria-label="Înapoi la Munții Înmulțirii"></button>
+   <div id="mountain-property-chests" role="group" aria-label="Alege o lădiță cu exercițiu"></div>
+   <output id="mountain-property-count" aria-label="Steluțe în lecția Proprietățile înmulțirii">0/12</output>
+   <button id="mountain-property-key" type="button" hidden aria-label="Colectează cheia lecției 2"></button>
+  </div>
+ </div>
+ <p id="mountain-property-status" class="map-summary" role="status" aria-live="polite">Alege o lădiță.</p>
+ <dialog id="mountain-property-dialog" aria-labelledby="mountain-property-question">
+  <div class="mountain-exercise-card">
+   <div class="mountain-exercise-top"><span id="mountain-property-chest-label">Lădița 1</span><button id="mountain-property-close" type="button" aria-label="Închide exercițiul">✕</button></div>
+   <h2>Proprietățile înmulțirii</h2>
+   <p id="mountain-property-hint"></p>
+   <form id="mountain-property-form" autocomplete="off">
+    <label id="mountain-property-question" for="mountain-property-answer"></label>
+    <input id="mountain-property-answer" inputmode="numeric" pattern="[0-9]{1,4}" maxlength="4" aria-label="Scrie numărul care lipsește" required>
+    <button id="mountain-property-check" type="submit">Verifică!</button>
+   </form>
+   <p id="mountain-property-feedback" role="status" aria-live="polite"></p>
+   <p class="mountain-exercise-note">Fiecare lădiță rezolvată corect oferă o singură steluță. La 6 steluțe poți colecta cheia.</p>
+  </div>
+ </dialog>
 </section>
 
 <section id="addition-page" hidden aria-label="Capitolul II, lecția 1 — Adunarea fără trecere peste ordin">
@@ -634,6 +662,6 @@
 </section>
 </div>
 </dialog>
-<script type="module" src="./scripts/app.js?v=amber-collection-20261117"></script>
+<script type="module" src="./scripts/app.js?v=mountain-property-20261117"></script>
 </body>
 </html>
