@@ -178,18 +178,18 @@ for(const id of ['mountains-back','mountains-back-sign'])$(id).addEventListener(
 });
 
 const mountainQuestions=[
- ['3 × 5 = 5 × □','Comutativitate: schimbă ordinea factorilor.'],
- ['7 × 4 = □ × 7','Comutativitate: produsul rămâne același.'],
- ['2 × (3 × 4) = (2 × 3) × □','Asociativitate: schimbă gruparea factorilor.'],
- ['(5 × 2) × 3 = 5 × (2 × □)','Asociativitate: schimbă gruparea factorilor.'],
- ['8 × 1 = □','Numărul înmulțit cu 1 rămâne neschimbat.'],
- ['1 × 9 = □','Înmulțirea cu 1 păstrează numărul.'],
- ['6 × 0 = □','Orice număr înmulțit cu 0 dă 0.'],
- ['0 × 12 = □','Zero înmulțit cu orice număr dă 0.'],
- ['4 × (3 + 2) = 4 × 3 + 4 × □','Distributivitatea față de adunare.'],
- ['6 × (8 − 3) = 6 × 8 − 6 × □','Distributivitatea față de scădere.'],
- ['5 × (2 + 4) = □ + 20','Înmulțește fiecare termen al sumei cu 5.'],
- ['3 × (7 + 2) = 21 + □','Înmulțește fiecare termen al sumei cu 3.']
+ {prefix:'4 × 3 = 3 ×',hint:'Schimbă ordinea factorilor. Produsul rămâne același.',format:'single'},
+ {prefix:'6 × 5 = 5 ×',hint:'Schimbă ordinea factorilor. Produsul rămâne același.',format:'single'},
+ {prefix:'8 × 2 = 2 ×',hint:'Schimbă ordinea factorilor. Produsul rămâne același.',format:'single'},
+ {prefix:'9 × 4 = 4 ×',hint:'Schimbă ordinea factorilor. Produsul rămâne același.',format:'single'},
+ {prefix:'7 × 5 × 2 =',hint:'Asociază 5 cu 2 ca să obții 10.',format:'triple'},
+ {prefix:'5 × 6 × 2 =',hint:'Asociază 5 cu 2 ca să obții 10.',format:'triple'},
+ {prefix:'4 × 2 × 5 =',hint:'Asociază 2 cu 5 ca să obții 10.',format:'triple'},
+ {prefix:'9 × 5 × 2 =',hint:'Asociază 5 cu 2 ca să obții 10.',format:'triple'},
+ {prefix:'5 × 3 × 3 × 2 =',hint:'Grupează 5 cu 2 și 3 cu 3.',format:'four'},
+ {prefix:'2 × 4 × 5 × 2 =',hint:'Grupează 2 cu 5 și 4 cu 2.',format:'four'},
+ {prefix:'3 × 5 × 2 × 2 =',hint:'Grupează 5 cu 2 și 3 cu 2.',format:'four'},
+ {prefix:'4 × 2 × 5 × 2 =',hint:'Grupează 2 cu 5 și 4 cu 2.',format:'four'}
 ];
 let mountainChest=1,mountainRevision=0,mountainBusy=false,mountainKeyBusy=false;
 const mountainScene=$('mountain-exercise-scene');
@@ -236,17 +236,29 @@ function openMountainProperty(){
 }
 function showMountainChest(number){
  if(mountainBusy)return;mountainChest=number;mountainRevision++;
- const [question,hint]=mountainQuestions[number-1];
+ const exercise=mountainQuestions[number-1],multi=exercise.format!=='single';
+ const instruction=multi?'Asociază convenabil:':'Completează căsuța cu numărul potrivit!';
  $('mountain-property-chest-label').textContent='Lădița '+number;
- $('mountain-property-question').textContent=question;
- $('mountain-exercise-question').textContent=question;
- $('mountain-property-hint').textContent=hint;
- $('mountain-exercise-hint').textContent=hint;
- mountainScene.classList.toggle('long-question',question.length>20&&question.length<=29);
- mountainScene.classList.toggle('very-long-question',question.length>29);
- for(const id of ['mountain-property-answer','mountain-exercise-answer']){
+ $('mountain-property-question').textContent=exercise.prefix+(multi?' □ × □ = □':' □');
+ $('mountain-exercise-question').textContent=exercise.prefix;
+ $('mountain-exercise-instruction').textContent=instruction;
+ $('mountain-property-hint').textContent=exercise.hint;
+ $('mountain-exercise-hint').textContent=exercise.hint;
+ $('mountain-exercise-equation').className='mountain-exercise-equation '+exercise.format;
+ mountainScene.classList.remove('long-question','very-long-question');
+ for(const pair of [
+  ['mountain-exercise-times','mountain-property-times'],
+  ['mountain-exercise-equals','mountain-property-equals'],
+  ['mountain-exercise-factor2','mountain-property-factor2'],
+  ['mountain-exercise-product','mountain-property-product']
+ ])for(const id of pair)$(id).hidden=!multi;
+ for(const id of [
+  'mountain-property-answer','mountain-exercise-answer',
+  'mountain-property-factor2','mountain-exercise-factor2',
+  'mountain-property-product','mountain-exercise-product'
+ ]){
   $(id).value='';
-  $(id).disabled=!!teacherMapReturn;
+  $(id).disabled=!!teacherMapReturn||(!multi&&id.endsWith('factor2'))||(!multi&&id.endsWith('product'));
  }
  for(const id of ['mountain-property-check','mountain-exercise-verify'])$(id).disabled=!!teacherMapReturn;
  for(const id of ['mountain-property-feedback','mountain-exercise-feedback'])
@@ -267,12 +279,25 @@ $('mountain-property-dialog').addEventListener('cancel',event=>{
 async function checkMountainExercise(event){
  event.preventDefault();
  if(teacherMapReturn||mountainBusy||!mapProfile)return;
- const answer=(mountainScene.hidden?$('mountain-property-answer'):$('mountain-exercise-answer')).value.trim();
+ const formPrefix=mountainScene.hidden?'mountain-property-':'mountain-exercise-';
+ const exercise=mountainQuestions[mountainChest-1];
+ const first=$(formPrefix+'answer').value.trim();
  const feedback=message=>{
   $('mountain-property-feedback').textContent=message;
   $('mountain-exercise-feedback').textContent=message;
  };
- if(!/^[0-9]{1,4}$/.test(answer)){feedback('Scrie numărul care lipsește.');return;}
+ let answer;
+ if(exercise.format==='single'){
+  if(!/^[0-9]{1,2}$/.test(first)){feedback('Completează căsuța cu un număr.');return;}
+  answer=first;
+ }else{
+  const second=$(formPrefix+'factor2').value.trim();
+  const result=$(formPrefix+'product').value.trim();
+  if(!/^[0-9]{1,2}$/.test(first)||!/^[0-9]{1,2}$/.test(second)||!/^[0-9]{1,3}$/.test(result)){
+   feedback('Completează cele două grupe și produsul.');return;
+  }
+  answer=[first,second,result].join(',');
+ }
  const sid=mapProfile.studentId,rev=mountainRevision,chest=mountainChest;
  mountainBusy=true;
  for(const id of ['mountain-property-check','mountain-exercise-verify'])$(id).disabled=true;
