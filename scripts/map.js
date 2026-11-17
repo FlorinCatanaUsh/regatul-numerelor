@@ -13,7 +13,7 @@ const chapters = [
 ];
 const chapterTrophies=[
  ['Cristalul pădurii','cristalul-padurii.webp'],
- ['Comoara văii','trofeu-capitol-2.webp'],
+ ['Chihlimbarul magic al văii','trofeu-capitol-2.webp'],
  ['Cristalul muntelui','trofeu-capitol-3.webp'],
  ['Perla râului','trofeu-capitol-4.webp'],
  ['Sigiliul cetății','trofeu-capitol-5.webp'],
@@ -104,7 +104,7 @@ function openValley(){
  $('valley-student').textContent=mapProfile.displayName;$('valley-stars').textContent=String(chapterStars(mapProfile,2));
  $('valley-lessons').replaceChildren();$('valley-progress').replaceChildren();
  const boxes=[[21.5,41,15,17],[43.5,43,15,17],[61.5,44,15,17],[19.5,59,15,18],[38,61,15,18],[56,63,13,18],[72,62,14,18]];
- valleyLessons.forEach((title,i)=>{const id=i+1,b=document.createElement('button');b.type='button';b.className='valley-lesson';b.setAttribute('aria-label',id+'. '+title);const [left,top,width,height]=boxes[i];Object.assign(b.style,{left:left+'%',top:top+'%',width:width+'%',height:height+'%'});const show=()=>openValleyLesson(id);b.addEventListener('click',show);$('valley-lessons').append(b);const tile=document.createElement('button');tile.type='button';tile.className='valley-tile';tile.textContent=String(id);tile.setAttribute('aria-label','Lecția '+id+' — '+title);Object.assign(tile.style,{left:(i<4?[79.5,83,86.5,90][i]:[81,84.6,88.2][i-4])+'%',top:(i<4?9.8:16)+'%',width:'3%',height:'5%'});tile.addEventListener('click',show);$('valley-progress').append(tile);});
+ valleyLessons.forEach((title,i)=>{const id=i+1,b=document.createElement('button');b.type='button';b.className='valley-lesson';b.setAttribute('aria-label',id+'. '+title);const [left,top,width,height]=boxes[i];Object.assign(b.style,{left:left+'%',top:top+'%',width:width+'%',height:height+'%'});const show=()=>openValleyLesson(id);b.addEventListener('click',show);$('valley-lessons').append(b);const progress=mapProfile.lessonProgress?.[2]||{};const completed=id===7?(progress.amberTaken===true||mapProfile.completedChapters.includes(2)):progress.keysTaken?.[id]===true;const tile=document.createElement('button');tile.type='button';tile.className='valley-tile'+(completed?' complete':'');tile.textContent=String(id);tile.setAttribute('aria-label','Lecția '+id+' — '+title);Object.assign(tile.style,{left:(i<4?[79.5,83,86.5,90][i]:[81,84.6,88.2][i-4])+'%',top:(i<4?9.8:16)+'%',width:'3%',height:'5%'});tile.addEventListener('click',show);$('valley-progress').append(tile);});
  // The original illustration has older lettering on signs 5–7.
  for (const id of [5,6,7]) {
   const label=document.createElement('span');
@@ -113,7 +113,9 @@ function openValley(){
   label.textContent=valleyLessons[id-1];
   $('valley-lessons').append(label);
  }
- $('valley-summary').textContent='0 din 7 lecții parcurse. '+chapterStars(mapProfile,2)+' steluțe în acest capitol. Exercițiile vor fi adăugate pe rând.';
+ const valleyProgress=mapProfile.lessonProgress?.[2]||{};
+ const finished=Array.from({length:6},(_,i)=>valleyProgress.keysTaken?.[i+1]===true).filter(Boolean).length+((valleyProgress.amberTaken===true||mapProfile.completedChapters.includes(2))?1:0);
+ $('valley-summary').textContent=finished+' din 7 lecții parcurse. '+chapterStars(mapProfile,2)+' steluțe în acest capitol.';
  $('valley-back').focus();window.scrollTo(0,0);
 }
 const mountainLessons=[
@@ -400,6 +402,24 @@ const unknownNumberFreeFields=Array.from({length:10},(_,index)=>$('unknown-numbe
 const unknownNumberCheck=$('unknown-number-check');
 const unknownNumberStatus=$('unknown-number-status');
 let unknownNumberRevision=0,activeUnknownNumberChest=1;
+let amberBusy=false;
+function updateAmberProgress(){
+ const progress=mapProfile?.lessonProgress?.[2]||{};
+ const taken=progress.amberTaken===true||mapProfile?.completedChapters?.includes(2)===true;
+ const ready=starCount(progress.solvedByLesson?.[7])>=6&&Array.from({length:6},(_,i)=>progress.keysTaken?.[i+1]===true).every(Boolean);
+ const button=$('unknown-number-amber');
+ const plaque=$('unknown-number-amber-plaque');
+ const status=$('unknown-number-amber-status');
+ button.hidden=!taken&&!ready;
+ button.disabled=!!teacherMapReturn||amberBusy||taken||!ready;
+ button.className='valley-amber-collect'+(taken?' collected':ready?' ready':'');
+ const label=taken?'Chihlimbar colectat. Capitolul 3 este deblocat.':ready?'Colectează chihlimbarul magic al văii':'Chihlimbarul se eliberează după 6 steluțe și cele 6 chei.';
+ button.setAttribute('aria-label',label);
+ button.title=label;
+ plaque.textContent=taken?'✓ Chihlimbar colectat':ready?'Atinge chihlimbarul!':'Chihlimbarul magic al văii';
+ plaque.classList.toggle('collected',taken);
+ status.textContent=taken?'Chihlimbarul a fost salvat! Capitolul 3 este deblocat.':ready?'Ai câștigat recompensa! Atinge chihlimbarul pentru a o colecta.':'';
+}
 function updateUnknownNumberProgress(){
  const solved=mapProfile.lessonProgress?.[2]?.solvedByLesson?.[7]||[];
  $('unknown-number-count').textContent=starCount(solved)+'/12';
@@ -411,6 +431,7 @@ function updateUnknownNumberProgress(){
   star.textContent='★';
   chest.append(star);
  }
+ updateAmberProgress();
 }
 function openUnknownNumberExercise(number){
  activeUnknownNumberChest=number;
@@ -443,6 +464,29 @@ function openUnknownNumberExercise(number){
  unknownNumberDialog.showModal();
 }
 $('unknown-number-close').addEventListener('click',()=>unknownNumberDialog.close());
+$('unknown-number-amber').addEventListener('click',async()=>{
+ if(teacherMapReturn||amberBusy||!mapProfile)return;
+ const progress=mapProfile.lessonProgress?.[2]||{};
+ if(progress.amberTaken===true||mapProfile.completedChapters.includes(2))return;
+ if(starCount(progress.solvedByLesson?.[7])<6||!Array.from({length:6},(_,i)=>progress.keysTaken?.[i+1]===true).every(Boolean))return;
+ const sid=mapProfile.studentId;
+ amberBusy=true;
+ updateAmberProgress();
+ $('unknown-number-amber-status').textContent='Chihlimbarul se salvează…';
+ try{
+  const result=await studentAuth.takeValleyAmber();
+  if(mapProfile?.studentId!==sid||teacherMapReturn)return;
+  amberBusy=false;
+  renderMap(result.profile);
+  updateAmberProgress();
+ }catch(error){
+  if(mapProfile?.studentId===sid&&!teacherMapReturn){
+   amberBusy=false;
+   updateAmberProgress();
+   $('unknown-number-amber-status').textContent=error.message;
+  }
+ }finally{amberBusy=false;}
+});
 $('unknown-number-form').addEventListener('submit',async event=>{
  event.preventDefault();
  if(teacherMapReturn||unknownNumberCheck.disabled)return;
