@@ -769,3 +769,6 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
 #mountain-proof-fields>div{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem;margin:.7rem 0;font-size:1.15rem;font-weight:700}
 #mountain-proof-fields input,#mountain-proof-fields select{box-sizing:border-box;width:2.65rem;min-height:2.6rem;padding:.1rem;text-align:center;font:inherit;color:#24180b;background:white;border:1px solid #94611f;border-radius:.3rem}
 #mountain-proof-form>button,#mountain-proof-key{padding:.55rem .75rem;border-radius:.5rem;cursor:pointer}
+
+.mountain-powers .mountain-proof-board{background-image:url('../assets/inmultirea-cu-10-100-1000.webp')}
+.mountain-powers #mountain-proof-fields input{width:7.5rem}
