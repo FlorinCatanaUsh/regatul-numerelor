@@ -143,10 +143,10 @@ function openMountains(){
   const showLesson=()=>{
    if(id===1){openMountainProperty();return;}
    const keys=mapProfile.lessonProgress?.[3]?.keysTaken;
-   if((id===2||id===3)&&(keys?.[id-1]||teacherMapReturn)){openMountainProof(id);return;}
+   if((id>=2&&id<=4)&&(keys?.[id-1]||teacherMapReturn)){openMountainProof(id);return;}
    $('chapter-title').textContent=id+'. '+title;
    $('chapter-description').textContent='Capitolul III · Munții Înmulțirii';
-   $('chapter-access').textContent=id<=4&&!teacherMapReturn&&!keys?.[id-1]
+   $('chapter-access').textContent=id<=5&&!teacherMapReturn&&!keys?.[id-1]
     ? 'Colectează cheia din lecția anterioară.' : 'Exercițiile acestei lecții sunt în pregătire.';
    $('chapter-back').textContent='Înapoi la lecții';
    $('chapter-dialog').showModal();
@@ -337,6 +337,7 @@ for(const id of ['mountain-property-back','mountain-property-back-sign'])$(id).a
 });
 
 const mountainProofExercises=[[5,7],[4,8],[9,5],[3,7],[6,8],[6,9],[7,8],[5,3],[7,8,65],[9,4,36],[8,5,35],[9,7,63]];
+const mountainSingleDigitExercises=[[[1,1],[1,2],[2,1],[1,3],[3,1],[1,4]],[[2,2],[4,1],[5,1],[1,6],[2,3],[3,2]],[[6,1],[1,7],[7,1],[1,8],[4,2],[8,1]],[[1,9],[3,3],[9,1],[2,5],[5,2],[2,6]],[[4,3],[6,2],[2,7],[7,2],[3,5],[5,3]],[[2,8],[4,4],[2,9],[3,6],[6,3],[9,2]],[[4,5],[5,4],[3,7],[7,3],[4,6],[6,4]],[[8,3],[5,5],[3,9],[9,3],[4,7],[7,4]],[[6,5],[4,8],[8,4],[5,7],[7,5],[4,9]],[[6,6],[9,4],[8,5],[6,7],[7,6],[5,9]],[[9,5],[6,8],[8,6],[7,7],[9,6],[7,8]],[[8,7],[7,9],[9,7],[8,8],[8,9],[9,8]]];
 const mountainPowersFactors=[5,34,285,8463];
 const mountainPowersMultipliers=[10,100,1000];
 let activeMountainLesson=2;
@@ -374,7 +375,7 @@ function refreshMountainProof(){
  const taken=progress?.keysTaken?.[activeMountainLesson]===true;
  proofChestButtons.forEach((button,index)=>{
   const done=solved.has(index+1);
-  const powers=activeMountainLesson===3;
+  const powers=activeMountainLesson>=3;
   button.style.setProperty('--chest-x',(powers?[23.1,41.2,59.1,77.2]:[22,40.75,59.5,78.25])[index%4]+'%');
   button.style.setProperty('--chest-y',(powers?[36,50.3,65.3]:[34.5,51,69.25])[Math.floor(index/4)]+'%');
   button.textContent=(index+1)+(done?' ★':'');
@@ -388,7 +389,8 @@ function refreshMountainProof(){
 function openMountainProof(lesson){
  activeMountainLesson=lesson;
  const title=mountainLessons[lesson-1][0];
- mountainProofPage.classList.toggle('mountain-powers',lesson===3);
+ mountainProofPage.classList.toggle('mountain-powers',lesson>=3);
+ mountainProofPage.classList.toggle('mountain-single-digit',lesson===4);
  mountainProofPage.setAttribute('aria-label',title);
  $('mountain-proof-heading').textContent=title;
  $('mountains-page').hidden=true;
@@ -399,6 +401,17 @@ function openMountainProof(lesson){
 }
 function openProofChest(chest){
  proofChest=chest;
+ if(activeMountainLesson===4){
+  $('mountain-proof-title').textContent='Lădița '+chest;
+  $('mountain-proof-instruction').textContent='Scrie produsele:';
+  $('mountain-proof-fields').innerHTML=mountainSingleDigitExercises[chest-1].map(([a,b],index)=>
+   '<div>'+a+' × '+b+' = <input inputmode="numeric" pattern="[0-9]{1,2}" maxlength="2" aria-label="Produsul la exercițiul '+(index+1)+'" required></div>'
+  ).join('');
+  $('mountain-proof-feedback').textContent=teacherMapReturn?'Previzualizare profesor.':'';
+  $('mountain-proof-check').disabled=!!teacherMapReturn;
+  proofDialog.showModal();
+  return;
+ }
  if(activeMountainLesson===3){
   const factor=mountainPowersFactors[(chest-1)%4];
   const multiplier=mountainPowersMultipliers[Math.floor((chest-1)/4)];
@@ -446,7 +459,7 @@ async function saveMountainProof(operation,fields,feedback){
   if(mapProfile?.studentId!==sid||teacherMapReturn)return;
   renderMap(result.profile);
   refreshMountainProof();
-  if(operation==='answer')feedback.textContent=result.correct?'✓ Corect! Steluța a fost salvată.':'✗ Mai încearcă!';
+  if(operation==='answer')feedback.textContent=result.correct?'✓ Corect! Steluța a fost salvată.':activeMountainLesson===4?'✗ Verifică cele șase rezultate și mai încearcă.':'✗ Mai încearcă!';
  }catch(error){if(mapProfile?.studentId===sid)feedback.textContent=error.message;}
  finally{
   proofSaving=false;
@@ -458,7 +471,7 @@ $('mountain-proof-form').addEventListener('submit',event=>{
  event.preventDefault();
  const answer=Array.from($('mountain-proof-fields').children,row=>
   Array.from(row.querySelectorAll('input,select'),field=>field.tagName==='INPUT'?String(Number(field.value)):field.value).join(',')
- ).join(';');
+ ).join(activeMountainLesson===4?',':';');
  saveMountainProof('answer',{chest:proofChest,answer},$('mountain-proof-feedback'));
 });
 $('mountain-proof-key').addEventListener('click',()=>saveMountainProof('take_key',{},$('mountain-proof-status')));

@@ -772,3 +772,10 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
 
 .mountain-powers .mountain-proof-board{background-image:url('../assets/inmultirea-cu-10-100-1000.webp')}
 .mountain-powers #mountain-proof-fields input{width:7.5rem}
+
+.mountain-single-digit #mountain-proof-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-flow:column;grid-template-rows:repeat(3,auto);gap:.25rem 1rem}
+.mountain-single-digit #mountain-proof-fields input{width:3.25rem}
+@media(max-width:600px){
+ .mountain-single-digit #mountain-proof-fields{grid-template-columns:1fr;grid-template-rows:none;grid-auto-flow:row}
+ .mountain-single-digit #mountain-proof-fields>div{margin:.25rem 0}
+}
