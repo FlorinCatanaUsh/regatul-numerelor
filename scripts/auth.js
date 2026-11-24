@@ -24,6 +24,7 @@ const studentAuth = (()=>{
   async students(){return (await request('teacher_students')).students;},
   async takeValleyKey(lesson){return request('take_valley_key',{lesson});},
   async takeValleyAmber(){return request('take_valley_amber');},
+  async multiplicationProof(operation,fields={}){return request('multiplication_proof',{operation,...fields});},
   async multiplicationProperty(operation,fields={}){return request('multiplication_property',{operation,...fields});},
   async addition(operation,fields={}){return await request('addition',{operation,...fields});},
   async carry(operation,fields={}){return await request('carry',{operation,...fields});},

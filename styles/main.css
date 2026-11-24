@@ -758,3 +758,14 @@ body.viewing-map{background:#102c32}body.viewing-map main{display:none}
  width:115px!important;max-width:26vw;font-size:28px!important;
 }
 .mountain-property-fallback-inputs :is(span) {font:bold 30px Georgia,serif}
+
+.mountain-proof-board{position:relative;max-width:1672px;margin:auto;aspect-ratio:1672/941;background:#422b1b url('../assets/proba-inmultirii.webp') center/cover no-repeat}
+.mountain-proof-board button{position:absolute;left:var(--chest-x);top:var(--chest-y);transform:translate(-50%,-50%);width:11.5%;height:14%;min-width:32px;min-height:30px;border:1px solid transparent;background:transparent;color:#fff0b7;font-size:clamp(.8rem,2.2vw,1.8rem);font-weight:900;text-shadow:0 2px 3px #160b03;cursor:pointer;border-radius:.4rem;display:grid;place-items:end center}
+.mountain-proof-board button:hover,.mountain-proof-board button:focus-visible{border-color:#ffe2a0;background:#fcd77922}
+.mountain-proof-key{text-align:center;margin:1rem}
+#mountain-proof-dialog{width:min(31rem,calc(100% - 1.5rem));box-sizing:border-box;padding:clamp(1rem,4vw,2rem);background:#f9edcf;color:#29190c;border:2px solid #a77329;border-radius:1rem}
+#mountain-proof-dialog::backdrop{background:#170f09b5}
+#mountain-proof-dialog h3{margin-top:0}
+#mountain-proof-fields>div{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem;margin:.7rem 0;font-size:1.15rem;font-weight:700}
+#mountain-proof-fields input,#mountain-proof-fields select{box-sizing:border-box;width:2.65rem;min-height:2.6rem;padding:.1rem;text-align:center;font:inherit;color:#24180b;background:white;border:1px solid #94611f;border-radius:.3rem}
+#mountain-proof-form>button,#mountain-proof-key{padding:.55rem .75rem;border-radius:.5rem;cursor:pointer}
